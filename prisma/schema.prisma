@@ -1,0 +1,168 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  CLIENT
+  ADVISOR
+  ADMIN
+}
+
+enum PlanTier {
+  FREE
+  PREMIUM
+}
+
+enum AccountType {
+  CHECKING
+  SAVINGS
+  CREDIT_CARD
+  INVESTMENT
+  CASH
+  OTHER
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER
+}
+
+enum GoalStatus {
+  IN_PROGRESS
+  COMPLETED
+  PAUSED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  avatarUrl     String?   @map("avatar_url")
+  role          UserRole  @default(CLIENT)
+  planTier      PlanTier  @default(FREE) @map("plan_tier")
+
+  advisorId     String?   @map("advisor_id")
+  advisor       User?     @relation("AdvisorClients", fields: [advisorId], references: [id], onDelete: SetNull)
+  clients       User[]    @relation("AdvisorClients")
+
+  accounts      Account[]
+  categories    Category[]
+  goals         Goal[]
+  auditLogs     AdvisorAuditLog[]
+
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@index([advisorId])
+  @@map("users")
+}
+
+model Account {
+  id                String       @id @default(cuid())
+  userId            String       @map("user_id")
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name              String
+  type              AccountType
+  initialBalance    Decimal      @default(0.00) @db.Decimal(15, 2) @map("initial_balance")
+  currentBalance    Decimal      @default(0.00) @db.Decimal(15, 2) @map("current_balance")
+  currency          String       @default("BRL")
+  color             String?
+  icon              String?
+
+  isManual          Boolean      @default(true) @map("is_manual")
+  openFinanceItemId String?      @map("open_finance_item_id")
+  lastSyncedAt      DateTime?    @map("last_synced_at")
+
+  transactions      Transaction[]
+
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Category {
+  id            String        @id @default(cuid())
+  userId        String?       @map("user_id")
+  user          User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name          String
+  icon          String?
+  color         String?
+  parentId      String?       @map("parent_id")
+  parent        Category?     @relation("SubCategories", fields: [parentId], references: [id], onDelete: Cascade)
+  subCategories Category[]    @relation("SubCategories")
+
+  transactions  Transaction[]
+
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("categories")
+}
+
+model Transaction {
+  id           String          @id @default(cuid())
+  accountId    String          @map("account_id")
+  account      Account         @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  categoryId   String?         @map("category_id")
+  category     Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  type         TransactionType
+  amount       Decimal         @db.Decimal(15, 2)
+  description  String
+  date         DateTime        @db.Date
+  notes        String?
+
+  externalId   String?         @unique @map("external_id")
+  isReconciled Boolean         @default(true) @map("is_reconciled")
+
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  @@index([accountId, date])
+  @@index([categoryId])
+  @@map("transactions")
+}
+
+model Goal {
+  id            String      @id @default(cuid())
+  userId        String      @map("user_id")
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title         String
+  targetAmount  Decimal     @db.Decimal(15, 2) @map("target_amount")
+  currentAmount Decimal     @default(0.00) @db.Decimal(15, 2) @map("current_amount")
+  targetDate    DateTime?   @map("target_date") @db.Date
+  status        GoalStatus  @default(IN_PROGRESS)
+  categoryTag   String?     @map("category_tag")
+
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("goals")
+}
+
+model AdvisorAuditLog {
+  id         String   @id @default(cuid())
+  advisorId  String   @map("advisor_id")
+  clientId   String   @map("client_id")
+  client     User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  action     String
+  accessedAt DateTime @default(now()) @map("accessed_at")
+
+  @@index([advisorId, clientId])
+  @@map("advisor_audit_logs")
+}
