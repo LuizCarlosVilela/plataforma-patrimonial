@@ -1,6 +1,7 @@
 import { getAccounts } from "@/server/actions/accounts";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { Plus, CreditCard, Landmark, TrendingUp, Wallet } from "lucide-react";
+import { formatBRL } from "@/lib/utils";
 
 const accountIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   CreditCard,
@@ -10,6 +11,7 @@ const accountIcons: Record<string, React.ComponentType<{ className?: string }>> 
 };
 
 export default async function AccountsPage() {
+  const prisma = getPrisma();
   const demoUserEmail = "cliente@demo.com.br";
   const user = await prisma.user.findUnique({ where: { email: demoUserEmail } });
 
@@ -42,7 +44,7 @@ export default async function AccountsPage() {
             <button className="text-indigo-400 hover:underline text-sm">Adicionar primeira conta</button>
           </div>
         ) : (
-          accounts.map((account) => {
+          accounts.map((account: { id: string; name: string; type: string; currentBalance: string; color?: string; icon?: string }) => {
             const Icon = account.icon && accountIcons[account.icon] ? accountIcons[account.icon] : CreditCard;
             const isCreditCard = account.type === "CREDIT_CARD";
             const balanceColor = isCreditCard ? "text-rose-400" : "text-emerald-400";

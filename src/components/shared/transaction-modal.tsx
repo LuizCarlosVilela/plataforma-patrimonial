@@ -24,6 +24,12 @@ const accountIcons: Record<string, React.ComponentType<{ className?: string }>> 
   Wallet,
 };
 
+// Helper to safely render icon
+const renderIcon = (iconName: string | null | undefined, icons: Record<string, React.ComponentType<{ className?: string }>>) => {
+  if (!iconName || !icons[iconName]) return null;
+  return <>{icons[iconName] && <span className="align-middle" />}</>
+}
+
 interface TransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -178,7 +184,7 @@ export function TransactionModal({ isOpen, onClose, userId }: TransactionModalPr
               <option value="">Selecione uma conta</option>
               {accounts.map((acc) => (
                 <option key={acc.id} value={acc.id}>
-                  {acc.icon && <accountIcons[acc.icon] ? (accountIcons[acc.icon] as any) : null} {acc.name} ({acc.type})
+                  {renderIcon(acc.icon, accountIcons)} {acc.name} ({acc.type})
                 </option>
               ))}
             </select>
@@ -195,7 +201,7 @@ export function TransactionModal({ isOpen, onClose, userId }: TransactionModalPr
               <option value="">Selecione uma categoria</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
-                  {cat.icon && <categoryIcons[cat.icon] ? (categoryIcons[cat.icon] as any) : null} {cat.name}
+                  {renderIcon(cat.icon, categoryIcons)} {cat.name}
                 </option>
               ))}
             </select>

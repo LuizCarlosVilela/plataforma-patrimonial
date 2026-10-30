@@ -1,8 +1,9 @@
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { Plus, ArrowUpRight, ArrowDownRight, Filter, Calendar } from "lucide-react";
 import { formatBRL } from "@/lib/utils";
 
 export default async function TransactionsPage() {
+  const prisma = getPrisma();
   const demoUserEmail = "cliente@demo.com.br";
   const user = await prisma.user.findUnique({ where: { email: demoUserEmail } });
 
@@ -10,6 +11,7 @@ export default async function TransactionsPage() {
     return (
       <div className="p-4 text-center text-slate-400">
         <p>Usuário demo não encontrado.</p>
+        <p className="text-sm mt-2">Execute: <code className="bg-slate-800 px-2 py-1 rounded">npm run db:seed</code></p>
       </div>
     );
   }
@@ -25,12 +27,19 @@ export default async function TransactionsPage() {
   });
 
   // Agrupar por data
-  const groupedTransactions = transactions.reduce((acc, tx) => {
-    const dateKey = new Date(tx.date).toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
-    if (!acc[dateKey]) acc[dateKey] = [];
-    acc[dateKey].push(tx);
-    return acc;
-  }, {} as Record<string, typeof transactions>);
+  const groupedTransactions = transactions.reduce(
+    (acc: Record<string, typeof transactions>, _tx: typeof transactions[0]) => {
+      const dateKey = new Date(_tx.date).toLocaleDateString("pt-BR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      });
+      if (!acc[dateKey]) acc[dateKey] = [];
+      acc[dateKey].push(_tx);
+      return acc;
+    },
+    {} as Record<string, typeof transactions>
+  );
 
   return (
     <>
@@ -62,11 +71,14 @@ export default async function TransactionsPage() {
         </div>
       ) : (
         <div className="space-y-6">
-          {Object.entries(groupedTransactions).map(([date, txs]) => {
-            const dayTotal = txs.reduce((sum, tx) => {
-              const amount = Number(tx.amount);
-              return tx.type === "INCOME" ? sum + amount : sum - amount;
-            }, 0);
+          {Object.entries(groupedTransactions).map(([date, txs]: [string, typeof transactions]) => {
+            const dayTotal = txs.reduce(
+              (sum: number, tx: typeof transactions[0]): number => {
+                const amount = Number(tx.amount);
+                return tx.type === "INCOME" ? sum + amount : sum - amount;
+              },
+              0
+            );
 
             return (
               <div key={date} className="space-y-2">
@@ -77,7 +89,7 @@ export default async function TransactionsPage() {
                   </span>
                 </div>
                 <div className="space-y-1">
-                  {txs.map((tx) => (
+                  {txs.map((tx: typeof transactions[0]) => (
                     <div
                       key={tx.id}
                       className="flex items-center justify-between bg-slate-900/70 border border-slate-800 rounded-xl p-3"
@@ -86,7 +98,7 @@ export default async function TransactionsPage() {
                         <div
                           className={`
                             w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm
-                            ${tx.type === "INCOME" ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"}
+                            ${tx.type === "INCOME" ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-500"}
                           `}
                         >
                           {tx.type === "INCOME" ? <ArrowDownRight className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}

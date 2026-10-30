@@ -1,5 +1,5 @@
 import { getGoals } from "@/server/actions/goals";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { Plus, Target, CheckCircle, Clock, PauseCircle } from "lucide-react";
 import { formatBRL } from "@/lib/utils";
 
@@ -22,6 +22,7 @@ const statusColors = {
 };
 
 export default async function GoalsPage() {
+  const prisma = getPrisma();
   const demoUserEmail = "cliente@demo.com.br";
   const user = await prisma.user.findUnique({ where: { email: demoUserEmail } });
 
@@ -54,17 +55,17 @@ export default async function GoalsPage() {
             <button className="text-indigo-400 hover:underline text-sm">Criar primeira meta</button>
           </div>
         ) : (
-          goals.map((goal) => {
+          goals.map((goal: { id: string; title: string; currentAmount: string; targetAmount: string; status: string; categoryTag: string; targetDate: string }) => {
             const current = Number(goal.currentAmount);
             const target = Number(goal.targetAmount);
             const progress = Math.min(Math.round((current / target) * 100), 100);
-            const StatusIcon = statusIcons[goal.status];
+            const StatusIcon = statusIcons[goal.status as keyof typeof statusIcons];
             const isCompleted = goal.status === "COMPLETED";
 
             return (
               <div
                 key={goal.id}
-                className={`bg-slate-900/70 border rounded-xl p-5 ${statusColors[goal.status]}`}
+                className={`bg-slate-900/70 border rounded-xl p-5 ${statusColors[goal.status as keyof typeof statusColors]}`}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
@@ -74,12 +75,12 @@ export default async function GoalsPage() {
                     </div>
                     {goal.categoryTag && (
                       <span className="inline-block px-2 py-0.5 text-[10px] font-medium bg-slate-800 rounded text-slate-400">
-                        {goal.categoryTag}
+                        {String(goal.categoryTag)}
                       </span>
                     )}
                   </div>
                   <div className="flex items-center gap-1">
-                    <StatusIcon className={`w-4 h-4 ${statusColors[goal.status].split(" ")[0]}`} />
+                    {StatusIcon && <StatusIcon className={`w-4 h-4 ${statusColors[goal.status as keyof typeof statusColors].split(" ")[0]}`} />}
                   </div>
                 </div>
 
@@ -102,7 +103,7 @@ export default async function GoalsPage() {
                         {new Date(goal.targetDate).toLocaleDateString("pt-BR")}
                       </span>
                     )}
-                    <span className="capitalize text-xs">{statusLabels[goal.status]}</span>
+                    <span className="capitalize text-xs">{statusLabels[goal.status as keyof typeof statusLabels]}</span>
                   </div>
                 </div>
 

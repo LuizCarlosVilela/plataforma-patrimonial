@@ -1,11 +1,12 @@
 import { getDashboardData } from "@/server/queries/dashboard";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { NetWorthCard } from "@/components/shared/net-worth-card";
 import { GoalProgressCard } from "@/components/shared/goal-progress-card";
-import { Plus, ArrowUpRight, ShieldCheck, TrendingUp } from "lucide-react";
+import { Plus, ArrowUpRight, ShieldCheck, TrendingUp, Target } from "lucide-react";
 
 export default async function DashboardPage() {
   // Demo com usuário inicial - em produção usar auth()
+  const prisma = getPrisma();
   const demoUserEmail = "cliente@demo.com.br";
   const user = await prisma.user.findUnique({ where: { email: demoUserEmail } });
 
@@ -57,7 +58,7 @@ export default async function DashboardPage() {
               <button className="mt-3 text-xs text-indigo-400 hover:underline">Criar primeira meta</button>
             </div>
           ) : (
-            data.goals.map((goal) => (
+            data.goals.map((goal: { id: string; title: string; currentAmount: number; targetAmount: number; targetDate: Date; status: "IN_PROGRESS" | "COMPLETED" | "PAUSED"; categoryTag: string }) => (
               <GoalProgressCard
                 key={goal.id}
                 id={goal.id}
@@ -86,7 +87,7 @@ export default async function DashboardPage() {
               <p className="text-slate-400 text-sm">Nenhuma transação recente</p>
             </div>
           ) : (
-            data.recentTransactions.map((tx) => (
+            data.recentTransactions.map((tx: { id: string; description: string; amount: string; type: string; date: string; account: { name: string; category?: { name: string; icon?: string } } }) => (
               <div
                 key={tx.id}
                 className="flex items-center justify-between bg-slate-900/70 border border-slate-800 rounded-xl p-3"
@@ -95,7 +96,7 @@ export default async function DashboardPage() {
                   <div
                     className={`
                       w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm
-                      ${tx.type === "INCOME" ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"}
+                      ${tx.type === "INCOME" ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-500"}
                     `}
                   >
                     {tx.type === "INCOME" ? (

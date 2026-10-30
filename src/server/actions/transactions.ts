@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -16,6 +16,7 @@ const createTransactionSchema = z.object({
 
 export async function createTransaction(data: z.infer<typeof createTransactionSchema>) {
   const validated = createTransactionSchema.parse(data);
+  const prisma = getPrisma();
 
   // Buscar conta para validar e atualizar saldo
   const account = await prisma.account.findUnique({
@@ -64,6 +65,7 @@ export async function createTransaction(data: z.infer<typeof createTransactionSc
 }
 
 export async function deleteTransaction(id: string) {
+  const prisma = getPrisma();
   const transaction = await prisma.transaction.findUnique({
     where: { id },
     include: { account: true },

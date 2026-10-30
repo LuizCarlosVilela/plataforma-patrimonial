@@ -22,7 +22,7 @@ export default function LoginPage() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     if (email === "cliente@demo.com.br" || email === "consultor@w1.com.br") {
-      router.push("/");
+      router.push("/dashboard");
       router.refresh();
     } else {
       setError("Credenciais inválidas. Use cliente@demo.com.br ou consultor@w1.com.br");

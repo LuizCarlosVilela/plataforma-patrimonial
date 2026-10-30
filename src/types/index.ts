@@ -1,6 +1,21 @@
-import { AccountType, TransactionType, GoalStatus, UserRole, PlanTier } from "@prisma/client";
+export type AccountType = 'CHECKING' | 'SAVINGS' | 'CREDIT_CARD' | 'INVESTMENT' | 'CASH' | 'OTHER';
+export type TransactionType = 'INCOME' | 'EXPENSE';
 
-export type { AccountType, TransactionType, GoalStatus, UserRole, PlanTier };
+export interface Transaction {
+  id: string;
+  accountId: string;
+  categoryId: string | null;
+  type: TransactionType;
+  amount: string;
+  description: string;
+  date: Date;
+  notes: string | null;
+  externalId: string | null;
+}
+
+export type GoalStatus = 'IN_PROGRESS' | 'COMPLETED' | 'PAUSED' | 'CANCELLED';
+export type UserRole = 'CLIENT' | 'ADVISOR' | 'ADMIN';
+export type PlanTier = 'FREE' | 'PREMIUM';
 
 export interface DashboardData {
   netWorth: number;

@@ -1,9 +1,12 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
-import { AccountType } from "@prisma/client";
+import { getPrisma } from "@/lib/prisma";
+
+// Account types defined locally (matching Prisma schema)
+type AccountType = 'CHECKING' | 'SAVINGS' | 'CREDIT_CARD' | 'INVESTMENT' | 'CASH' | 'OTHER';
 
 export async function getDashboardData(userId: string) {
+  const prisma = getPrisma();
   const accounts = await prisma.account.findMany({
     where: { userId },
   });
@@ -14,7 +17,7 @@ export async function getDashboardData(userId: string) {
     take: 3,
   });
 
-  const goalsWithProgress = goals.map((goal) => ({
+  const goalsWithProgress = goals.map((goal: { id: string; currentAmount: string; targetAmount: string; status: string }) => ({
     ...goal,
     currentAmount: Number(goal.currentAmount),
     targetAmount: Number(goal.targetAmount),
@@ -37,7 +40,7 @@ export async function getDashboardData(userId: string) {
 
   for (const acc of accounts) {
     const balance = Number(acc.currentBalance);
-    if (acc.type === AccountType.CREDIT_CARD) {
+    if (acc.type === 'CREDIT_CARD') {
       liabilities += balance;
     } else {
       assets += balance;

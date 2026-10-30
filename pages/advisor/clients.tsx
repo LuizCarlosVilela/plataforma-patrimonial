@@ -1,10 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { Users, TrendingUp, Target, ShieldCheck, Search, Filter, MoreVertical, ArrowRight } from "lucide-react";
 
 const formatBRL = (val: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
 
 export default async function AdvisorClientsPage() {
+  const prisma = getPrisma();
   const advisor = await prisma.user.findUnique({
     where: { email: "consultor@w1.com.br" },
     include: {
@@ -80,16 +81,16 @@ export default async function AdvisorClientsPage() {
                   </td>
                 </tr>
               ) : (
-                clients.map((client) => {
+                clients.map((client: { id: string; name: string; email: string; planTier: string; accounts: Array<{ type: string; currentBalance: string }>; goals: Array<{ status: string }> }) => {
                   const assets = client.accounts
-                    .filter((a) => a.type !== "CREDIT_CARD")
-                    .reduce((s, a) => s + Number(a.currentBalance), 0);
+                    .filter((a): a is { type: string; currentBalance: string } => a.type !== "CREDIT_CARD")
+                    .reduce((s, a): number => s + Number(a.currentBalance), 0 as number);
                   const liabilities = client.accounts
-                    .filter((a) => a.type === "CREDIT_CARD")
-                    .reduce((s, a) => s + Number(a.currentBalance), 0);
+                    .filter((a): a is { type: string; currentBalance: string } => a.type === "CREDIT_CARD")
+                    .reduce((s, a): number => s + Number(a.currentBalance), 0 as number);
                   const netWorth = assets - liabilities;
-                  const activeGoals = client.goals.filter((g) => g.status === "IN_PROGRESS").length;
-                  const completedGoals = client.goals.filter((g) => g.status === "COMPLETED").length;
+                  const activeGoals = client.goals.filter((g: { status: string }) => g.status === "IN_PROGRESS").length;
+                  const completedGoals = client.goals.filter((g: { status: string }) => g.status === "COMPLETED").length;
 
                   return (
                     <tr key={client.id} className="hover:bg-slate-900/50 transition-colors">
@@ -137,9 +138,7 @@ export default async function AdvisorClientsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-400">
-                        {client.updatedAt
-                          ? new Date(client.updatedAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
-                          : "—"}
+                        {client.accounts.length > 0 ? `${client.accounts.length} contas` : "—"}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">

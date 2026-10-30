@@ -1,8 +1,10 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+
+const prisma = getPrisma();
 
 const createGoalSchema = z.object({
   userId: z.string().cuid(),
@@ -15,7 +17,7 @@ const createGoalSchema = z.object({
 
 export async function createGoal(data: z.infer<typeof createGoalSchema>) {
   const validated = createGoalSchema.parse(data);
-
+  const prisma = getPrisma();
   const goal = await prisma.goal.create({
     data: {
       userId: validated.userId,
@@ -38,7 +40,7 @@ export async function updateGoal(id: string, data: Partial<z.infer<typeof create
   if (data.targetDate) {
     updateData.targetDate = new Date(data.targetDate);
   }
-
+  const prisma = getPrisma();
   const goal = await prisma.goal.update({
     where: { id },
     data: updateData,

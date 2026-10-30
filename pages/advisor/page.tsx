@@ -1,10 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { Users, TrendingUp, ShieldCheck, ArrowUpRight, Target, Activity } from "lucide-react";
 
 const formatBRL = (val: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
 
 export default async function AdvisorDashboardPage() {
+  const prisma = getPrisma();
   // Buscar clientes do advisor demo
   const advisor = await prisma.user.findUnique({
     where: { email: "consultor@w1.com.br" },
@@ -31,17 +32,26 @@ export default async function AdvisorDashboardPage() {
 
   // Calcular totais
   const totalClients = clients.length;
-  const totalNetWorth = clients.reduce((sum, client) => {
-    const assets = client.accounts
-      .filter((a) => a.type !== "CREDIT_CARD")
-      .reduce((s, a) => s + Number(a.currentBalance), 0);
-    const liabilities = client.accounts
-      .filter((a) => a.type === "CREDIT_CARD")
-      .reduce((s, a) => s + Number(a.currentBalance), 0);
-    return sum + (assets - liabilities);
-  }, 0);
-  const totalGoals = clients.reduce((sum, client) => sum + client.goals.length, 0);
-  const activeGoals = clients.reduce((sum, client) => sum + client.goals.filter((g) => g.status === "IN_PROGRESS").length, 0);
+  const totalNetWorth = clients.reduce(
+    (sum: number, client: { accounts: Array<{ type: string; currentBalance: string }> }) => {
+      const assets = client.accounts
+        .filter((a): a is { type: string; currentBalance: string } => a.type !== "CREDIT_CARD")
+        .reduce((s: number, a: { type: string; currentBalance: string }): number => s + Number(a.currentBalance), 0 as number);
+      const liabilities = client.accounts
+        .filter((a): a is { type: string; currentBalance: string } => a.type === "CREDIT_CARD")
+        .reduce((s: number, a: { type: string; currentBalance: string }): number => s + Number(a.currentBalance), 0 as number);
+      return sum + (assets - liabilities);
+    },
+    0 as number
+  );
+  const totalGoals = clients.reduce(
+    (sum: number, client: { goals: Array<{ status: string }> }) => sum + client.goals.length,
+    0
+  );
+  const activeGoals = clients.reduce(
+    (sum: number, client: { goals: Array<{ status: string }> }) => sum + client.goals.filter((g: { status: string }) => g.status === "IN_PROGRESS").length,
+    0
+  );
 
   return (
     <div className="space-y-6">
@@ -107,15 +117,16 @@ export default async function AdvisorDashboardPage() {
               <p className="text-slate-400 text-sm">Convide seus clientes para começar a assessoria</p>
             </div>
           ) : (
-            clients.map((client) => {
+            clients.map((client: { id: string; name: string; email: string; planTier: string; accounts: Array<{ type: string; currentBalance: string }>; goals: Array<{ status: string }>; _count: { transactions: number } }) => {
               const assets = client.accounts
-                .filter((a) => a.type !== "CREDIT_CARD")
-                .reduce((s, a) => s + Number(a.currentBalance), 0);
+                .filter((a): a is { type: string; currentBalance: string } => a.type !== "CREDIT_CARD")
+                .reduce((s: number, a: { type: string; currentBalance: string }): number => s + Number(a.currentBalance), 0 as number);
               const liabilities = client.accounts
-                .filter((a) => a.type === "CREDIT_CARD")
-                .reduce((s, a) => s + Number(a.currentBalance), 0);
+                .filter((a): a is { type: string; currentBalance: string } => a.type === "CREDIT_CARD")
+                .reduce((s: number, a: { type: string; currentBalance: string }): number => s + Number(a.currentBalance), 0 as number);
               const netWorth = assets - liabilities;
-              const activeGoalsCount = client.goals.filter((g) => g.status === "IN_PROGRESS").length;
+              const activeGoalsCount = client.goals.filter((g: { status: string }) => g.status === "IN_PROGRESS").length;
+              const transactionCount = client._count?.transactions || 0;
 
               return (
                 <div
@@ -124,7 +135,7 @@ export default async function AdvisorDashboardPage() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium text-lg">
+                      <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium">
                         {client.name.charAt(0).toUpperCase()}
                       </div>
                       <div>
@@ -141,7 +152,7 @@ export default async function AdvisorDashboardPage() {
                   <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between text-sm text-slate-400">
                     <span className="flex items-center gap-1">
                       <Activity className="w-3.5 h-3.5" />
-                      {client._count.transactions} transações
+                      {transactionCount} transações
                     </span>
                     <span className="flex items-center gap-1">
                       <Target className="w-3.5 h-3.5" />

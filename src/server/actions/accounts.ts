@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -16,7 +16,7 @@ const createAccountSchema = z.object({
 
 export async function createAccount(data: z.infer<typeof createAccountSchema>) {
   const validated = createAccountSchema.parse(data);
-
+  const prisma = getPrisma();
   const account = await prisma.account.create({
     data: {
       userId: validated.userId,
@@ -37,6 +37,7 @@ export async function createAccount(data: z.infer<typeof createAccountSchema>) {
 }
 
 export async function updateAccount(id: string, data: Partial<z.infer<typeof createAccountSchema>>) {
+  const prisma = getPrisma();
   const account = await prisma.account.update({
     where: { id },
     data,
@@ -49,6 +50,7 @@ export async function updateAccount(id: string, data: Partial<z.infer<typeof cre
 }
 
 export async function deleteAccount(id: string) {
+  const prisma = getPrisma();
   await prisma.account.delete({ where: { id } });
 
   revalidatePath("/");
@@ -56,6 +58,7 @@ export async function deleteAccount(id: string) {
 }
 
 export async function getAccounts(userId: string) {
+  const prisma = getPrisma();
   return prisma.account.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
