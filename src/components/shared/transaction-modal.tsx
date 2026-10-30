@@ -4,8 +4,6 @@ import { useState } from "react";
 import { X, Plus, Minus, CreditCard, Landmark, TrendingUp, Wallet, Car, Home, Utensils, HeartPulse, Gamepad2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createTransaction } from "@/server/actions/transactions";
-import { getAccounts } from "@/server/actions/accounts";
-import { getGoals } from "@/server/actions/goals";
 
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   Utensils,
@@ -33,7 +31,8 @@ const renderIcon = (iconName: string | null | undefined, icons: Record<string, R
 interface TransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  userId: string;
+  accounts: Array<{ id: string; name: string; type: string; color?: string | null; icon?: string | null }>;
+  categories: Array<{ id: string; name: string; icon?: string | null; color?: string | null }>;
 }
 
 export function TransactionModal({ isOpen, onClose, userId }: TransactionModalProps) {
@@ -46,13 +45,6 @@ export function TransactionModal({ isOpen, onClose, userId }: TransactionModalPr
   const [notes, setNotes] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [accounts, setAccounts] = useState<Array<{ id: string; name: string; type: string; color?: string | null; icon?: string | null }>>([]);
-  const [categories, setCategories] = useState<Array<{ id: string; name: string; icon?: string | null; color?: string | null }>>([]);
-
-  // Carregar contas e categorias ao abrir
-  // Nota: Em produção, usar React Query ou SWR para cache
-  // Por simplicidade, vamos carregar via server action direto (não ideal para client components)
-  // Melhor abordagem: passar dados como props do server component
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

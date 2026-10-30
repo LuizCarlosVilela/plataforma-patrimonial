@@ -1,21 +1,4 @@
-export type AccountType = 'CHECKING' | 'SAVINGS' | 'CREDIT_CARD' | 'INVESTMENT' | 'CASH' | 'OTHER';
-export type TransactionType = 'INCOME' | 'EXPENSE';
-
-export interface Transaction {
-  id: string;
-  accountId: string;
-  categoryId: string | null;
-  type: TransactionType;
-  amount: string;
-  description: string;
-  date: Date;
-  notes: string | null;
-  externalId: string | null;
-}
-
-export type GoalStatus = 'IN_PROGRESS' | 'COMPLETED' | 'PAUSED' | 'CANCELLED';
-export type UserRole = 'CLIENT' | 'ADVISOR' | 'ADMIN';
-export type PlanTier = 'FREE' | 'PREMIUM';
+export type { AccountType, TransactionType, GoalStatus, UserRole, PlanTier } from '@prisma/client'; // Re-export types from @prisma/client
 
 export interface DashboardData {
   netWorth: number;

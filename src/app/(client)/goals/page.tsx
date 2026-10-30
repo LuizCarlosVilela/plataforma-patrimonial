@@ -1,6 +1,6 @@
 import { getGoals } from "@/server/actions/goals";
 import { getPrisma } from "@/lib/prisma";
-import { Plus, Target, CheckCircle, Clock, PauseCircle } from "lucide-react";
+import { Plus, Target, CheckCircle, Clock, PauseCircle, TrendingUp } from "lucide-react";
 import { formatBRL } from "@/lib/utils";
 
 const statusIcons = {
@@ -30,6 +30,7 @@ export default async function GoalsPage() {
     return (
       <div className="p-4 text-center text-slate-400">
         <p>Usuário demo não encontrado.</p>
+        <p className="text-sm mt-2">Execute: <code className="bg-slate-800 px-2 py-1 rounded">npx prisma db seed</code></p>
       </div>
     );
   }
@@ -55,7 +56,7 @@ export default async function GoalsPage() {
             <button className="text-indigo-400 hover:underline text-sm">Criar primeira meta</button>
           </div>
         ) : (
-          goals.map((goal: { id: string; title: string; currentAmount: string; targetAmount: string; status: string; categoryTag: string; targetDate: string }) => {
+          goals.map((goal: { id: string; title: string; currentAmount: number; targetAmount: number; status: string; categoryTag: string; targetDate: Date }) => {
             const current = Number(goal.currentAmount);
             const target = Number(goal.targetAmount);
             const progress = Math.min(Math.round((current / target) * 100), 100);

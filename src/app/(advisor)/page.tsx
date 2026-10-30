@@ -23,8 +23,9 @@ export default async function AdvisorDashboardPage() {
   if (!advisor) {
     return (
       <div className="p-4 text-center text-slate-400">
-        <p>Assessor não encontrado.</p>
-      </div>
+      <p>Assessor não encontrado.</p>
+      <p className="text-sm mt-2">Execute: <code className="bg-slate-800 px-2 py-1 rounded">npx prisma db seed</code></p>
+    </div>
     );
   }
 
