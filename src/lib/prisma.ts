@@ -10,4 +10,10 @@ export const prisma =
     log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
 
+// Also export getPrisma for backward compatibility with existing imports
+export function getPrisma() {
+  if (process.env.NODE_ENV === "development") return prisma;
+  return prisma;
+}
+
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
