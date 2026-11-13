@@ -99,20 +99,14 @@ async function main() {
     { type: 'INCOME', amount: 2500, description: 'Investimento rendido', date: '2024-11-15' },
   ];
 
-  const categoriaCategoria = await prisma.category.findFirst();
-  const categoriaTransacoes = categorias.map(c => ({
-    name: c.name,
-    icon: c.icon,
-    color: c.color,
-  }));
-
   for (const transacao of transacoes) {
-    const randomCat = categorias[Math.floor(Math.random() * categorias.length)];
     await prisma.transaction.create({
       data: {
         accountId: conta.id,
-        categoryId: randomCat.id || undefined,
-        ...transacao,
+        type: transacao.type as 'INCOME' | 'EXPENSE',
+        amount: new (require('@prisma/client').Decimal)(transacao.amount),
+        description: transacao.description,
+        date: new Date(transacao.date),
         isReconciled: true,
       },
     });
