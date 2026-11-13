@@ -22,7 +22,7 @@ export default function DiagnosticPage() {
     if (step < questions.length) {
       setStep(step + 1);
     } else {
-      router.push("/client/dashboard?diagnostic=completed");
+      router.push("/dashboard?diagnostic=completed");
     }
   };
 
@@ -75,7 +75,7 @@ export default function DiagnosticPage() {
               Analisamos suas respostas com base no Método MAPA e geramos o seu perfil patrimonial.
             </p>
             <button
-              onClick={() => router.push("/client/dashboard")}
+              onClick={() => router.push("/dashboard")}
               className="px-8 py-3 rounded-xl font-medium text-sm text-[#16171b] hover:bg-[#b08a3e] transition-all shadow-gold active:scale-[0.98]"
               style={{ background: "#b08a3e" }}
             >

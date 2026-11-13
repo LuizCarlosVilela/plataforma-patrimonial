@@ -50,7 +50,7 @@ export default function DashboardPage() {
       <section>
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-xs text-[#86837d] uppercase tracking-wider">Planejamento & Metas</h3>
-          <a href="/client/goals" className="text-xs font-medium text-[#86837d] hover:text-[#b08a3e] flex items-center gap-1 transition-colors">
+          <a href="/goals" className="text-xs font-medium text-[#86837d] hover:text-[#b08a3e] flex items-center gap-1 transition-colors">
             Ver todas <ArrowUpRight className="w-3 h-3" />
           </a>
         </div>
@@ -88,7 +88,7 @@ export default function DashboardPage() {
       <section>
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-xs text-[#86837d] uppercase tracking-wider">Transações Recentes</h3>
-          <a href="/client/transactions" className="text-xs font-medium text-[#86837d] hover:text-[#b08a3e] transition-colors">Ver todas →</a>
+          <a href="/transactions" className="text-xs font-medium text-[#86837d] hover:text-[#b08a3e] transition-colors">Ver todas →</a>
         </div>
         <div className="space-y-2">
           {data.recentTransactions.map((tx) => (

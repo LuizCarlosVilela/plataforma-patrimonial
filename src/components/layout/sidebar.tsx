@@ -52,7 +52,7 @@ export function Sidebar() {
         <Link
           href="/design-system"
           className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 ${
-            pathname === "/client/design-system"
+            pathname === "/design-system"
               ? "bg-white/10 text-[#efeae0] font-medium"
               : "text-[#86837d] hover:bg-white/5 hover:text-[#cfc6b4]"
           }`}
