@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Mail, Lock, Eye, EyeOff, Loader2, Building2, ChevronRight } from "lucide-react";
+import { OriginLogo } from "@/components/shared/origin-logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -34,16 +35,7 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div className="relative z-10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm text-[#16171B]"
-                 style={{ background: "#b08a3e" }}>
-              O
-            </div>
-            <div>
-              <span className="text-lg font-semibold tracking-widest text-[#efeae0]">ORIGIN</span>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-[#86837d]">Gestão Patrimonial</p>
-            </div>
-          </div>
+          <OriginLogo size={40} />
         </div>
 
         {/* Hero */}
@@ -80,10 +72,7 @@ export default function LoginPage() {
       <div className="flex-1 flex flex-col bg-[#16171B]">
         {/* Top bar - mobile logo */}
         <div className="lg:hidden flex items-center gap-3 px-8 py-5 border-b border-[#cfc6b4]">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm text-[#16171B]"
-               style={{ background: "#b08a3e" }}>
-            O
-          </div>
+          <OriginLogo size={32} showText={false} />
           <span className="text-base font-semibold tracking-widest text-[#efeae0]">ORIGIN</span>
         </div>
 

@@ -10,6 +10,7 @@ import {
   ArrowRight,
   Sparkles,
 } from "lucide-react";
+import { OriginLogo } from "@/components/shared/origin-logo";
 
 export default function DesignSystemPage() {
   const [activeTab, setActiveTab] = useState<"colors" | "typography" | "components" | "cards" | "forms" | "hero">("colors");
@@ -20,9 +21,7 @@ export default function DesignSystemPage() {
       {/* Header */}
       <div className="border-b border-[#cfc6b4]/30 pb-6">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-[#16171b] text-xl shadow-gold" style={{ background: "#b08a3e" }}>
-            O
-          </div>
+          <OriginLogo size={40} showText={false} />
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-[#efeae0]">
               Origin <span style={{ color: "#b08a3e" }}>Design System</span>

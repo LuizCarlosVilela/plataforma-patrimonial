@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ShieldCheck, TrendingUp, Users, Building2, ArrowRight, CheckCircle, Sparkles, CalendarDays, Award } from "lucide-react";
+import { OriginLogo } from "@/components/shared/origin-logo";
 
 export default function LandingPage() {
   return (
@@ -22,10 +23,7 @@ export default function LandingPage() {
       <nav className="relative z-10 border-b border-[#cfc6b4]">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center font-black text-sm text-[#16171B]"
-                 style={{ background: "#b08a3e" }}>
-              O
-            </div>
+            <OriginLogo size={36} showText={false} />
             <span className="text-base font-semibold tracking-widest text-[#efeae0]">ORIGIN</span>
             <span className="hidden sm:inline text-xs text-[#86837d] uppercase tracking-[0.15em]">por Carvalho Group</span>
           </div>
@@ -365,10 +363,7 @@ export default function LandingPage() {
       <footer className="relative z-10 border-t border-[#cfc6b4] py-10">
         <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs text-[#16171B]"
-                 style={{ background: "#b08a3e" }}>
-              O
-            </div>
+            <OriginLogo size={32} showText={false} />
             <span className="text-sm font-semibold text-[#efeae0]">ORIGIN</span>
             <span className="text-xs text-[#86837d]">por Carvalho Group</span>
           </div>

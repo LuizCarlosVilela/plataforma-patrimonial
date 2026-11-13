@@ -3,6 +3,7 @@
 import { Home, Wallet, Target, ArrowRightLeft, Settings, LogOut, Palette, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { OriginLogo } from "@/components/shared/origin-logo";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -20,16 +21,7 @@ export function Sidebar() {
     <aside className="w-64 bg-[#191a1e] border-r border-[#cfc6b4] flex flex-col hidden md:flex flex-shrink-0">
       {/* Logo */}
       <div className="p-6 border-b border-[#cfc6b4]/30">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm text-[#16171b]"
-               style={{ background: "#b08a3e" }}>
-            O
-          </div>
-          <div>
-            <span className="text-base font-semibold tracking-widest text-[#efeae0] block leading-none">ORIGIN</span>
-            <span className="text-[9px] uppercase tracking-[0.18em] text-[#86837d]">Gestão Patrimonial</span>
-          </div>
-        </div>
+        <OriginLogo size={36} />
       </div>
 
       {/* Nav */}

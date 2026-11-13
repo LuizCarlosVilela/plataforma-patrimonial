@@ -140,4 +140,29 @@
   .text-gold-accent { color: #b08a3e; }
   .bg-gold-accent   { background-color: #b08a3e; }
   .border-gold-accent { border-color: #b08a3e; }
+
+  /* Origin Logo — Carvalho Group */
+  .origin-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+  }
+  .origin-logo svg {
+    flex-shrink: 0;
+  }
+  .origin-logo svg circle.logo-outer {
+    fill: none;
+    stroke: #b08a3e;
+    stroke-width: 2;
+  }
+  .origin-logo svg circle.cx-20.cy-20.r-12 {
+    fill: none;
+    stroke: #cfc6b4;
+    stroke-width: 1.5;
+    opacity: 0.5;
+  }
+  .origin-logo svg circle.nucleus {
+    fill: #b08a3e;
+  }
 }
