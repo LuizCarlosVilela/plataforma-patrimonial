@@ -24,27 +24,28 @@
   --vinho:     #9e4a3e;
 
   /* shadcn/ui tokens */
-  --background:    var(--osso);
-  --foreground:    var(--tinta);
-  --card:          var(--areia);
+  --background:      var(--osso);
+  --foreground:      var(--tinta);
+  --card:            var(--areia);
   --card-foreground: var(--tinta);
-  --popover:       var(--osso);
+  --popover:         var(--osso);
   --popover-foreground: var(--tinta);
-  --primary:       var(--obsidiana);
-  --primary-foreground: var(--ossos);
-  --secondary:     var(--areia);
+  --primary:         var(--obsidiana);
+  --primary-foreground: var(--osso);
+  --secondary:       var(--areia);
   --secondary-foreground: var(--tinta);
-  --muted:         var(--areia);
+  --muted:           var(--areia);
   --muted-foreground: var(--cinza);
-  --accent:        var(--mineral);
+  --accent:          var(--mineral);
   --accent-foreground: var(--obsidiana);
-  --destructive:   var(--vinho);
-  --destructive-foreground: var(--ossos);
-  --border:        var(--linha);
-  --input:         var(--linha);
-  --ring:          var(--linha);
+  --destructive:     var(--vinho);
+  --destructive-foreground: var(--osso);
+  --border:          var(--linha);
+  --input:           var(--linha);
+  --ring:            var(--bronze);
 
   --radius: 6px;
+  --dark-line: var(--osso);
 }
 
 @media (prefers-color-scheme: dark) {
