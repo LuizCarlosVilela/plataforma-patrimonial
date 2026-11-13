@@ -6,7 +6,27 @@ const MOCK_COLOR = "#b08a3e";
 type MockValue = Record<string, any>;
 
 const mockModel = {
-  findUnique: async (_args?: any): Promise<MockValue | null> => ({ id: "demo-id", name: "Demo", color: MOCK_COLOR, icon: "Tag", userId: "demo-user-001", currentAmount: 0, targetAmount: 100, status: "IN_PROGRESS", type: "CHECKING", amount: 0, accountId: "demo-acc", date: "2026-11-13", currentBalance: 0, createdAt: new Date(), category: { name: "Demo", icon: "Tag", color: MOCK_COLOR }, account: { name: "Demo", color: MOCK_COLOR } }),
+  findUnique: async (_args?: any): Promise<MockValue | null> => ({
+    id: "demo-id", name: "Demo", color: MOCK_COLOR, icon: "Tag", userId: "demo-user-001",
+    currentAmount: 0, targetAmount: 100, status: "IN_PROGRESS", type: "CHECKING", amount: 0,
+    accountId: "demo-acc", date: "2026-11-13", currentBalance: 0, createdAt: new Date(),
+    category: { name: "Demo", icon: "Tag", color: MOCK_COLOR },
+    account: { name: "Demo", color: MOCK_COLOR },
+    clients: [{
+      id: "client-1", name: "João Silva", email: "cliente@demo.com.br", planTier: "FREE", role: "CLIENT",
+      accounts: [
+        { id: "acc-1", type: "CHECKING", currentBalance: "2500" },
+        { id: "acc-2", type: "SAVINGS", currentBalance: "10000" },
+        { id: "acc-3", type: "CREDIT_CARD", currentBalance: "1250" },
+      ],
+      goals: [
+        { id: "goal-1", status: "IN_PROGRESS", title: "Reserva de Emergência" },
+        { id: "goal-2", status: "COMPLETED", title: "Viagem Europa" },
+        { id: "goal-3", status: "IN_PROGRESS", title: "Aposentadoria" },
+      ],
+      _count: { transactions: 12 },
+    }],
+  }),
   findMany: async (_args?: any): Promise<MockValue[]> => ([
     { id: "demo-id", name: "Demo", color: MOCK_COLOR, icon: "Tag", userId: "demo-user-001", currentAmount: 0, targetAmount: 100, status: "IN_PROGRESS", type: "CHECKING", amount: 0, accountId: "demo-acc", date: "2026-11-13", currentBalance: 0, createdAt: new Date(), category: { name: "Demo", icon: "Tag", color: MOCK_COLOR }, account: { name: "Demo", color: MOCK_COLOR } }
   ]),
