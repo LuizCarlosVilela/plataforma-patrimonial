@@ -42,7 +42,7 @@ export default async function AccountsPage() {
             <CreditCard className="w-16 h-16 mx-auto text-[#86837d] mb-4" />
             <h3 className="text-lg font-medium text-[#efeae0] mb-1">Nenhuma conta cadastrada</h3>
             <p className="text-[#86837d] text-sm mb-4">Adicione suas contas para começar a controlar seu patrimônio</p>
-            <button className="text-[#b08a3e] hover:text-[#c49a3e] text-sm font-medium transition-colors">Adicionar primeira conta</button>
+            <button className="text-[#b08a3e] hover:text-[#b08a3e] text-sm font-medium transition-colors">Adicionar primeira conta</button>
           </div>
         ) : (
           accounts.map((account: { id: string; name: string; type: string; currentBalance: string; color?: string; icon?: string }) => {

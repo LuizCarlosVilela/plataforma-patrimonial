@@ -97,7 +97,7 @@ export default async function TransactionsPage() {
           <ArrowUpRight className="w-16 h-16 mx-auto text-[#86837d] mb-4" />
           <h3 className="text-lg font-medium text-[#efeae0] mb-1">Nenhuma transação encontrada</h3>
           <p className="text-[#86837d] text-sm mb-4">Comece registrando suas despesas e receitas</p>
-          <button className="text-[#b08a3e] hover:text-[#c49a3e] text-sm font-medium transition-colors">Registrar primeira transação</button>
+          <button className="text-[#b08a3e] hover:text-[#b08a3e] text-sm font-medium transition-colors">Registrar primeira transação</button>
         </div>
       ) : (
         <div className="space-y-6">

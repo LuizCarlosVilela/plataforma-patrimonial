@@ -37,7 +37,7 @@ export default function DashboardPage() {
 
       {/* Ações Rápidas */}
       <section className="grid grid-cols-2 gap-4">
-        <button className="flex items-center justify-center gap-2 bg-[#b08a3e] hover:bg-[#c49a3e] active:scale-[0.98] transition-all text-[#16171b] py-3 px-4 rounded-xl font-medium text-sm shadow-gold">
+        <button className="flex items-center justify-center gap-2 bg-[#b08a3e] hover:bg-[#b08a3e] active:scale-[0.98] transition-all text-[#16171b] py-3 px-4 rounded-xl font-medium text-sm shadow-gold">
           <Plus className="w-4 h-4" />
           <span>Nova Despesa</span>
         </button>

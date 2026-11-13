@@ -54,7 +54,7 @@ export default async function GoalsPage() {
             <Target className="w-16 h-16 mx-auto text-[#86837d] mb-4" />
             <h3 className="text-lg font-medium text-[#efeae0] mb-1">Nenhuma meta cadastrada</h3>
             <p className="text-[#86837d] text-sm mb-4">Crie metas para sua reserva de emergência, viagens, investimentos...</p>
-            <button className="text-[#b08a3e] hover:text-[#c49a3e] text-sm font-medium transition-colors">Criar primeira meta</button>
+            <button className="text-[#b08a3e] hover:text-[#b08a3e] text-sm font-medium transition-colors">Criar primeira meta</button>
           </div>
         ) : (
           goals.map((goal: { id: string; title: string; currentAmount: number; targetAmount: number; status: string; categoryTag: string; targetDate: Date }) => {
@@ -111,7 +111,7 @@ export default async function GoalsPage() {
                 </div>
 
                 {!isCompleted && (
-                  <button className="mt-4 w-full flex items-center justify-center gap-2 py-2 rounded-lg font-medium text-sm text-[#16171b] transition-all hover:bg-[#c49a3e]"
+                  <button className="mt-4 w-full flex items-center justify-center gap-2 py-2 rounded-lg font-medium text-sm text-[#16171b] transition-all hover:bg-[#b08a3e]"
                           style={{ background: "#b08a3e" }}>
                     <Plus className="w-4 h-4" />
                     Adicionar valor

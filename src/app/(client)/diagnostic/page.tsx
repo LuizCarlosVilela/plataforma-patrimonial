@@ -76,7 +76,7 @@ export default function DiagnosticPage() {
             </p>
             <button
               onClick={() => router.push("/client/dashboard")}
-              className="px-8 py-3 rounded-xl font-medium text-sm text-[#16171b] hover:bg-[#c49a3e] transition-all shadow-gold active:scale-[0.98]"
+              className="px-8 py-3 rounded-xl font-medium text-sm text-[#16171b] hover:bg-[#b08a3e] transition-all shadow-gold active:scale-[0.98]"
               style={{ background: "#b08a3e" }}
             >
               Ver Resultado no Dashboard

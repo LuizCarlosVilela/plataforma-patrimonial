@@ -235,7 +235,7 @@ export function TransactionModal({ isOpen, onClose, accounts = [], categories = 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 rounded-xl font-medium text-sm text-[#16171b] transition-all hover:bg-[#c49a3e] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-gold"
+            className="w-full py-3 rounded-xl font-medium text-sm text-[#16171b] transition-all hover:bg-[#b08a3e] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-gold"
             style={{ background: "#b08a3e" }}
           >
             {isLoading ? "Salvando..." : `Salvar ${type === "INCOME" ? "Receita" : "Despesa"}`}
