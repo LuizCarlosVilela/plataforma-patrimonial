@@ -113,8 +113,8 @@ export default function LandingPage() {
               {/* Top bar */}
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-3 h-3 rounded-full bg-[#b08a3e]/50" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
-                <div className="w-3 h-3 rounded-full bg-green-500/50" />
+                <div className="w-3 h-3 rounded-full bg-[#b08a3e]/50" />
+                <div className="w-3 h-3 rounded-full bg-[#4f6b52]/50" />
                 <span className="ml-3 text-xs text-[#86837d]">origin.dashboard.com</span>
               </div>
               {/* Net Worth Display */}
@@ -122,7 +122,7 @@ export default function LandingPage() {
                 <p className="text-xs uppercase tracking-wider text-[#86837d] mb-1">Patrimônio Líquido</p>
                 <p className="text-3xl font-bold text-[#efeae0]">R$ 2.450.000</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "rgba(34,197,94,0.15)", color: "#22c55e" }}>
+                  <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "rgba(34,197,94,0.15)", color: "#4f6b52" }}>
                     ↑ +12.4% este mês
                   </span>
                 </div>
@@ -137,7 +137,7 @@ export default function LandingPage() {
                   <div key={i} className="p-3 rounded-xl bg-[#16171B] border border-[#cfc6b4]">
                     <p className="text-[10px] text-[#86837d] uppercase tracking-wider">{item.label}</p>
                     <p className="font-bold text-sm text-[#efeae0] mt-0.5">{item.value}</p>
-                    {item.pct && <p className="text-[10px] mt-0.5" style={{ color: item.pct.startsWith("+") ? "#22c55e" : "#ef4444" }}>{item.pct}</p>}
+                    {item.pct && <p className="text-[10px] mt-0.5" style={{ color: item.pct.startsWith("+") ? "#4f6b52" : "#9e4a3e" }}>{item.pct}</p>}
                   </div>
                 ))}
               </div>
@@ -152,13 +152,13 @@ export default function LandingPage() {
                 ].map((goal, i) => (
                   <div key={i} className="flex items-center gap-3">
                     {goal.done ? (
-                      <CheckCircle size={16} className="flex-shrink-0" style={{ color: "#22c55e" }} />
+                      <CheckCircle size={16} className="flex-shrink-0" style={{ color: "#4f6b52" }} />
                     ) : (
                       <div className="w-4 h-4 rounded-full border-2 flex-shrink-0 border-[#cfc6b4]" />
                     )}
                     <span className="text-xs text-[#efeae0] flex-1">{goal.name}</span>
                     <div className="w-20 h-1.5 rounded-full bg-[#16171B] overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${goal.progress}%`, background: goal.done ? "#22c55e" : "#b08a3e" }} />
+                      <div className="h-full rounded-full" style={{ width: `${goal.progress}%`, background: goal.done ? "#4f6b52" : "#b08a3e" }} />
                     </div>
                     <span className="text-[10px] text-[#86837d] w-8 text-right">{goal.progress}%</span>
                   </div>
