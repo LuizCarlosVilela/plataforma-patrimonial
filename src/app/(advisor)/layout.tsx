@@ -9,9 +9,9 @@ interface AdvisorLayoutProps {
 
 export default function AdvisorLayout({ children }: AdvisorLayoutProps) {
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col">
+    <div className="min-h-screen bg-[#191a1e] flex flex-col">
       {/* Top Header */}
-      <header className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800 px-4 py-4 max-w-5xl mx-auto w-full">
+      <header className="sticky top-0 z-40 bg-[#191a1e]/80 backdrop-blur-md border-b border-[#cfc6b4] px-4 py-4 max-w-5xl mx-auto w-full">
         <TopHeader userName="Guilherme Consultor" userRole="ADVISOR" showMobileMenu={false} />
       </header>
 

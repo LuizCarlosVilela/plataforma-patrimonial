@@ -1,0 +1,65 @@
+/* Origin Navbar Component */
+
+.origin-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-6);
+  background-color: rgba(17, 24, 39, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-origin-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.origin-navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+}
+
+.origin-navbar-logo {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--color-origin-gold), #f5d7c9);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-origin-slate-950);
+}
+
+.origin-navbar-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-origin-slate-100);
+}
+
+.origin-navbar-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* Navigation links */
+.origin-nav-link {
+  color: var(--color-origin-slate-500);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-base);
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 2px solid transparent;
+  transition: var(--transition-fast);
+}
+
+.origin-nav-link:hover {
+  color: var(--color-origin-gold);
+}
+
+.origin-nav-link.active {
+  color: var(--color-origin-gold);
+  border-bottom-color: var(--color-origin-gold);
+}

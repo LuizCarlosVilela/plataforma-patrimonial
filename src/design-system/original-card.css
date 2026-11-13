@@ -1,0 +1,60 @@
+/* Origin Card Component */
+
+.origin-card {
+  background-color: var(--color-origin-surface);
+  border: 1px solid var(--color-origin-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-fast);
+}
+
+.origin-card:hover {
+  border-color: var(--color-origin-gold/30);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.origin-card:focus-within {
+  border-color: var(--color-origin-gold);
+  box-shadow: var(--shadow-gold);
+}
+
+/* Gold-featured card */
+.origin-card.origin-card-gold {
+  border-color: var(--color-origin-gold/30);
+}
+
+.origin-card.origin-card-gold:hover {
+  border-color: var(--color-origin-gold/50);
+}
+
+/* Elevated card */
+.origin-card.origin-card-elevated {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Card with header */
+.origin-card>.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: calc(var(--space-1) * -1) calc(var(--space-1) * -1) var(--space-3);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--color-origin-border);
+}
+
+.origin-card>.card-body {
+  padding-top: var(--space-1);
+}
+
+.origin-card>.card-footer {
+  margin-top: var(--space-1);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--color-origin-border);
+}
+
+/* Card with gold accent border */
+.origin-card.origin-card-gold>.card-header {
+  border-color: var(--color-origin-gold/30);
+}

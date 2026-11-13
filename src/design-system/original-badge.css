@@ -1,0 +1,60 @@
+/* Origin Badge Component */
+
+.origin-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-origin-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+}
+
+.origin-badge span {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Default badge */
+.origin-badge {
+  background-color: rgba(251, 251, 251, 0.1);
+  color: var(--color-origin-slate-100);
+  border-color: rgba(251, 251, 251, 0.2);
+}
+
+/* Gold badge */
+.origin-badge.origin-badge-gold {
+  background-color: rgba(212, 168, 67, 0.15);
+  color: var(--color-origin-gold);
+  border-color: rgba(212, 168, 67, 0.3);
+}
+
+/* Success badge */
+.origin-badge.origin-badge-success {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: var(--color-origin-success);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+/* Warning badge */
+.origin-badge.origin-badge-warning {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: var(--color-origin-warning);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+/* Error badge */
+.origin-badge.origin-badge-error {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: var(--color-origin-error);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+//* Ocean badge */
+.origin-badge.origin-badge-ocean {
+  background-color: rgba(14, 165, 233, 0.15);
+  color: var(--color-origin-ocean);
+  border-color: rgba(14, 165, 233, 0.3);
+}

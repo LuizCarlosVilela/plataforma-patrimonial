@@ -1,0 +1,52 @@
+/* Origin Design System Global Imports */
+
+@import "./original-tokens.css";
+
+/* Root design tokens */
+html {
+  --font-origin-sans: "Geist Sans", system-ui, -apple-system, sans-serif;
+  --font-origin-mono: "Geist Mono", monospace;
+}
+
+/* Page base */
+body {
+  font-family: var(--font-origin-sans);
+  background-color: var(--color-origin-background);
+  color: var(--color-origin-slate-100);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: var(--space-2);
+  height: var(--space-2);
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-origin-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-origin-border);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-origin-gold);
+}
+
+/* Focus visible */
+*:focus-visible {
+  outline: 2px solid var(--color-origin-gold);
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

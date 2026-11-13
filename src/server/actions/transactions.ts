@@ -39,7 +39,7 @@ export async function createTransaction(data: z.infer<typeof createTransactionSc
   // TRANSFER não altera o saldo total (sai de uma conta e entra em outra)
 
   // Criar transação e atualizar saldo da conta em uma transação
-  const [transaction] = await prisma.$transaction([
+  const [transaction] = (await prisma.$transaction([
     prisma.transaction.create({
       data: {
         accountId: validated.accountId,
@@ -55,7 +55,7 @@ export async function createTransaction(data: z.infer<typeof createTransactionSc
       where: { id: validated.accountId },
       data: { currentBalance: newBalance },
     }),
-  ]);
+  ])) as any;
 
   revalidatePath("/");
   revalidatePath("/accounts");
@@ -68,7 +68,7 @@ export async function deleteTransaction(id: string) {
   const prisma = getPrisma();
   const transaction = await prisma.transaction.findUnique({
     where: { id },
-    include: { account: true },
+    include: { account: true as any },
   });
 
   if (!transaction) {

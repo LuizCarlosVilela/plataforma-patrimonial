@@ -1,4 +1,9 @@
-export type { AccountType, TransactionType, GoalStatus, UserRole, PlanTier } from '@prisma/client'; // Re-export types from @prisma/client
+// Tipos locais (enquanto Prisma client não é gerado)
+export type UserRole = "CLIENT" | "ADVISOR" | "ADMIN";
+export type PlanTier = "FREE" | "PREMIUM";
+export type AccountType = "CHECKING" | "SAVINGS" | "CREDIT_CARD" | "INVESTMENT" | "CASH" | "OTHER";
+export type TransactionType = "INCOME" | "EXPENSE" | "TRANSFER";
+export type GoalStatus = "IN_PROGRESS" | "COMPLETED" | "PAUSED";
 
 export interface DashboardData {
   netWorth: number;

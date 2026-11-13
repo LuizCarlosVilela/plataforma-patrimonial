@@ -1,0 +1,80 @@
+/* Origin Button Component */
+
+.origin-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-origin-sans);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-base);
+  border: none;
+  white-space: nowrap;
+}
+
+/* Primary button - Gold accent */
+.origin-button.origin-button-primary {
+  background-color: var(--color-origin-gold);
+  color: var(--color-origin-slate-950);
+}
+
+.origin-button.origin-button-primary:hover {
+  background-color: #e8bc51; /* gold-light hover */
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-gold);
+}
+
+.origin-button.origin-button-primary:active {
+  transform: scale(0.98);
+}
+
+.origin-button.origin-button-primary:focus-visible {
+  outline: 2px solid var(--color-origin-gold);
+  outline-offset: 2px;
+}
+
+/* Secondary button - Gold border */
+.origin-button.origin-button-secondary {
+  background-color: transparent;
+  color: var(--color-origin-gold);
+  border: 2px solid var(--color-origin-gold);
+}
+
+.origin-button.origin-button-secondary:hover {
+  background-color: rgba(212, 168, 67, 0.1);
+}
+
+.origin-button.origin-button-secondary:active {
+  transform: scale(0.98);
+}
+
+/* Tertiary - Text button */
+.origin-button.origin-button-text {
+  background-color: transparent;
+  color: var(--color-origin-slate-100);
+}
+
+.origin-button.origin-button-text:hover {
+  color: var(--color-origin-gold);
+}
+
+/* Sizes */
+.origin-button.btn-sm {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-sm);
+}
+
+.origin-button.btn-lg {
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--font-size-lg);
+}
+
+/* Disabled state */
+.origin-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -6,7 +6,6 @@ const formatBRL = (val: number) =>
 
 export default async function AdvisorDashboardPage() {
   const prisma = getPrisma();
-  // Buscar clientes do advisor demo
   const advisor = await prisma.user.findUnique({
     where: { email: "consultor@w1.com.br" },
     include: {
@@ -22,16 +21,15 @@ export default async function AdvisorDashboardPage() {
 
   if (!advisor) {
     return (
-      <div className="p-4 text-center text-slate-400">
-      <p>Assessor não encontrado.</p>
-      <p className="text-sm mt-2">Execute: <code className="bg-slate-800 px-2 py-1 rounded">npx prisma db seed</code></p>
-    </div>
+      <div className="p-4 text-center text-[#86837d]">
+        <p>Assessor não encontrado.</p>
+        <p className="text-sm mt-2">Execute: <code className="bg-[#191a1e] px-2 py-1 rounded">npx prisma db seed</code></p>
+      </div>
     );
   }
 
   const clients = advisor.clients;
 
-  // Calcular totais
   const totalClients = clients.length;
   const totalNetWorth = clients.reduce(
     (sum: number, client: { accounts: Array<{ type: string; currentBalance: string }> }) => {
@@ -59,10 +57,10 @@ export default async function AdvisorDashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Painel do Assessor</h1>
-          <p className="text-slate-400 text-sm">Visão geral da carteira de clientes</p>
+          <h1 className="text-2xl font-bold text-[#efeae0]">Painel do Assessor</h1>
+          <p className="text-[#86837d] text-sm">Visão geral da carteira de clientes</p>
         </div>
-        <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-full text-xs font-semibold">
+        <div className="flex items-center gap-1.5 bg-[#4f6b52]/10 border border-[rgba(79,107,82,0.2)] text-[#4f6b52] px-3 py-1.5 rounded-full text-xs font-semibold">
           <ShieldCheck className="w-4 h-4" />
           <span>W1 Consultoria</span>
         </div>
@@ -70,52 +68,52 @@ export default async function AdvisorDashboardPage() {
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-5">
+        <div className="bg-[#191a1e] border border-[#cfc6b4]/30 rounded-xl p-5">
           <div className="flex items-center gap-2 mb-2">
-            <Users className="w-5 h-5 text-indigo-400" />
-            <span className="text-xs font-medium text-slate-400">Total de Clientes</span>
+            <Users className="w-5 h-5 text-[#b08a3e]" />
+            <span className="text-xs font-medium text-[#86837d]">Total de Clientes</span>
           </div>
-          <p className="text-2xl font-bold text-white">{totalClients}</p>
+          <p className="text-2xl font-bold text-[#efeae0]">{totalClients}</p>
         </div>
 
-        <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-5">
+        <div className="bg-[#191a1e] border border-[#cfc6b4]/30 rounded-xl p-5">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="w-5 h-5 text-emerald-400" />
-            <span className="text-xs font-medium text-slate-400">Patrimônio Total</span>
+            <TrendingUp className="w-5 h-5 text-[#4f6b52]" />
+            <span className="text-xs font-medium text-[#86837d]">Patrimônio Total</span>
           </div>
-          <p className="text-2xl font-bold text-emerald-400">{formatBRL(totalNetWorth)}</p>
+          <p className="text-2xl font-bold text-[#4f6b52]">{formatBRL(totalNetWorth)}</p>
         </div>
 
-        <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-5">
+        <div className="bg-[#191a1e] border border-[#cfc6b4]/30 rounded-xl p-5">
           <div className="flex items-center gap-2 mb-2">
-            <Target className="w-5 h-5 text-amber-400" />
-            <span className="text-xs font-medium text-slate-400">Metas Ativas</span>
+            <Target className="w-5 h-5 text-[#b08a3e]" />
+            <span className="text-xs font-medium text-[#86837d]">Metas Ativas</span>
           </div>
-          <p className="text-2xl font-bold text-amber-400">{activeGoals}/{totalGoals}</p>
+          <p className="text-2xl font-bold text-[#b08a3e]">{activeGoals}/{totalGoals}</p>
         </div>
 
-        <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-5">
+        <div className="bg-[#191a1e] border border-[#cfc6b4]/30 rounded-xl p-5">
           <div className="flex items-center gap-2 mb-2">
-            <Activity className="w-5 h-5 text-rose-400" />
-            <span className="text-xs font-medium text-slate-400">Alertas</span>
+            <Activity className="w-5 h-5 text-[#9e4a3e]" />
+            <span className="text-xs font-medium text-[#86837d]">Alertas</span>
           </div>
-          <p className="text-2xl font-bold text-rose-400">3</p>
+          <p className="text-2xl font-bold text-[#9e4a3e]">3</p>
         </div>
       </div>
 
       {/* Lista de Clientes */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-white">Clientes</h2>
-          <button className="text-sm text-indigo-400 hover:underline">Ver todos</button>
+          <h2 className="text-lg font-semibold text-[#efeae0]">Clientes</h2>
+          <button className="text-sm text-[#b08a3e] hover:underline">Ver todos</button>
         </div>
 
         <div className="space-y-3">
           {clients.length === 0 ? (
-            <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-8 text-center">
-              <Users className="w-16 h-16 mx-auto text-slate-600 mb-4" />
-              <h3 className="text-lg font-medium text-white mb-1">Nenhum cliente vinculado</h3>
-              <p className="text-slate-400 text-sm">Convide seus clientes para começar a assessoria</p>
+            <div className="bg-[#191a1e] border border-[#cfc6b4]/30 rounded-xl p-8 text-center">
+              <Users className="w-16 h-16 mx-auto text-[#86837d] mb-4" />
+              <h3 className="text-lg font-medium text-[#efeae0] mb-1">Nenhum cliente vinculado</h3>
+              <p className="text-[#86837d] text-sm">Convide seus clientes para começar a assessoria</p>
             </div>
           ) : (
             clients.map((client: { id: string; name: string; email: string; planTier: string; accounts: Array<{ type: string; currentBalance: string }>; goals: Array<{ status: string }>; _count: { transactions: number } }) => {
@@ -132,25 +130,25 @@ export default async function AdvisorDashboardPage() {
               return (
                 <div
                   key={client.id}
-                  className="bg-slate-900/70 border border-slate-800 rounded-xl p-4 hover:border-slate-700 transition-colors"
+                  className="bg-[#191a1e] border border-[#cfc6b4]/30 rounded-xl p-4 hover:border-[#cfc6b4]/60 transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center text-[#16171b] font-bold" style={{ background: "#b08a3e" }}>
                         {client.name.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-medium text-white">{client.name}</p>
-                        <p className="text-xs text-slate-400">{client.email}</p>
+                        <p className="font-medium text-[#efeae0]">{client.name}</p>
+                        <p className="text-xs text-[#86837d]">{client.email}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-lg text-white">{formatBRL(netWorth)}</p>
-                      <p className="text-xs text-slate-400">Patrimônio Líquido</p>
+                      <p className="font-semibold text-lg text-[#efeae0]">{formatBRL(netWorth)}</p>
+                      <p className="text-xs text-[#86837d]">Patrimônio Líquido</p>
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between text-sm text-slate-400">
+                  <div className="mt-4 pt-4 border-t border-[#cfc6b4]/20 flex items-center justify-between text-sm text-[#86837d]">
                     <span className="flex items-center gap-1">
                       <Activity className="w-3.5 h-3.5" />
                       {transactionCount} transações
@@ -163,7 +161,7 @@ export default async function AdvisorDashboardPage() {
                       <ShieldCheck className="w-3.5 h-3.5" />
                       {client.planTier === "PREMIUM" ? "Premium" : "Gratuito"}
                     </span>
-                    <button className="text-indigo-400 hover:underline text-sm font-medium">
+                    <button className="text-[#b08a3e] hover:underline text-sm font-medium">
                       Ver detalhes →
                     </button>
                   </div>

@@ -1,66 +1,142 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-@theme inline {
-  --color-background: #0f172a;
-  --color-foreground: #f1f5f9;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  /* Custom colors for the app */
-  --color-slate-950: #020617;
-  --color-slate-900: #0f172a;
-  --color-slate-800: #1e293b;
-  --color-slate-700: #334155;
-  --color-slate-600: #475569;
-  --color-slate-500: #64748b;
-  --color-slate-400: #94a3b8;
-  --color-slate-300: #cbd5e1;
-  --color-slate-200: #e2e8f0;
-  --color-slate-100: #f1f5f9;
+/* ═══════════════════════════════════════════
+   CARVALHO GROUP — Paleta Oficial
+   ═══════════════════════════════════════════ */
+:root {
+  /* Neutros quentes */
+  --obsidiana: #16171b;
+  --osso:      #efeae0;
+  --areia:     #e6dfd2;
+  --linha:     #cfc6b4;
+  --mineral:   #c2b293;
+  --bronze:    #7e6e52;
+  --tinta:     #191a1e;
+  --cinza:     #86837d;
+
+  /* Acentos */
+  --verde:     #4f6b52;
+  --ocre:      #b08a3e;
+  --vinho:     #9e4a3e;
+
+  /* shadcn/ui tokens */
+  --background:    var(--osso);
+  --foreground:    var(--tinta);
+  --card:          var(--areia);
+  --card-foreground: var(--tinta);
+  --popover:       var(--osso);
+  --popover-foreground: var(--tinta);
+  --primary:       var(--obsidiana);
+  --primary-foreground: var(--ossos);
+  --secondary:     var(--areia);
+  --secondary-foreground: var(--tinta);
+  --muted:         var(--areia);
+  --muted-foreground: var(--cinza);
+  --accent:        var(--mineral);
+  --accent-foreground: var(--obsidiana);
+  --destructive:   var(--vinho);
+  --destructive-foreground: var(--ossos);
+  --border:        var(--linha);
+  --input:         var(--linha);
+  --ring:          var(--linha);
+
+  --radius: 6px;
 }
 
-body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-sans);
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--osso);
+    --foreground: var(--tinta);
+    --card:       var(--areia);
+    --card-foreground: var(--tinta);
+    --popover:    var(--osso);
+    --popover-foreground: var(--tinta);
+    --primary:    var(--obsidiana);
+    --primary-foreground: var(--ossos);
+    --secondary:  var(--areia);
+    --secondary-foreground: var(--tinta);
+    --muted:      var(--areia);
+    --muted-foreground: var(--cinza);
+    --accent:     var(--mineral);
+    --accent-foreground: var(--obsidiana);
+    --destructive: var(--vinho);
+    --destructive-foreground: var(--ossos);
+    --border:      var(--linha);
+    --input:       var(--linha);
+    --ring:        var(--linha);
+  }
 }
 
-/* Scrollbar personalizada */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+@layer base {
+  * {
+    @apply border-[var(--linha)];
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-[#16171B] text-[#efeae0] antialiased font-sans;
+    background-color: #16171b;
+    color: #efeae0;
+    font-family: "Poppins", system-ui, sans-serif;
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: var(--color-slate-900);
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--tinta); }
+::-webkit-scrollbar-thumb { background: rgba(79,107,82,0.4); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(79,107,82,0.6); }
+
+/* Gold gradient text */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #b08a3e 0%, #c2b293 50%, #b08a3e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--color-slate-700);
-  border-radius: 3px;
+/* Card premium com glow dourado */
+.card-premium {
+  @apply bg-[#191A1E] border border-[rgba(176,138,62,0.25)] rounded-xl transition-all duration-200;
+}
+.card-premium:hover {
+  border-color: rgba(176,138,62,0.45);
+  box-shadow: 0 0 40px rgba(176,138,62,0.12);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-slate-600);
+/* Glass card overlay */
+.glass {
+  @apply bg-[rgba(25,26,30,0.8)] backdrop-blur-md border border-[#cfc6b4]/10 rounded-xl;
 }
 
-/* Focus visible para acessibilidade */
+/* Gold shadow utility */
+.shadow-gold {
+  box-shadow: 0 0 20px rgba(176,138,62,0.3);
+}
+.shadow-gold-lg {
+  box-shadow: 0 0 50px rgba(176,138,62,0.25), 0 10px 30px rgba(0,0,0,0.5);
+}
+
 *:focus-visible {
-  outline: 2px solid #6366f1;
-  outline-offset: 2px;
+  @apply outline-2 outline-[#b08a3e] outline-offset-2;
 }
 
-/* Animações suaves */
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@layer components {
+  .card-body {
+    @apply bg-[#191A1E] border border-[#cfc6b4] rounded-xl transition-all duration-200;
+  }
+  .card-body:hover {
+    @apply border-[#b08a3e]/50 shadow-[0_0_20px_rgba(176,138,62,0.1)];
+  }
 
-.animate-fade-in {
-  animation: fade-in 0.2s ease-out;
-}
-
-/* Utility classes */
-.text-balance {
-  text-wrap: balance;
+  .text-gold-accent { color: #b08a3e; }
+  .bg-gold-accent   { background-color: #b08a3e; }
+  .border-gold-accent { border-color: #b08a3e; }
 }

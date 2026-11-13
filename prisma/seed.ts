@@ -1,6 +1,24 @@
-import { AccountType, UserRole, PlanTier, GoalStatus, TransactionType } from "@prisma/client";
+// Seed script - types defined locally (will be replaced by Prisma types after generation)
+type UserRole = "CLIENT" | "ADVISOR" | "ADMIN";
+type PlanTier = "FREE" | "PREMIUM";
+type AccountType = "CHECKING" | "SAVINGS" | "CREDIT_CARD" | "INVESTMENT" | "CASH" | "OTHER";
+type TransactionType = "INCOME" | "EXPENSE" | "TRANSFER";
+type GoalStatus = "IN_PROGRESS" | "COMPLETED" | "PAUSED";
 
-const prisma = new PrismaClient({
+interface PrismaClient {
+  user: any;
+  account: any;
+  transaction: any;
+  category: any;
+  goal: any;
+  advisorAuditLog: any;
+  $connect: () => Promise<void>;
+  $disconnect: () => Promise<void>;
+  $on: (event: string, callback: (e: any) => void) => void;
+  $transaction: <T>(fn: (prisma: PrismaClient) => Promise<T>) => Promise<T>;
+}
+
+const prisma = new (require("@prisma/client").PrismaClient)({
   log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
 });
 
@@ -104,7 +122,6 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-}
 
 // Export for manual seeding via tsx prisma/seed.ts
 export default main;

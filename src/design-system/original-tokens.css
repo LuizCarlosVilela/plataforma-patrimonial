@@ -1,0 +1,72 @@
+/* Origin Design System Tokens - CSS Custom Properties */
+
+:root {
+  /* Colors */
+  --color-origin-background: #0a0e1a;
+  --color-origin-surface: #111827;
+  --color-origin-border: #1f2937;
+  --color-origin-gold: #d4a843;
+  --color-origin-gold-light: #f5e9e4;
+  --color-origin-ocean: #0ea5e9;
+  --color-origin-ocean-light: #e0f2fe;
+  --color-origin-success: #22c55e;
+  --color-origin-warning: #f59e0b;
+  --color-origin-error: #ef4444;
+
+  /* Color shades */
+  --color-origin-slate-50: #f8fafc;
+  --color-origin-slate-100: #f1f5f9;
+  --color-origin-slate-500: #6b7280;
+  --color-origin-slate-700: #374151;
+  --color-origin-slate-900: #1e293b;
+  --color-origin-slate-950: #0a0e1a;
+
+  /* Typography */
+  --font-origin-sans: "Geist Sans", system-ui, -apple-system, sans-serif;
+  --font-origin-mono: "Geist Mono", monospace;
+
+  --font-size-xxs: 0.5rem;
+  --font-size-xs: 0.625rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+  --font-size-4xl: 2.5rem;
+  --font-size-5xl: 3rem;
+
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  /* Spacing */
+  --space-0: 0.25rem; /* 4px */
+  --space-1: 0.5rem; /* 8px */
+  --space-2: 1rem; /* 16px */
+  --space-3: 1.5rem; /* 24px */
+  --space-4: 2rem; /* 32px */
+  --space-5: 3rem; /* 48px */
+  --space-6: 4rem; /* 64px */
+
+  /* Border Radius */
+  --radius-sm: 0.125rem; /* 2px */
+  --radius-md: 0.25rem; /* 4px */
+  --radius-lg: 0.5rem; /* 8px */
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-gold: 0 0 20px rgba(212, 168, 67, 0.3);
+
+  /* Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 250ms ease-in-out;
+}

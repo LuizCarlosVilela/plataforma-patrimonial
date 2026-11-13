@@ -1,29 +1,26 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
+  variable: "--font-sans",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "S1NC - Gestão Patrimonial W1",
-  description: "Plataforma de Gestão Financeira Pessoal e Planejamento Patrimonial",
+  title: "Origin — Liberdade é fruto de estrutura",
+  description: "Diagnóstico patrimonial em 3 minutos para empresários R$100k+/mês. Descubra onde seu patrimônio está travado e como transformar faturamento em liberdade.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="pt-BR"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
+      className={`${poppins.variable} h-full antialiased`}
+      style={{ backgroundColor: "#16171B" }}
     >
-      <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#16171B] text-[#efeae0]">{children}</body>
     </html>
   );
 }

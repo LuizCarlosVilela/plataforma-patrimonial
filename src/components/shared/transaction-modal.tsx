@@ -22,20 +22,20 @@ const accountIcons: Record<string, React.ComponentType<{ className?: string }>> 
   Wallet,
 };
 
-// Helper to safely render icon
 const renderIcon = (iconName: string | null | undefined, icons: Record<string, React.ComponentType<{ className?: string }>>) => {
   if (!iconName || !icons[iconName]) return null;
-  return <>{icons[iconName] && <span className="align-middle" />}</>
-}
+  return null;
+};
 
 interface TransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  userId?: string;
   accounts: Array<{ id: string; name: string; type: string; color?: string | null; icon?: string | null }>;
   categories: Array<{ id: string; name: string; icon?: string | null; color?: string | null }>;
 }
 
-export function TransactionModal({ isOpen, onClose, userId }: TransactionModalProps) {
+export function TransactionModal({ isOpen, onClose, accounts = [], categories = [] }: TransactionModalProps) {
   const [type, setType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
@@ -88,24 +88,26 @@ export function TransactionModal({ isOpen, onClose, userId }: TransactionModalPr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-slate-950 border border-slate-800 rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+      <div className="bg-[#191a1e] border border-[#cfc6b4] rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-800">
-          <h2 className="text-lg font-semibold text-white">Nova {type === "INCOME" ? "Receita" : "Despesa"}</h2>
+        <div className="flex items-center justify-between p-5 border-b border-[#cfc6b4]">
+          <h2 className="text-lg font-semibold text-[#efeae0]">
+            Nova {type === "INCOME" ? "Receita" : "Despesa"}
+          </h2>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white transition-colors p-1"
+            className="text-[#86837d] hover:text-[#efeae0] transition-colors p-1 rounded-lg hover:bg-[#16171b]"
             aria-label="Fechar"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {/* Tipo */}
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-2">Tipo</label>
+            <label className="block text-xs font-medium text-[#86837d] mb-2">Tipo de lançamento</label>
             <div className="flex gap-2">
               <button
                 type="button"
@@ -113,8 +115,8 @@ export function TransactionModal({ isOpen, onClose, userId }: TransactionModalPr
                 className={cn(
                   "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-medium text-sm transition-all",
                   type === "EXPENSE"
-                    ? "bg-rose-500/20 border border-rose-500/30 text-rose-400"
-                    : "bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700"
+                    ? "bg-[rgba(158,74,62,0.15)] border border-[rgba(158,74,62,0.3)] text-[#9e4a3e]"
+                    : "bg-[#16171b] border border-[#cfc6b4] text-[#86837d] hover:text-[#efeae0]"
                 )}
               >
                 <Minus className="w-4 h-4" />
@@ -126,8 +128,8 @@ export function TransactionModal({ isOpen, onClose, userId }: TransactionModalPr
                 className={cn(
                   "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-medium text-sm transition-all",
                   type === "INCOME"
-                    ? "bg-emerald-500/20 border border-emerald-500/30 text-emerald-400"
-                    : "bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700"
+                    ? "bg-[rgba(79,107,82,0.15)] border border-[rgba(79,107,82,0.3)] text-[#4f6b52]"
+                    : "bg-[#16171b] border border-[#cfc6b4] text-[#86837d] hover:text-[#efeae0]"
                 )}
               >
                 <Plus className="w-4 h-4" />
@@ -138,14 +140,14 @@ export function TransactionModal({ isOpen, onClose, userId }: TransactionModalPr
 
           {/* Valor */}
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-2">Valor</label>
+            <label className="block text-xs font-medium text-[#86837d] mb-1.5">Valor (R$)</label>
             <input
               type="number"
               step="0.01"
               min="0.01"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl px-4 py-2.5 text-[#efeae0] placeholder-[#86837d] focus:border-[#b08a3e] focus:outline-none focus:ring-1 focus:ring-[#b08a3e] text-sm transition-colors"
               placeholder="0,00"
               required
             />
@@ -153,30 +155,30 @@ export function TransactionModal({ isOpen, onClose, userId }: TransactionModalPr
 
           {/* Descrição */}
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-2">Descrição</label>
+            <label className="block text-xs font-medium text-[#86837d] mb-1.5">Descrição</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              placeholder="Ex: Supermercado, Salário, Uber..."
+              className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl px-4 py-2.5 text-[#efeae0] placeholder-[#86837d] focus:border-[#b08a3e] focus:outline-none focus:ring-1 focus:ring-[#b08a3e] text-sm transition-colors"
+              placeholder="Ex: Aporte Investimentos, Honorários, Supermercado..."
               required
             />
           </div>
 
           {/* Conta */}
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-2">Conta</label>
+            <label className="block text-xs font-medium text-[#86837d] mb-1.5">Conta</label>
             <select
               value={accountId}
               onChange={(e) => setAccountId(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl px-4 py-2.5 text-[#efeae0] focus:border-[#b08a3e] focus:outline-none focus:ring-1 focus:ring-[#b08a3e] text-sm transition-colors"
               required
             >
-              <option value="">Selecione uma conta</option>
+              <option value="" className="bg-[#16171b]">Selecione uma conta</option>
               {accounts.map((acc) => (
-                <option key={acc.id} value={acc.id}>
-                  {renderIcon(acc.icon, accountIcons)} {acc.name} ({acc.type})
+                <option key={acc.id} value={acc.id} className="bg-[#16171b]">
+                  {acc.name} ({acc.type})
                 </option>
               ))}
             </select>
@@ -184,16 +186,16 @@ export function TransactionModal({ isOpen, onClose, userId }: TransactionModalPr
 
           {/* Categoria */}
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-2">Categoria (opcional)</label>
+            <label className="block text-xs font-medium text-[#86837d] mb-1.5">Categoria (opcional)</label>
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl px-4 py-2.5 text-[#efeae0] focus:border-[#b08a3e] focus:outline-none focus:ring-1 focus:ring-[#b08a3e] text-sm transition-colors"
             >
-              <option value="">Selecione uma categoria</option>
+              <option value="" className="bg-[#16171b]">Selecione uma categoria</option>
               {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {renderIcon(cat.icon, categoryIcons)} {cat.name}
+                <option key={cat.id} value={cat.id} className="bg-[#16171b]">
+                  {cat.name}
                 </option>
               ))}
             </select>
@@ -201,30 +203,30 @@ export function TransactionModal({ isOpen, onClose, userId }: TransactionModalPr
 
           {/* Data */}
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-2">Data</label>
+            <label className="block text-xs font-medium text-[#86837d] mb-1.5">Data</label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl px-4 py-2.5 text-[#efeae0] focus:border-[#b08a3e] focus:outline-none focus:ring-1 focus:ring-[#b08a3e] text-sm transition-colors"
               required
             />
           </div>
 
           {/* Observações */}
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-2">Observações (opcional)</label>
+            <label className="block text-xs font-medium text-[#86837d] mb-1.5">Observações (opcional)</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              rows={3}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none"
-              placeholder="Detalhes adicionais..."
+              rows={2}
+              className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl px-4 py-2.5 text-[#efeae0] placeholder-[#86837d] focus:border-[#b08a3e] focus:outline-none focus:ring-1 focus:ring-[#b08a3e] text-sm transition-colors resize-none"
+              placeholder="Notas adicionais sobre este lançamento..."
             />
           </div>
 
           {error && (
-            <div className="text-sm text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-lg p-3">
+            <div className="text-sm text-[#9e4a3e] bg-[rgba(158,74,62,0.1)] border border-[rgba(158,74,62,0.2)] rounded-lg p-3">
               {error}
             </div>
           )}
@@ -233,7 +235,8 @@ export function TransactionModal({ isOpen, onClose, userId }: TransactionModalPr
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/50 disabled:cursor-not-allowed text-white py-3 rounded-xl font-medium text-sm transition-colors"
+            className="w-full py-3 rounded-xl font-medium text-sm text-[#16171b] transition-all hover:bg-[#c49a3e] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-gold"
+            style={{ background: "#b08a3e" }}
           >
             {isLoading ? "Salvando..." : `Salvar ${type === "INCOME" ? "Receita" : "Despesa"}`}
           </button>

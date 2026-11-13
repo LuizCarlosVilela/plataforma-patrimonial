@@ -17,7 +17,7 @@ export async function getDashboardData(userId: string) {
     take: 3,
   });
 
-  const goalsWithProgress = goals.map((goal: { id: string; currentAmount: string; targetAmount: string; status: string }) => ({
+  const goalsWithProgress = goals.map((goal: any) => ({
     ...goal,
     currentAmount: Number(goal.currentAmount),
     targetAmount: Number(goal.targetAmount),
