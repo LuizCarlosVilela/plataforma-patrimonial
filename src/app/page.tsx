@@ -52,7 +52,7 @@ export default function LandingPage() {
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-6"
                  style={{ borderColor: "rgba(176,138,62,0.3)", background: "rgba(176,138,62,0.08)" }}>
               <Sparkles size={14} style={{ color: "#b08a3e" }} />
-              <span className="text-xs font-medium" style={{ color: "#b08a3e" }}>DIAGNÓSTICO PATRIMONIAL · 3 MINUTOS</span>
+              <span className="text-xs font-medium" style={{ color: "#7e6e52" }}>DIAGNÓSTICO PATRIMONIAL · 3 MINUTOS</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-6" style={{ fontFamily: "'Poppins', sans-serif" }}>
