@@ -3,14 +3,18 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+async function executeSql(sql: string): Promise<void> {
+  await prisma.$executeRawUnsafe(sql);
+}
+
 export async function GET() {
   try {
-    // Verificar conexão e criar tabelas se necessário
+    // Verificar conexão
     await prisma.$queryRaw`SELECT 1`;
 
-    // Tentar rodar a migração de schema usando SQL direto
-    const schema = `
-      CREATE TABLE IF NOT EXISTS "users" (
+    // Criar tabelas se não existirem (comandos individuais)
+    const tables = [
+      `CREATE TABLE IF NOT EXISTS "users" (
         id TEXT PRIMARY KEY,
         email TEXT UNIQUE NOT NULL,
         name TEXT NOT NULL,
@@ -21,9 +25,9 @@ export async function GET() {
         advisor_id TEXT,
         created_at TIMESTAMP NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMP NOT NULL
-      );
+      )`,
 
-      CREATE TABLE IF NOT EXISTS "accounts" (
+      `CREATE TABLE IF NOT EXISTS "accounts" (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL REFERENCES "users"(id) ON DELETE CASCADE,
         name TEXT NOT NULL,
@@ -38,9 +42,9 @@ export async function GET() {
         last_synced_at TIMESTAMP,
         created_at TIMESTAMP NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMP NOT NULL
-      );
+      )`,
 
-      CREATE TABLE IF NOT EXISTS "categories" (
+      `CREATE TABLE IF NOT EXISTS "categories" (
         id TEXT PRIMARY KEY,
         user_id TEXT REFERENCES "users"(id) ON DELETE CASCADE,
         name TEXT NOT NULL,
@@ -49,9 +53,9 @@ export async function GET() {
         parent_id TEXT REFERENCES "categories"(id) ON DELETE CASCADE,
         created_at TIMESTAMP NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMP NOT NULL
-      );
+      )`,
 
-      CREATE TABLE IF NOT EXISTS "transactions" (
+      `CREATE TABLE IF NOT EXISTS "transactions" (
         id TEXT PRIMARY KEY,
         account_id TEXT NOT NULL REFERENCES "accounts"(id) ON DELETE CASCADE,
         category_id TEXT REFERENCES "categories"(id) ON DELETE SET NULL,
@@ -64,9 +68,9 @@ export async function GET() {
         is_reconciled BOOLEAN NOT NULL DEFAULT true,
         created_at TIMESTAMP NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMP NOT NULL
-      );
+      )`,
 
-      CREATE TABLE IF NOT EXISTS "goals" (
+      `CREATE TABLE IF NOT EXISTS "goals" (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL REFERENCES "users"(id) ON DELETE CASCADE,
         title TEXT NOT NULL,
@@ -77,17 +81,26 @@ export async function GET() {
         category_tag TEXT,
         created_at TIMESTAMP NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMP NOT NULL
-      );
+      )`,
+    ];
 
-      CREATE INDEX IF NOT EXISTS idx_users_email ON "users"(email);
-      CREATE INDEX IF NOT EXISTS idx_users_advisor ON "users"(advisor_id);
-      CREATE INDEX IF NOT EXISTS idx_accounts_user ON "accounts"(user_id);
-      CREATE INDEX IF NOT EXISTS idx_categories_user ON "categories"(user_id);
-      CREATE INDEX IF NOT EXISTS idx_transactions_account ON "transactions"(account_id);
-      CREATE INDEX IF NOT EXISTS idx_goals_user ON "goals"(user_id);
-    `;
+    for (const sql of tables) {
+      await executeSql(sql);
+    }
 
-    await prisma.$executeRawUnsafe(schema);
+    // Criar índices
+    const indexes = [
+      'CREATE INDEX IF NOT EXISTS idx_users_email ON "users"(email)',
+      'CREATE INDEX IF NOT EXISTS idx_users_advisor ON "users"(advisor_id)',
+      'CREATE INDEX IF NOT EXISTS idx_accounts_user ON "accounts"(user_id)',
+      'CREATE INDEX IF NOT EXISTS idx_categories_user ON "categories"(user_id)',
+      'CREATE INDEX IF NOT EXISTS idx_transactions_account ON "transactions"(account_id)',
+      'CREATE INDEX IF NOT EXISTS idx_goals_user ON "goals"(user_id)',
+    ];
+
+    for (const sql of indexes) {
+      await executeSql(sql);
+    }
 
     return NextResponse.json({
       message: '✅ Banco configurado com sucesso! Tabelas criadas.',
