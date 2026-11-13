@@ -14,6 +14,16 @@ export async function GET() {
       return NextResponse.json({ message: 'Já existem dados no banco. Pulando seed.' });
     }
 
+    // Criar tipos ENUM necessários
+    const enumsSql = `
+      CREATE TYPE "UserRole" AS ENUM ('CLIENT', 'ADVISOR', 'ADMIN');
+      CREATE TYPE "PlanTier" AS ENUM ('FREE', 'PREMIUM');
+      CREATE TYPE "AccountType" AS ENUM ('CHECKING', 'SAVINGS', 'CREDIT_CARD', 'INVESTMENT', 'CASH', 'OTHER');
+      CREATE TYPE "TransactionType" AS ENUM ('INCOME', 'EXPENSE', 'TRANSFER');
+      CREATE TYPE "GoalStatus" AS ENUM ('IN_PROGRESS', 'COMPLETED', 'PAUSED');
+    `;
+    await prisma.$executeRawUnsafe(enumsSql);
+
     // Criar usuário admin de teste
     const hashedPassword = await bcrypt.hash('admin123', 10);
 
