@@ -57,7 +57,7 @@ export default async function GoalsPage() {
             <button className="text-[#b08a3e] hover:text-[#b08a3e] text-sm font-medium transition-colors">Criar primeira meta</button>
           </div>
         ) : (
-          goals.map((goal: { id: string; title: string; currentAmount: number; targetAmount: number; status: string; categoryTag: string; targetDate: Date }) => {
+          goals.map((goal) => {
             const current = Number(goal.currentAmount);
             const target = Number(goal.targetAmount);
             const progress = Math.min(Math.round((current / target) * 100), 100);

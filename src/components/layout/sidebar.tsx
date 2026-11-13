@@ -9,12 +9,12 @@ export function Sidebar() {
   const pathname = usePathname();
 
   const menuItems = [
-    { name: "Dashboard", path: "/client/dashboard", icon: Home },
-    { name: "Diagnóstico MAPA", path: "/client/diagnostic", icon: ShieldCheck },
-    { name: "Contas", path: "/client/accounts", icon: Wallet },
-    { name: "Metas", path: "/client/goals", icon: Target },
-    { name: "Transações", path: "/client/transactions", icon: ArrowRightLeft },
-    { name: "Relatórios", path: "/client/reports", icon: Settings },
+    { name: "Dashboard", path: "/dashboard", icon: Home },
+    { name: "Diagnóstico MAPA", path: "/diagnostic", icon: ShieldCheck },
+    { name: "Contas", path: "/accounts", icon: Wallet },
+    { name: "Metas", path: "/goals", icon: Target },
+    { name: "Transações", path: "/transactions", icon: ArrowRightLeft },
+    { name: "Relatórios", path: "/reports", icon: Settings },
   ];
 
   return (
@@ -50,7 +50,7 @@ export function Sidebar() {
         <div className="my-3 border-t border-[#cfc6b4]/20" />
 
         <Link
-          href="/client/design-system"
+          href="/design-system"
           className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 ${
             pathname === "/client/design-system"
               ? "bg-white/10 text-[#efeae0] font-medium"

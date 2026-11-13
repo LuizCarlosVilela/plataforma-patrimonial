@@ -45,7 +45,7 @@ export default async function AccountsPage() {
             <button className="text-[#b08a3e] hover:text-[#b08a3e] text-sm font-medium transition-colors">Adicionar primeira conta</button>
           </div>
         ) : (
-          accounts.map((account: { id: string; name: string; type: string; currentBalance: string; color?: string; icon?: string }) => {
+          accounts.map((account) => {
             const Icon = account.icon && accountIcons[account.icon] ? accountIcons[account.icon] : CreditCard;
             const isCreditCard = account.type === "CREDIT_CARD";
             const balanceColor = isCreditCard ? "text-[#9e4a3e]" : "text-[#4f6b52]";

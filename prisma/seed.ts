@@ -57,8 +57,8 @@ async function main() {
     create: {
       email: "consultor@w1.com.br",
       name: "Guilherme Consultor (W1)",
-      role: UserRole.ADVISOR,
-      planTier: PlanTier.FREE,
+      role: "ADVISOR",
+      planTier: "FREE",
     },
   });
 
@@ -68,8 +68,8 @@ async function main() {
     create: {
       email: "cliente@demo.com.br",
       name: "João Silva",
-      role: UserRole.CLIENT,
-      planTier: PlanTier.FREE,
+      role: "CLIENT",
+      planTier: "FREE",
       advisorId: advisor.id,
     },
   });
@@ -79,7 +79,7 @@ async function main() {
     data: {
       userId: client.id,
       name: "Nubank Conta",
-      type: AccountType.CHECKING,
+      type: "CHECKING",
       initialBalance: 2500.0,
       currentBalance: 2500.0,
       color: "#820AD1",
@@ -91,7 +91,7 @@ async function main() {
     data: {
       userId: client.id,
       name: "Cartão XP Visa Infinite",
-      type: AccountType.CREDIT_CARD,
+      type: "CREDIT_CARD",
       initialBalance: 0.0,
       currentBalance: 1250.0, // Fatura em aberto (Passivo)
       color: "#1E1E1E",
@@ -107,7 +107,7 @@ async function main() {
       targetAmount: 30000.0,
       currentAmount: 12000.0,
       categoryTag: "Segurança",
-      status: GoalStatus.IN_PROGRESS,
+      status: "IN_PROGRESS",
     },
   });
 

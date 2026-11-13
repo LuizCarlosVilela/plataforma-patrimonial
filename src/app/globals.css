@@ -57,7 +57,7 @@
     --popover:    var(--osso);
     --popover-foreground: var(--tinta);
     --primary:    var(--obsidiana);
-    --primary-foreground: var(--ossos);
+    --primary-foreground: var(--osso);
     --secondary:  var(--areia);
     --secondary-foreground: var(--tinta);
     --muted:      var(--areia);
@@ -65,7 +65,7 @@
     --accent:     var(--mineral);
     --accent-foreground: var(--obsidiana);
     --destructive: var(--vinho);
-    --destructive-foreground: var(--ossos);
+    --destructive-foreground: var(--osso);
     --border:      var(--linha);
     --input:       var(--linha);
     --ring:        var(--linha);

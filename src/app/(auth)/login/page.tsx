@@ -19,7 +19,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     await new Promise((resolve) => setTimeout(resolve, 800));
-    router.push("/client/dashboard");
+    router.push("/dashboard");
     router.refresh();
     setIsLoading(false);
   };
