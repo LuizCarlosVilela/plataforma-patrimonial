@@ -1,6 +1,4 @@
-// Mock PrismaClient para compilação sem banco de dados
-// Em produção, isso será substituído pelo cliente Prisma real
-
+// Mock PrismaClient robusto para compilação e testes em ambiente sem acesso à rede externa
 const MOCK_COLOR = "#b08a3e";
 
 type MockValue = Record<string, any>;
@@ -85,7 +83,6 @@ export const prisma: PrismaClient = globalForPrisma.prisma ?? ({
   },
 }) as PrismaClient;
 
-// Also export getPrisma for backward compatibility with existing imports
 export function getPrisma(): PrismaClient {
   return prisma;
 }
