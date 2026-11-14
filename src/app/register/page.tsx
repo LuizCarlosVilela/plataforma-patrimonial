@@ -67,7 +67,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0e0e10] flex">
+    <div className="min-h-screen bg-[#16171B] flex">
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <div className="absolute inset-0" style={{
@@ -102,7 +102,7 @@ export default function RegisterPage() {
                 { icon: "📊", title: "Visão Financeira Clara", desc: "Controle total dos seus números" },
                 { icon: "🏢", title: "Separação Empresa × Pessoal", desc: "Estrutura societária adequada" },
               ].map((item) => (
-                <div key={item.title} className="flex items-center gap-4 p-4 rounded-xl border border-[#ffffff10] bg-white/[0.02]">
+                <div key={item.title} className="flex items-center gap-4 p-4 rounded-xl border border-[#2a2b30] bg-white/[0.02]">
                   <span className="text-xl">{item.icon}</span>
                   <div>
                     <p className="text-white text-sm font-medium">{item.title}</p>
@@ -138,7 +138,7 @@ export default function RegisterPage() {
           <div className="space-y-3 mb-6">
             <button
               onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-              className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-[#ffffff15] bg-white/5 text-white text-sm font-medium hover:bg-white/10 transition-all duration-200"
+              className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-[#2a2b30] bg-white/5 text-white text-sm font-medium hover:bg-white/10 transition-all duration-200"
             >
               <svg width="18" height="18" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -150,7 +150,7 @@ export default function RegisterPage() {
             </button>
             <button
               onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-              className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-[#ffffff15] bg-white/5 text-white text-sm font-medium hover:bg-white/10 transition-all duration-200"
+              className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-[#2a2b30] bg-white/5 text-white text-sm font-medium hover:bg-white/10 transition-all duration-200"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
                 <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
@@ -161,9 +161,9 @@ export default function RegisterPage() {
 
           {/* Divider */}
           <div className="flex items-center gap-4 mb-6">
-            <div className="flex-1 h-px bg-[#ffffff15]" />
+            <div className="flex-1 h-px bg-[#2a2b30]" />
             <span className="text-xs text-[#555] uppercase tracking-wider">ou cadastre-se manualmente</span>
-            <div className="flex-1 h-px bg-[#ffffff15]" />
+            <div className="flex-1 h-px bg-[#2a2b30]" />
           </div>
 
           {/* Form */}
@@ -180,7 +180,7 @@ export default function RegisterPage() {
                   required
                   minLength={2}
                   autoComplete="name"
-                  className="w-full bg-[#1a1a1e] border border-[#ffffff15] rounded-xl pl-10 pr-4 py-3 text-white text-sm placeholder-[#555] focus:border-[#b08a3e] outline-none transition-colors"
+                  className="w-full bg-[#191a1e] border border-[#2a2b30] rounded-xl pl-10 pr-4 py-3 text-white text-sm placeholder-[#555] focus:border-[#b08a3e] outline-none transition-colors"
                 />
               </div>
             </div>
@@ -196,7 +196,7 @@ export default function RegisterPage() {
                   placeholder="seu@email.com"
                   required
                   autoComplete="email"
-                  className="w-full bg-[#1a1a1e] border border-[#ffffff15] rounded-xl pl-10 pr-4 py-3 text-white text-sm placeholder-[#555] focus:border-[#b08a3e] outline-none transition-colors"
+                  className="w-full bg-[#191a1e] border border-[#2a2b30] rounded-xl pl-10 pr-4 py-3 text-white text-sm placeholder-[#555] focus:border-[#b08a3e] outline-none transition-colors"
                 />
               </div>
             </div>
@@ -213,7 +213,7 @@ export default function RegisterPage() {
                   required
                   minLength={6}
                   autoComplete="new-password"
-                  className="w-full bg-[#1a1a1e] border border-[#ffffff15] rounded-xl pl-10 pr-10 py-3 text-white text-sm placeholder-[#555] focus:border-[#b08a3e] outline-none transition-colors"
+                  className="w-full bg-[#191a1e] border border-[#2a2b30] rounded-xl pl-10 pr-10 py-3 text-white text-sm placeholder-[#555] focus:border-[#b08a3e] outline-none transition-colors"
                 />
                 <button
                   type="button"
@@ -237,7 +237,7 @@ export default function RegisterPage() {
                   required
                   minLength={6}
                   autoComplete="new-password"
-                  className="w-full bg-[#1a1a1e] border border-[#ffffff15] rounded-xl pl-10 pr-4 py-3 text-white text-sm placeholder-[#555] focus:border-[#b08a3e] outline-none transition-colors"
+                  className="w-full bg-[#191a1e] border border-[#2a2b30] rounded-xl pl-10 pr-4 py-3 text-white text-sm placeholder-[#555] focus:border-[#b08a3e] outline-none transition-colors"
                 />
               </div>
             </div>
@@ -251,11 +251,11 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl font-medium text-[#0e0e10] text-sm flex items-center justify-center gap-2 disabled:opacity-50 transition-all duration-200 hover:shadow-lg hover:shadow-[#b08a3e]/20"
+              className="w-full py-3 rounded-xl font-medium text-[#16171B] text-sm flex items-center justify-center gap-2 disabled:opacity-50 transition-all duration-200 hover:shadow-lg hover:shadow-[#b08a3e]/20"
               style={{ background: "#b08a3e" }}
             >
               {loading ? (
-                <span className="inline-block w-4 h-4 border-2 border-[#0e0e10]/30 border-t-[#0e0e10] rounded-full animate-spin" />
+                <span className="inline-block w-4 h-4 border-2 border-[#16171B]/30 border-t-[#16171B] rounded-full animate-spin" />
               ) : (
                 <>Criar conta <span aria-hidden="true">→</span></>
               )}
