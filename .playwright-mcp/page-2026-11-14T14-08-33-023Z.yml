@@ -1,0 +1,27 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - heading "Patrimônio+" [level=1] [ref=e5]
+      - paragraph [ref=e6]: Crie sua conta gratuita
+    - generic [ref=e7]:
+      - button "Cadastrar com Google" [ref=e8] [cursor=pointer]
+      - generic [ref=e14]: ou cadastre-se com email
+      - generic [ref=e19]:
+        - textbox "Seu nome completo" [ref=e24]: E2E Test User
+        - textbox "seu@email.com" [ref=e29]: e2etest12345@patrimonio.com
+        - textbox "Sua senha (mín. 6 caracteres)" [ref=e34]: testpass123
+        - textbox "Confirme sua senha" [ref=e39]: testpass123
+        - button "Criando conta..." [disabled] [ref=e49]
+        - paragraph [ref=e43]:
+          - text: Ao criar uma conta, você concorda com nossos
+          - link "Termos de Uso" [ref=e44] [cursor=pointer]:
+            - /url: /terms
+          - text: e
+          - link "Política de Privacidade" [ref=e45] [cursor=pointer]:
+            - /url: /privacy
+          - text: .
+    - paragraph [ref=e46]:
+      - text: Já tem uma conta?
+      - link "Fazer login" [ref=e47] [cursor=pointer]:
+        - /url: /login
+  - alert [ref=e48]

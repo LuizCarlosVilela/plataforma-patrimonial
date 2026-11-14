@@ -1,0 +1,87 @@
+- generic [active] [ref=f5e1]:
+  - generic [ref=f5e2]:
+    - complementary [ref=f5e3]:
+      - generic [ref=f5e4]: ORIGIN
+      - navigation [ref=f5e11]:
+        - link "Dashboard" [ref=f5e12] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Diagnóstico MAPA" [ref=f5e18] [cursor=pointer]:
+          - /url: /diagnostic
+        - link "Contas" [ref=f5e23] [cursor=pointer]:
+          - /url: /accounts
+        - link "Metas" [ref=f5e28] [cursor=pointer]:
+          - /url: /goals
+        - link "Transações" [ref=f5e34] [cursor=pointer]:
+          - /url: /transactions
+        - link "Relatórios" [ref=f5e39] [cursor=pointer]:
+          - /url: /reports
+        - link "Origin Design" [ref=f5e45] [cursor=pointer]:
+          - /url: /design-system
+      - generic [ref=f5e53]:
+        - button "Sair" [ref=f5e54] [cursor=pointer]
+        - paragraph [ref=f5e60]: Carvalho Group · Diagnóstico Patrimonial
+    - generic [ref=f5e61]:
+      - banner [ref=f5e62]:
+        - generic [ref=f5e63]:
+          - text: Bom dia,
+          - heading "João" [level=1] [ref=f5e64]
+        - generic [ref=f5e65]:
+          - generic [ref=f5e66]: client
+          - button "3" [ref=f5e68] [cursor=pointer]
+          - button "J" [ref=f5e75] [cursor=pointer]
+      - main [ref=f5e79]:
+        - generic [ref=f5e80]:
+          - generic [ref=f5e81]:
+            - generic [ref=f5e82]:
+              - generic [ref=f5e83]:
+                - text: Patrimônio Líquido
+                - heading "R$ 0,00" [level=2] [ref=f5e84]
+                - paragraph [ref=f5e85]: +12.4% este mês
+              - generic [ref=f5e89]: O
+            - generic [ref=f5e91]:
+              - generic [ref=f5e92]:
+                - generic [ref=f5e93]: Ativos
+                - paragraph [ref=f5e98]: R$ 0,00
+              - generic [ref=f5e99]:
+                - generic [ref=f5e100]: Passivos
+                - paragraph [ref=f5e105]: R$ 0,00
+          - generic [ref=f5e106]:
+            - button "Nova Despesa" [ref=f5e107] [cursor=pointer]
+            - button "+ Nova Receita" [ref=f5e110] [cursor=pointer]:
+              - generic [ref=f5e111]: +
+              - text: Nova Receita
+          - generic [ref=f5e112]:
+            - generic [ref=f5e113]:
+              - heading "Planejamento & Metas" [level=3] [ref=f5e114]
+              - link "Ver todas" [ref=f5e115] [cursor=pointer]:
+                - /url: /goals
+            - generic [ref=f5e119]: Carregando metas…
+          - generic [ref=f5e122]:
+            - heading "Método MAPA — Diagnóstico Atual" [level=3] [ref=f5e123]
+            - generic [ref=f5e124]:
+              - generic [ref=f5e125] [cursor=pointer]:
+                - generic [ref=f5e126]: "01"
+                - heading "Órbita Corporativa" [level=4] [ref=f5e131]
+                - paragraph [ref=f5e132]: Gestão estratégica da empresa e separação caixa-pessoal
+              - generic [ref=f5e133] [cursor=pointer]:
+                - generic [ref=f5e134]: "02"
+                - heading "Órbita Patrimonial" [level=4] [ref=f5e139]
+                - paragraph [ref=f5e140]: Blindagem jurídica e alocação inteligente dos ativos
+              - generic [ref=f5e141] [cursor=pointer]:
+                - generic [ref=f5e142]: "03"
+                - heading "Órbita Sucessória" [level=4] [ref=f5e148]
+                - paragraph [ref=f5e149]: Governança familiar e planejamento sucessório
+          - generic [ref=f5e150]:
+            - generic [ref=f5e151]:
+              - heading "Transações Recentes" [level=3] [ref=f5e152]
+              - link "Ver todas →" [ref=f5e153] [cursor=pointer]:
+                - /url: /transactions
+            - generic [ref=f5e154]: Carregando transações…
+          - button "Sincronizar Contas via Open Finance" [ref=f5e158] [cursor=pointer]
+      - navigation [ref=f5e164]:
+        - button "Início" [ref=f5e165] [cursor=pointer]
+        - button "Extrato" [ref=f5e170] [cursor=pointer]
+        - button "Contas" [ref=f5e175] [cursor=pointer]
+        - button "Metas" [ref=f5e179] [cursor=pointer]
+        - button "Assessor" [ref=f5e185] [cursor=pointer]
+  - alert [ref=f5e190]

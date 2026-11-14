@@ -1,0 +1,17 @@
+- generic [active] [ref=f2e1]:
+  - generic [ref=f2e3]:
+    - generic [ref=f2e4]:
+      - heading "Patrimônio+" [level=1] [ref=f2e5]
+      - paragraph [ref=f2e6]: Seu patrimônio sob controle
+    - generic [ref=f2e7]:
+      - button "Entrar com Google" [ref=f2e8] [cursor=pointer]
+      - generic [ref=f2e14]: ou continue com email
+      - generic [ref=f2e19]:
+        - textbox "seu@email.com" [ref=f2e24]: e2etest12345@patrimonio.com
+        - textbox "Sua senha" [ref=f2e29]: testpass123
+        - button "Entrando..." [disabled] [ref=f2e36]
+    - paragraph [ref=f2e33]:
+      - text: Não tem uma conta?
+      - link "Cadastre-se grátis" [ref=f2e34] [cursor=pointer]:
+        - /url: /register
+  - alert [ref=f2e35]

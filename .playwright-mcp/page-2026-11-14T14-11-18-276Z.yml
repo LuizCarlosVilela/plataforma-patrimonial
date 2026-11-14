@@ -1,0 +1,74 @@
+- generic [ref=f3e1]:
+  - generic [ref=f3e2]:
+    - complementary [ref=f3e3]:
+      - generic [ref=f3e4]: ORIGIN
+      - navigation [ref=f3e11]:
+        - link "Dashboard" [ref=f3e12] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Diagnóstico MAPA" [ref=f3e17] [cursor=pointer]:
+          - /url: /diagnostic
+        - link "Contas" [ref=f3e22] [cursor=pointer]:
+          - /url: /accounts
+        - link "Metas" [ref=f3e27] [cursor=pointer]:
+          - /url: /goals
+        - link "Transações" [ref=f3e33] [cursor=pointer]:
+          - /url: /transactions
+        - link "Relatórios" [ref=f3e39] [cursor=pointer]:
+          - /url: /reports
+        - link "Origin Design" [ref=f3e45] [cursor=pointer]:
+          - /url: /design-system
+      - generic [ref=f3e53]:
+        - button "Sair" [ref=f3e54] [cursor=pointer]
+        - paragraph [ref=f3e60]: Carvalho Group · Diagnóstico Patrimonial
+    - generic [ref=f3e61]:
+      - banner [ref=f3e62]:
+        - generic [ref=f3e63]:
+          - text: Bom dia,
+          - heading "João" [level=1] [ref=f3e64]
+        - generic [ref=f3e65]:
+          - generic [ref=f3e66]: client
+          - button "3" [ref=f3e68] [cursor=pointer]
+          - button "J" [ref=f3e75] [cursor=pointer]
+      - main [ref=f3e79]:
+        - generic [ref=f3e80]:
+          - generic [ref=f3e81]:
+            - heading "Transações" [level=1] [ref=f3e82]
+            - button "Nova Transação" [active] [ref=f3e83] [cursor=pointer]
+          - generic [ref=f3e124]:
+            - heading "Nova Transação" [level=2] [ref=f3e125]
+            - generic [ref=f3e126]:
+              - generic [ref=f3e127]:
+                - generic [ref=f3e128]: Tipo
+                - generic [ref=f3e129]:
+                  - button "Despesa" [ref=f3e130] [cursor=pointer]
+                  - button "Receita" [ref=f3e131] [cursor=pointer]
+              - generic [ref=f3e132]:
+                - generic [ref=f3e133]: Valor (R$)
+                - spinbutton "0,00" [ref=f3e134]
+              - generic [ref=f3e135]:
+                - generic [ref=f3e136]: Descrição
+                - 'textbox "Ex: Supermercado" [ref=f3e137]'
+              - generic [ref=f3e138]:
+                - generic [ref=f3e139]: Conta
+                - combobox [ref=f3e140]:
+                  - option "Selecione uma conta" [selected]
+              - generic [ref=f3e141]:
+                - generic [ref=f3e142]: Data
+                - textbox [ref=f3e143]: 2026-11-14
+            - generic [ref=f3e144]:
+              - button "Cancelar" [ref=f3e145] [cursor=pointer]
+              - button "Salvar Transação" [ref=f3e146] [cursor=pointer]
+          - generic [ref=f3e88]:
+            - button "Todas" [ref=f3e89] [cursor=pointer]
+            - button "Receitas" [ref=f3e90] [cursor=pointer]
+            - button "Despesas" [ref=f3e91] [cursor=pointer]
+          - generic [ref=f3e92]:
+            - heading "Nenhuma transação encontrada" [level=3] [ref=f3e95]
+            - paragraph [ref=f3e96]: Adicione sua primeira transação para começar a controlar suas finanças
+      - navigation [ref=f3e97]:
+        - button "Início" [ref=f3e98] [cursor=pointer]
+        - button "Extrato" [ref=f3e103] [cursor=pointer]
+        - button "Contas" [ref=f3e108] [cursor=pointer]
+        - button "Metas" [ref=f3e112] [cursor=pointer]
+        - button "Assessor" [ref=f3e118] [cursor=pointer]
+  - alert [ref=f3e123]

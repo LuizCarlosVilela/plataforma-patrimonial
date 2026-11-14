@@ -108,6 +108,7 @@ export default function RegisterPage() {
                 placeholder="Seu nome completo"
                 required
                 minLength={2}
+                autoComplete="name"
                 className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl pl-10 pr-4 py-3 text-[#efeae0] focus:border-[#b08a3e] outline-none"
               />
             </div>
@@ -119,6 +120,7 @@ export default function RegisterPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
                 required
+                autoComplete="email"
                 className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl pl-10 pr-4 py-3 text-[#efeae0] focus:border-[#b08a3e] outline-none"
               />
             </div>
@@ -131,6 +133,7 @@ export default function RegisterPage() {
                 placeholder="Sua senha (mín. 6 caracteres)"
                 required
                 minLength={6}
+                autoComplete="new-password"
                 className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl pl-10 pr-4 py-3 text-[#efeae0] focus:border-[#b08a3e] outline-none"
               />
             </div>
@@ -143,6 +146,7 @@ export default function RegisterPage() {
                 placeholder="Confirme sua senha"
                 required
                 minLength={6}
+                autoComplete="new-password"
                 className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl pl-10 pr-4 py-3 text-[#efeae0] focus:border-[#b08a3e] outline-none"
               />
             </div>

@@ -78,6 +78,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
                 required
+                autoComplete="username"
                 className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl pl-10 pr-4 py-3 text-[#efeae0] focus:border-[#b08a3e] outline-none"
               />
             </div>
@@ -90,6 +91,7 @@ export default function LoginPage() {
                 placeholder="Sua senha"
                 required
                 minLength={6}
+                autoComplete="current-password"
                 className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl pl-10 pr-4 py-3 text-[#efeae0] focus:border-[#b08a3e] outline-none"
               />
             </div>

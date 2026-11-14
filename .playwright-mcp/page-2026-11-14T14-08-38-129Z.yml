@@ -1,0 +1,192 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e2]:
+    - complementary [ref=f1e3]:
+      - generic [ref=f1e4]: ORIGIN
+      - navigation [ref=f1e11]:
+        - link "Dashboard" [ref=f1e12] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Diagnóstico MAPA" [ref=f1e18] [cursor=pointer]:
+          - /url: /diagnostic
+        - link "Contas" [ref=f1e23] [cursor=pointer]:
+          - /url: /accounts
+        - link "Metas" [ref=f1e28] [cursor=pointer]:
+          - /url: /goals
+        - link "Transações" [ref=f1e34] [cursor=pointer]:
+          - /url: /transactions
+        - link "Relatórios" [ref=f1e39] [cursor=pointer]:
+          - /url: /reports
+        - link "Origin Design" [ref=f1e45] [cursor=pointer]:
+          - /url: /design-system
+      - generic [ref=f1e53]:
+        - button "Sair" [ref=f1e54] [cursor=pointer]
+        - paragraph [ref=f1e60]: Carvalho Group · Diagnóstico Patrimonial
+    - generic [ref=f1e61]:
+      - banner [ref=f1e62]:
+        - generic [ref=f1e63]:
+          - text: Bom dia,
+          - heading "João" [level=1] [ref=f1e64]
+        - generic [ref=f1e65]:
+          - generic [ref=f1e66]: client
+          - button "3" [ref=f1e68] [cursor=pointer]
+          - button "J" [ref=f1e75] [cursor=pointer]
+      - main [ref=f1e79]:
+        - generic [ref=f1e80]:
+          - generic [ref=f1e81]:
+            - generic [ref=f1e82]:
+              - generic [ref=f1e83]:
+                - text: Patrimônio Líquido
+                - heading "R$ 186.429,25" [level=2] [ref=f1e84]
+                - paragraph [ref=f1e85]: +12.4% este mês
+              - generic [ref=f1e89]: O
+            - generic [ref=f1e91]:
+              - generic [ref=f1e92]:
+                - generic [ref=f1e93]: Ativos
+                - paragraph [ref=f1e98]: R$ 188.729,25
+              - generic [ref=f1e99]:
+                - generic [ref=f1e100]: Passivos
+                - paragraph [ref=f1e105]: R$ 2.300,00
+          - generic [ref=f1e106]:
+            - button "Nova Despesa" [ref=f1e107] [cursor=pointer]
+            - button "+ Nova Receita" [ref=f1e110] [cursor=pointer]:
+              - generic [ref=f1e111]: +
+              - text: Nova Receita
+          - generic [ref=f1e112]:
+            - generic [ref=f1e113]:
+              - heading "Planejamento & Metas" [level=3] [ref=f1e114]
+              - link "Ver todas" [ref=f1e115] [cursor=pointer]:
+                - /url: /goals
+            - generic [ref=f1e119]:
+              - generic [ref=f1e120]:
+                - generic [ref=f1e121]:
+                  - generic [ref=f1e122]:
+                    - generic [ref=f1e123]: Reserva de emergência
+                    - generic [ref=f1e124]: Em Progresso
+                  - generic [ref=f1e125]: 98%
+                - generic [ref=f1e128]:
+                  - generic [ref=f1e129]: R$ 48.750,00
+                  - generic [ref=f1e130]: de R$ 50.000,00
+                - generic [ref=f1e131]: "Prazo: 31/05/2025"
+              - generic [ref=f1e132]:
+                - generic [ref=f1e133]:
+                  - generic [ref=f1e134]:
+                    - generic [ref=f1e135]: Vacation to Japan
+                    - generic [ref=f1e136]: Em Progresso
+                  - generic [ref=f1e137]: 10%
+                - generic [ref=f1e140]:
+                  - generic [ref=f1e141]: R$ 500,00
+                  - generic [ref=f1e142]: de R$ 5.000,00
+                - generic [ref=f1e143]: "Prazo: 31/05/2025"
+              - generic [ref=f1e144]:
+                - generic [ref=f1e145]:
+                  - generic [ref=f1e146]:
+                    - generic [ref=f1e147]: Emergency Fund
+                    - generic [ref=f1e148]: Em Progresso
+                  - generic [ref=f1e149]: 10%
+                - generic [ref=f1e152]:
+                  - generic [ref=f1e153]: R$ 1.000,00
+                  - generic [ref=f1e154]: de R$ 10.000,00
+                - generic [ref=f1e155]: "Prazo: 30/12/2025"
+              - generic [ref=f1e156]:
+                - generic [ref=f1e157]:
+                  - generic [ref=f1e158]:
+                    - generic [ref=f1e159]: Reserva de Emergência
+                    - generic [ref=f1e160]: Em Progresso
+                  - generic [ref=f1e161]: 24%
+                - generic [ref=f1e164]:
+                  - generic [ref=f1e165]: R$ 12.000,00
+                  - generic [ref=f1e166]: de R$ 50.000,00
+                - generic [ref=f1e167]: "Prazo: 30/12/2026"
+              - generic [ref=f1e168]:
+                - generic [ref=f1e169]:
+                  - generic [ref=f1e170]:
+                    - generic [ref=f1e171]: Viagem Europa 2027
+                    - generic [ref=f1e172]: Em Progresso
+                  - generic [ref=f1e173]: 21%
+                - generic [ref=f1e176]:
+                  - generic [ref=f1e177]: R$ 3.200,00
+                  - generic [ref=f1e178]: de R$ 15.000,00
+                - generic [ref=f1e179]: "Prazo: 31/05/2027"
+              - generic [ref=f1e180]:
+                - generic [ref=f1e181]:
+                  - generic [ref=f1e182]:
+                    - generic [ref=f1e183]: Viagem Europa 2027
+                    - generic [ref=f1e184]: Em Progresso
+                  - generic [ref=f1e185]: 13%
+                - generic [ref=f1e188]:
+                  - generic [ref=f1e189]: R$ 3.200,00
+                  - generic [ref=f1e190]: de R$ 25.000,00
+                - generic [ref=f1e191]: "Prazo: 30/12/2027"
+              - generic [ref=f1e192]:
+                - generic [ref=f1e193]:
+                  - generic [ref=f1e194]:
+                    - generic [ref=f1e195]: Reserva de Emergência Completa
+                    - generic [ref=f1e196]: Em Progresso
+                  - generic [ref=f1e197]: 98%
+                - generic [ref=f1e200]:
+                  - generic [ref=f1e201]: R$ 48.750,00
+                  - generic [ref=f1e202]: de R$ 50.000,00
+                - generic [ref=f1e203]: "Prazo: 13/11/2028"
+              - generic [ref=f1e204]:
+                - generic [ref=f1e205]:
+                  - generic [ref=f1e206]:
+                    - generic [ref=f1e207]: Aposentadoria Antecipada 2036
+                    - generic [ref=f1e208]: Em Progresso
+                  - generic [ref=f1e209]: 8%
+                - generic [ref=f1e212]:
+                  - generic [ref=f1e213]: R$ 125.000,00
+                  - generic [ref=f1e214]: de R$ 1.500.000,00
+                - generic [ref=f1e215]: "Prazo: 13/11/2036"
+          - generic [ref=f1e216]:
+            - heading "Método MAPA — Diagnóstico Atual" [level=3] [ref=f1e217]
+            - generic [ref=f1e218]:
+              - generic [ref=f1e219] [cursor=pointer]:
+                - generic [ref=f1e220]: "01"
+                - heading "Órbita Corporativa" [level=4] [ref=f1e225]
+                - paragraph [ref=f1e226]: Gestão estratégica da empresa e separação caixa-pessoal
+              - generic [ref=f1e227] [cursor=pointer]:
+                - generic [ref=f1e228]: "02"
+                - heading "Órbita Patrimonial" [level=4] [ref=f1e233]
+                - paragraph [ref=f1e234]: Blindagem jurídica e alocação inteligente dos ativos
+              - generic [ref=f1e235] [cursor=pointer]:
+                - generic [ref=f1e236]: "03"
+                - heading "Órbita Sucessória" [level=4] [ref=f1e242]
+                - paragraph [ref=f1e243]: Governança familiar e planejamento sucessório
+          - generic [ref=f1e244]:
+            - generic [ref=f1e245]:
+              - heading "Transações Recentes" [level=3] [ref=f1e246]
+              - link "Ver todas →" [ref=f1e247] [cursor=pointer]:
+                - /url: /transactions
+            - generic [ref=f1e248]:
+              - generic [ref=f1e249]:
+                - generic [ref=f1e255]:
+                  - paragraph [ref=f1e256]: Freelance design
+                  - paragraph [ref=f1e257]: Conta Corrente • 13/11/2026
+                - generic [ref=f1e258]: +R$ 2.000,00
+              - generic [ref=f1e259]:
+                - generic [ref=f1e265]:
+                  - paragraph [ref=f1e266]: Restaurante Japonês
+                  - paragraph [ref=f1e267]: Cartão de Crédito • 13/11/2026
+                - generic [ref=f1e268]: "-R$ 185,50"
+              - generic [ref=f1e269]:
+                - generic [ref=f1e275]:
+                  - paragraph [ref=f1e276]: Supermercado Carrefour
+                  - paragraph [ref=f1e277]: Conta Corrente Principal • 13/11/2026
+                - generic [ref=f1e278]: "-R$ 450,75"
+              - generic [ref=f1e279]:
+                - generic [ref=f1e285]:
+                  - paragraph [ref=f1e286]: Salario Novembro
+                  - paragraph [ref=f1e287]: Conta Corrente Principal • 13/11/2026
+                - generic [ref=f1e288]: +R$ 8.500,00
+              - generic [ref=f1e289]:
+                - generic [ref=f1e295]:
+                  - paragraph [ref=f1e296]: Padaria
+                  - paragraph [ref=f1e297]: Conta Corrente • 12/11/2026
+                - generic [ref=f1e298]: "-R$ 150,00"
+          - button "Sincronizar Contas via Open Finance" [ref=f1e300] [cursor=pointer]
+      - navigation [ref=f1e306]:
+        - button "Início" [ref=f1e307] [cursor=pointer]
+        - button "Extrato" [ref=f1e312] [cursor=pointer]
+        - button "Contas" [ref=f1e317] [cursor=pointer]
+        - button "Metas" [ref=f1e321] [cursor=pointer]
+        - button "Assessor" [ref=f1e327] [cursor=pointer]
+  - alert [ref=f1e332]

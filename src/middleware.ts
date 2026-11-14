@@ -18,6 +18,7 @@ export async function middleware(request: NextRequest) {
     '/goals',
     '/transactions',
     '/accounts',
+    '/reports',
   ];
 
   // Verificar se a rota é protegida e se não há token
