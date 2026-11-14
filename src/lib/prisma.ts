@@ -25,6 +25,7 @@ const mockModel = {
       _count: { transactions: 12 },
     }],
   }),
+  findFirst: async (_args?: any): Promise<MockValue | null> => null,
   findMany: async (_args?: any): Promise<MockValue[]> => ([
     { id: "demo-id", name: "Demo", color: MOCK_COLOR, icon: "Tag", userId: "demo-user-001", currentAmount: 0, targetAmount: 100, status: "IN_PROGRESS", type: "CHECKING", amount: 0, accountId: "demo-acc", date: "2026-11-13", currentBalance: 0, createdAt: new Date(), category: { name: "Demo", icon: "Tag", color: MOCK_COLOR }, account: { name: "Demo", color: MOCK_COLOR } }
   ]),
@@ -37,6 +38,7 @@ const mockModel = {
 
 interface MockPrismaModel {
   findUnique: (args?: any) => Promise<MockValue | null>;
+  findFirst: (args?: any) => Promise<MockValue | null>;
   findMany: (args?: any) => Promise<MockValue[]>;
   create: (args?: any) => Promise<MockValue>;
   update: (args?: any) => Promise<MockValue>;

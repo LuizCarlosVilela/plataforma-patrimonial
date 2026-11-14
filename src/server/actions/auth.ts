@@ -1,37 +1,27 @@
-"use server";
-
-import { prisma } from "@/lib/prisma";
+import { signIn } from "next-auth/react";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+
+const prisma = new PrismaClient();
 
 export async function loginAction(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  if (!email || !password) {
-    return { error: "Preencha todos os campos." };
-  }
-
   try {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
+    const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return { error: "E-mail ou senha incorretos." };
+      return { success: false, error: "Usuário não encontrado" };
     }
 
-    // Se o usuário possui senha no banco, valida com bcrypt
-    if (user.password) {
-      const isValidPassword = await bcrypt.compare(password, user.password);
-      if (!isValidPassword) {
-        return { error: "E-mail ou senha incorretos." };
-      }
+    const isValid = await bcrypt.compare(password, user.password!);
+    if (!isValid) {
+      return { success: false, error: "Senha incorreta" };
     }
 
     return { success: true, role: user.role || "CLIENT" };
-  } catch (err: any) {
-    console.error("Erro no login:", err);
-    return { error: "Erro interno no servidor. Tente novamente." };
+  } catch (error) {
+    return { success: false, error: "Erro ao autenticar usuário" };
   }
 }
 
@@ -40,26 +30,9 @@ export async function registerAction(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  if (!name || !email || !password) {
-    return { error: "Preencha todos os campos." };
-  }
-
-  if (password.length < 8) {
-    return { error: "A senha deve ter pelo menos 8 caracteres." };
-  }
-
   try {
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
-      return { error: "Este e-mail já está cadastrado." };
-    }
-
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         name,
         email,
@@ -68,13 +41,17 @@ export async function registerAction(formData: FormData) {
         planTier: "FREE",
       },
     });
+    return { success: true, role: user.role || "CLIENT" };
+  } catch (error) {
+    return { success: false, error: "Erro ao registrar usuário" };
+  }
+}
 
-    // Simulação de disparo de e-mail de boas-vindas / notificação
-    console.log(`[EMAIL DISPARADO] Bem-vindo à Origin, ${name}! E-mail enviado para: ${email}`);
-
-    return { success: true, userId: newUser.id };
-  } catch (err: any) {
-    console.error("Erro no cadastro:", err);
-    return { error: "Erro ao cadastrar usuário. Tente novamente." };
+export async function googleLogin() {
+  try {
+    await signIn("google", { callbackUrl: "/dashboard" });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: "Erro ao autenticar com Google" };
   }
 }

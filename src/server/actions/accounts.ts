@@ -2,65 +2,92 @@
 
 import { getPrisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
-
-const createAccountSchema = z.object({
-  userId: z.string().cuid(),
-  name: z.string().min(1).max(100),
-  type: z.enum(["CHECKING", "SAVINGS", "CREDIT_CARD", "INVESTMENT", "CASH", "OTHER"]),
-  initialBalance: z.number().default(0),
-  color: z.string().optional(),
-  icon: z.string().optional(),
-  currency: z.string().default("BRL"),
-});
-
-export async function createAccount(data: z.infer<typeof createAccountSchema>) {
-  const validated = createAccountSchema.parse(data);
-  const prisma = getPrisma();
-  const account = await prisma.account.create({
-    data: {
-      userId: validated.userId,
-      name: validated.name,
-      type: validated.type,
-      initialBalance: validated.initialBalance,
-      currentBalance: validated.initialBalance,
-      color: validated.color,
-      icon: validated.icon,
-      currency: validated.currency,
-    },
-  });
-
-  revalidatePath("/");
-  revalidatePath("/accounts");
-
-  return account;
-}
-
-export async function updateAccount(id: string, data: Partial<z.infer<typeof createAccountSchema>>) {
-  const prisma = getPrisma();
-  const account = await prisma.account.update({
-    where: { id },
-    data,
-  });
-
-  revalidatePath("/");
-  revalidatePath("/accounts");
-
-  return account;
-}
-
-export async function deleteAccount(id: string) {
-  const prisma = getPrisma();
-  await prisma.account.delete({ where: { id } });
-
-  revalidatePath("/");
-  revalidatePath("/accounts");
-}
 
 export async function getAccounts(userId: string) {
   const prisma = getPrisma();
   return prisma.account.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
+    include: {
+      transactions: {
+        take: 5,
+        orderBy: { date: "desc" },
+      },
+    },
   });
+}
+
+export async function createAccount(data: {
+  name: string;
+  type: "CHECKING" | "SAVINGS" | "CREDIT_CARD" | "INVESTMENT" | "CASH" | "OTHER";
+  initialBalance: number;
+  currency?: string;
+  icon?: string;
+  color?: string;
+}) {
+  const prisma = getPrisma();
+  const account = await prisma.account.create({
+    data: {
+      name: data.name,
+      type: data.type,
+      currentBalance: data.initialBalance,
+      initialBalance: data.initialBalance,
+      currency: data.currency || "BRL",
+      icon: data.icon,
+      color: data.color,
+      isManual: true,
+    },
+  });
+  revalidatePath("/accounts");
+  return account;
+}
+
+export async function syncOpenFinance(userId: string, accounts: Array<{
+  id: string;
+  name: string;
+  type: "CHECKING" | "SAVINGS" | "CREDIT_CARD" | "INVESTMENT" | "CASH" | "OTHER";
+  balance: number;
+  currency: string;
+}>) {
+  const prisma = getPrisma();
+  const results = [];
+
+  for (const acc of accounts) {
+    const existing = await prisma.account.findFirst({
+      where: { userId, openFinanceItemId: acc.id },
+    });
+
+    if (existing) {
+      const updated = await prisma.account.update({
+        where: { id: existing.id },
+        data: {
+          name: acc.name,
+          type: acc.type,
+          currentBalance: acc.balance,
+          lastSyncedAt: new Date(),
+          isManual: false,
+        },
+      });
+      results.push(updated);
+    } else {
+      const created = await prisma.account.create({
+        data: {
+          userId,
+          name: acc.name,
+          type: acc.type,
+          currentBalance: acc.balance,
+          initialBalance: acc.balance,
+          currency: acc.currency,
+          openFinanceItemId: acc.id,
+          lastSyncedAt: new Date(),
+          isManual: false,
+        },
+      });
+      results.push(created);
+    }
+  }
+
+  revalidatePath("/accounts");
+  revalidatePath("/dashboard");
+  return results;
 }

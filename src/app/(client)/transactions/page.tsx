@@ -1,168 +1,322 @@
-import { getPrisma } from "@/lib/prisma";
-import { getAccounts } from "@/server/actions/accounts";
-import { Plus, ArrowUpRight, ArrowDownRight, Filter, Calendar } from "lucide-react";
+"use client";
+
+import { useState, useEffect } from "react";
+import { Plus, ArrowUpRight, ArrowDownRight, Filter, Calendar, Trash2, Pencil } from "lucide-react";
 import { formatBRL } from "@/lib/utils";
 
-export default async function TransactionsPage() {
-  const prisma = getPrisma();
-  const demoUserEmail = "cliente@demo.com.br";
-  const user = await prisma.user.findUnique({ where: { email: demoUserEmail } });
+interface Transaction {
+  id: string;
+  accountId: string;
+  amount: string;
+  description: string;
+  date: string;
+  type: "INCOME" | "EXPENSE";
+  account?: { name: string; color: string };
+  category?: { name: string; icon: string; color: string };
+}
 
-  if (!user) {
-    return (
-      <div className="p-4 text-center text-[#86837d]">
-        <p>Usuário demo não encontrado.</p>
-      </div>
-    );
-  }
+export default function TransactionsPage() {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [filter, setFilter] = useState<"all" | "income" | "expense">("all");
+  const [loading, setLoading] = useState(true);
 
-  const accounts = await getAccounts(user.id);
+  // Form state
+  const [type, setType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
+  const [amount, setAmount] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [accountId, setAccountId] = useState("");
+  const [accounts, setAccounts] = useState<any[]>([]);
 
-  // Mock transactions for demo since server action is not yet available
-  const mockTransactions = [
-    {
-      id: "tx-1",
-      account: { name: "Nubank Conta", color: "#820AD1", type: "CHECKING" },
-      category: { name: "Alimentação", icon: "Utensils", color: "#F97316" },
-      type: "EXPENSE",
-      amount: "85.00",
-      description: "Supermercado",
-      date: "2025-01-15T14:30:00.000Z",
-      notes: null,
-    },
-    {
-      id: "tx-2",
-      account: { name: "Cartão XP Visa Infinite", color: "#1E1E1E", type: "CREDIT_CARD" },
-      category: { name: "Transporte", icon: "Car", color: "#EAB308" },
-      type: "EXPENSE",
-      amount: "45.50",
-      description: "Uber para o trabalho",
-      date: "2025-01-14T09:15:00.000Z",
-      notes: null,
-    },
-    {
-      id: "tx-3",
-      account: { name: "Nubank Conta", color: "#820AD1", type: "CHECKING" },
-      category: { name: "Salário & Renda", icon: "Wallet", color: "#10B981" },
-      type: "INCOME",
-      amount: "3500.00",
-      description: "Salário - Tech Solutions Ltda",
-      date: "2025-01-10T10:00:00.000Z",
-      notes: null,
-    },
-  ];
+  const DEMO_USER_ID = "clx8h6r7v0000w3xy9z2k4m5n"; // Client user from seed
 
-  // Use mock transactions for demo purposes
-  const transactions = mockTransactions;
+  useEffect(() => {
+    loadTransactions();
+    loadAccounts();
+  }, []);
 
-  // Agrupar por data
-  const groupedTransactions = transactions.reduce(
-    (acc: Record<string, typeof transactions>, _tx: typeof transactions[0]) => {
-      const dateKey = new Date(_tx.date).toLocaleDateString("pt-BR", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
+  const loadTransactions = async () => {
+    try {
+      const res = await fetch(`/api/transactions?userId=${DEMO_USER_ID}`);
+      if (res.ok) {
+        const data = await res.json();
+        setTransactions(data.transactions || []);
+      }
+    } catch (e) {
+      console.error("Error loading transactions:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadAccounts = async () => {
+    try {
+      const res = await fetch(`/api/accounts?userId=${DEMO_USER_ID}`);
+      if (res.ok) {
+        const data = await res.json();
+        setAccounts(data.accounts || []);
+        if (data.accounts.length > 0 && !accountId) {
+          setAccountId(data.accounts[0].id);
+        }
+      }
+    } catch (e) {
+      console.error("Error loading accounts:", e);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!amount || !description || !date || !accountId) return;
+
+    try {
+      const res = await fetch("/api/transactions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: DEMO_USER_ID,
+          accountId,
+          type,
+          amount: parseFloat(amount),
+          description,
+          date: `${date}T00:00:00Z`,
+        }),
       });
-      if (!acc[dateKey]) acc[dateKey] = [];
-      acc[dateKey].push(_tx);
-      return acc;
-    },
-    {} as Record<string, typeof transactions>
-  );
+
+      if (res.ok) {
+        setShowForm(false);
+        setAmount("");
+        setDescription("");
+        loadTransactions();
+      }
+    } catch (e) {
+      console.error("Error creating transaction:", e);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Deseja realmente excluir esta transação?")) return;
+
+    try {
+      const res = await fetch(`/api/transactions?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        loadTransactions();
+      }
+    } catch (e) {
+      console.error("Error deleting transaction:", e);
+    }
+  };
+
+  const filteredTransactions = transactions.filter((t) => {
+    if (filter === "income") return t.type === "INCOME";
+    if (filter === "expense") return t.type === "EXPENSE";
+    return true;
+  });
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-[#efeae0]">Extrato</h1>
-        <button className="flex items-center gap-2 py-2 px-4 rounded-xl font-medium text-sm transition-all hover:shadow-gold active:scale-[0.98] text-[#16171b]"
-                 style={{ background: "#b08a3e" }}>
+    <div className="space-y-6 max-w-6xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold text-[#efeae0]">Transações</h1>
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className="flex items-center gap-2 py-2 px-4 rounded-xl font-medium text-sm transition-all active:scale-[0.98] text-[#16171b]"
+          style={{ background: "#b08a3e" }}
+        >
           <Plus className="w-4 h-4" />
           Nova Transação
         </button>
       </div>
 
-      <div className="flex items-center gap-2 mb-4">
-        <button className="flex-1 flex items-center justify-center gap-2 bg-[#191a1e] border border-[#cfc6b4] hover:border-[#b08a3e]/40 text-[#efeae0] py-2 rounded-xl font-medium text-sm">
-          <Filter className="w-4 h-4" />
-          Filtrar
-        </button>
-        <button className="flex-1 flex items-center justify-center gap-2 bg-[#191a1e] border border-[#cfc6b4] hover:border-[#b08a3e]/40 text-[#efeae0] py-2 rounded-xl font-medium text-sm">
-          <Calendar className="w-4 h-4" />
-          Período
-        </button>
+      {/* Form */}
+      {showForm && (
+        <form onSubmit={handleSubmit} className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-6 space-y-4">
+          <h2 className="font-semibold text-[#efeae0]">Nova Transação</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Type */}
+            <div>
+              <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Tipo</label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setType("EXPENSE")}
+                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
+                    type === "EXPENSE"
+                      ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                      : "bg-[#16171b] text-[#86837d] border border-[#cfc6b4]"
+                  }`}
+                >
+                  Despesa
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setType("INCOME")}
+                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
+                    type === "INCOME"
+                      ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                      : "bg-[#16171b] text-[#86837d] border border-[#cfc6b4]"
+                  }`}
+                >
+                  Receita
+                </button>
+              </div>
+            </div>
+
+            {/* Amount */}
+            <div>
+              <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Valor (R$)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="0,00"
+                className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-lg px-4 py-2 text-[#efeae0] focus:border-[#b08a3e] outline-none"
+                required
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Descrição</label>
+              <input
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Ex: Supermercado"
+                className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-lg px-4 py-2 text-[#efeae0] focus:border-[#b08a3e] outline-none"
+                required
+              />
+            </div>
+
+            {/* Account */}
+            <div>
+              <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Conta</label>
+              <select
+                value={accountId}
+                onChange={(e) => setAccountId(e.target.value)}
+                className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-lg px-4 py-2 text-[#efeae0] focus:border-[#b08a3e] outline-none"
+                required
+              >
+                <option value="">Selecione uma conta</option>
+                {accounts.map((acc) => (
+                  <option key={acc.id} value={acc.id}>
+                    {acc.name} ({acc.type})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Date */}
+            <div>
+              <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Data</label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-lg px-4 py-2 text-[#efeae0] focus:border-[#b08a3e] outline-none"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => setShowForm(false)}
+              className="py-2 px-4 rounded-lg text-sm text-[#86837d] hover:text-[#efeae0] transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="py-2 px-6 rounded-lg font-medium text-sm text-[#16171b]"
+              style={{ background: "#b08a3e" }}
+            >
+              Salvar Transação
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* Filters */}
+      <div className="flex items-center gap-3">
+        <Filter className="w-4 h-4 text-[#86837d]" />
+        <div className="flex gap-2">
+          {[
+            { key: "all", label: "Todas" },
+            { key: "income", label: "Receitas" },
+            { key: "expense", label: "Despesas" },
+          ].map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key as any)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                filter === f.key
+                  ? "bg-[#b08a3e]/20 text-[#b08a3e] border border-[#b08a3e]/30"
+                  : "text-[#86837d] hover:text-[#efeae0]"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {Object.keys(groupedTransactions).length === 0 ? (
+      {/* Transactions List */}
+      {loading ? (
+        <div className="text-center py-12 text-[#86837d]">Carregando...</div>
+      ) : filteredTransactions.length === 0 ? (
         <div className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-8 text-center">
-          <ArrowUpRight className="w-16 h-16 mx-auto text-[#86837d] mb-4" />
+          <Calendar className="w-16 h-16 mx-auto text-[#86837d] mb-4" />
           <h3 className="text-lg font-medium text-[#efeae0] mb-1">Nenhuma transação encontrada</h3>
-          <p className="text-[#86837d] text-sm mb-4">Comece registrando suas despesas e receitas</p>
-          <button className="text-[#b08a3e] hover:text-[#b08a3e] text-sm font-medium transition-colors">Registrar primeira transação</button>
+          <p className="text-[#86837d] text-sm">Adicione sua primeira transação para começar a controlar suas finanças</p>
         </div>
       ) : (
-        <div className="space-y-6">
-          {Object.entries(groupedTransactions).map(([date, txs]: [string, typeof transactions]) => {
-            const dayTotal = txs.reduce(
-              (sum: number, tx: typeof transactions[0]): number => {
-                const amount = Number(tx.amount);
-                return tx.type === "INCOME" ? sum + amount : sum - amount;
-              },
-              0
-            );
-
-            return (
-              <div key={date} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-[#efeae0] capitalize">{date}</span>
-                  <span className={`text-sm font-semibold ${dayTotal >= 0 ? "text-[#4f6b52]" : "text-[#9e4a3e]"}`}>
-                    {dayTotal >= 0 ? "+" : ""}{formatBRL(dayTotal)}
-                  </span>
+        <div className="space-y-2">
+          {filteredTransactions.map((tx) => (
+            <div
+              key={tx.id}
+              className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-4 flex items-center justify-between hover:border-[#b08a3e]/40 transition-all"
+            >
+              <div className="flex items-center gap-4">
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center"
+                  style={{ background: tx.type === "INCOME" ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)" }}
+                >
+                  {tx.type === "INCOME" ? (
+                    <ArrowUpRight className="w-5 h-5 text-green-500" />
+                  ) : (
+                    <ArrowDownRight className="w-5 h-5 text-red-500" />
+                  )}
                 </div>
-                <div className="space-y-1">
-                  {txs.map((tx: typeof transactions[0]) => (
-                    <div
-                      key={tx.id}
-                      className="flex items-center justify-between bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-3"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`
-                            w-10 h-10 rounded-xl flex items-center justify-center text-sm
-                            ${tx.type === "INCOME" ? "bg-[rgba(79,107,82,0.1)] text-[#4f6b52]" : "bg-[rgba(158,74,62,0.1)] text-[#9e4a3e]"}
-                          `}
-                        >
-                          {tx.type === "INCOME" ? <ArrowDownRight className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-[#efeae0]">{tx.description}</p>
-                          <p className="text-xs text-[#86837d] flex items-center gap-1">
-                            {tx.account.name}
-                            {tx.category && (
-                              <>
-                                <span>•</span>
-                                {tx.category.icon && <span className="text-[#b08a3e]">◆</span>}
-                                {tx.category.name}
-                              </>
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                      <span
-                        className={`
-                          text-sm font-semibold
-                          ${tx.type === "INCOME" ? "text-[#4f6b52]" : "text-[#9e4a3e]"}
-                        `}
-                      >
-                        {tx.type === "INCOME" ? "+" : "-"}{formatBRL(Number(tx.amount))}
-                      </span>
-                    </div>
-                  ))}
+                <div>
+                  <p className="font-medium text-[#efeae0]">{tx.description}</p>
+                  <p className="text-xs text-[#86837d]">
+                    {tx.account?.name || "Sem conta"} · {new Date(tx.date).toLocaleDateString("pt-BR")}
+                  </p>
                 </div>
               </div>
-            );
-          })}
+              <div className="flex items-center gap-4">
+                <span
+                  className={`font-semibold ${
+                    tx.type === "INCOME" ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  {tx.type === "INCOME" ? "+" : "-"} {formatBRL(parseFloat(tx.amount))}
+                </span>
+                <button
+                  onClick={() => handleDelete(tx.id)}
+                  className="p-2 rounded-lg hover:bg-red-500/10 text-[#86837d] hover:text-red-500 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
-    </>
+    </div>
   );
 }

@@ -12,11 +12,32 @@
 # Error details
 
 ```
-Error: Channel closed
+Test timeout of 30000ms exceeded while running "beforeEach" hook.
 ```
 
 ```
-Error: page.goto: Target page, context or browser has been closed
+Error: page.fill: Test timeout of 30000ms exceeded.
+Call log:
+  - waiting for locator('input[type="email"]')
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - heading "Login" [level=1] [ref=e4]
+    - generic [ref=e5]:
+      - button "Entrar com Google" [ref=e6] [cursor=pointer]
+      - generic [ref=e7]: Ou continue com
+      - button "Login Tradicional" [ref=e11] [cursor=pointer]
+    - generic [ref=e12]:
+      - text: Não tem uma conta?
+      - link "Cadastre-se" [ref=e13] [cursor=pointer]:
+        - /url: /register
+  - button "Open Next.js Dev Tools" [ref=e19] [cursor=pointer]
+  - alert [ref=e23]
 ```
 
 # Test source
@@ -27,9 +48,9 @@ Error: page.goto: Target page, context or browser has been closed
   3   | test.describe('Simulação Financeira - Compra Imóvel 1M', () => {
   4   |   test.beforeEach(async ({ page }) => {
   5   |     // Login como cliente demo
-> 6   |     await page.goto('/login');
-      |                ^ Error: page.goto: Target page, context or browser has been closed
-  7   |     await page.fill('input[type="email"]', 'cliente@demo.com.br');
+  6   |     await page.goto('/login');
+> 7   |     await page.fill('input[type="email"]', 'cliente@demo.com.br');
+      |                ^ Error: page.fill: Test timeout of 30000ms exceeded.
   8   |     await page.fill('input[type="password"]', 'demo123');
   9   |     await page.click('button[type="submit"]');
   10  |     await expect(page).toHaveURL(/\/dashboard/);
@@ -129,4 +150,5 @@ Error: page.goto: Target page, context or browser has been closed
   104 |     // ============================================
   105 |     // PASSO 6: Verificar Patrimônio Líquido Atualizado
   106 |     // ============================================
+  107 |     await test.step('Verificar patrimônio líquido no dashboard', async () => {
 ```

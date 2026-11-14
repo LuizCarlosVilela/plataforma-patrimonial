@@ -15,11 +15,11 @@ export async function GET() {
     }
 
     // Criar tipos ENUM necessários (comandos separados)
-    await prisma.$executeRawUnsafe('CREATE TYPE "UserRole" AS ENUM ('CLIENT', 'ADVISOR', 'ADMIN')');
-    await prisma.$executeRawUnsafe('CREATE TYPE "PlanTier" AS ENUM ('FREE', 'PREMIUM')');
-    await prisma.$executeRawUnsafe('CREATE TYPE "AccountType" AS ENUM ('CHECKING', 'SAVINGS', 'CREDIT_CARD', 'INVESTMENT', 'CASH', 'OTHER')');
-    await prisma.$executeRawUnsafe('CREATE TYPE "TransactionType" AS ENUM ('INCOME', 'EXPENSE', 'TRANSFER')');
-    await prisma.$executeRawUnsafe('CREATE TYPE "GoalStatus" AS ENUM ('IN_PROGRESS', 'COMPLETED', 'PAUSED')');
+    await prisma.$executeRawUnsafe("CREATE TYPE \"UserRole\" AS ENUM ('CLIENT', 'ADVISOR', 'ADMIN')");
+    await prisma.$executeRawUnsafe("CREATE TYPE \"PlanTier\" AS ENUM ('FREE', 'PREMIUM')");
+    await prisma.$executeRawUnsafe("CREATE TYPE \"AccountType\" AS ENUM ('CHECKING', 'SAVINGS', 'CREDIT_CARD', 'INVESTMENT', 'CASH', 'OTHER')");
+    await prisma.$executeRawUnsafe("CREATE TYPE \"TransactionType\" AS ENUM ('INCOME', 'EXPENSE', 'TRANSFER')");
+    await prisma.$executeRawUnsafe("CREATE TYPE \"GoalStatus\" AS ENUM ('IN_PROGRESS', 'COMPLETED', 'PAUSED')");
 
     // Criar usuário admin de teste
     const hashedPassword = await bcrypt.hash('admin123', 10);
