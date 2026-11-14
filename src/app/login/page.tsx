@@ -1,9 +1,37 @@
 "use client";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { Mail, Lock, User, ArrowRight } from "lucide-react";
+import { Mail, Lock, ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (result?.error) {
+      setError(result.error === "CredentialsSignin" ? "E-mail ou senha incorretos" : result.error);
+    } else if (result?.ok) {
+      router.push("/dashboard");
+    }
+
+    setLoading(false);
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0d0d0d] px-4">
       <div className="w-full max-w-md">
@@ -39,13 +67,16 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Email Form Placeholder */}
-          <div className="space-y-4">
+          {/* Email Form */}
+          <form onSubmit={handleLogin} className="space-y-4">
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#86837d]" />
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
+                required
                 className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl pl-10 pr-4 py-3 text-[#efeae0] focus:border-[#b08a3e] outline-none"
               />
             </div>
@@ -53,19 +84,29 @@ export default function LoginPage() {
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#86837d]" />
               <input
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Sua senha"
+                required
+                minLength={6}
                 className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl pl-10 pr-4 py-3 text-[#efeae0] focus:border-[#b08a3e] outline-none"
               />
             </div>
+
+            {error && (
+              <p className="text-red-400 text-sm">{error}</p>
+            )}
+
             <button
-              type="button"
-              className="w-full py-3 rounded-xl font-medium text-[#16171b] flex items-center justify-center gap-2"
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 rounded-xl font-medium text-[#16171b] flex items-center justify-center gap-2 disabled:opacity-50"
               style={{ background: "#b08a3e" }}
             >
-              Entrar
+              {loading ? "Entrando..." : "Entrar"}
               <ArrowRight className="w-4 h-4" />
             </button>
-          </div>
+          </form>
         </div>
 
         {/* Footer */}

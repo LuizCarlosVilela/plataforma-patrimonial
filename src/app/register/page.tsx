@@ -10,12 +10,19 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+
+    if (password !== confirmPassword) {
+      setError("As senhas não coincidem");
+      return;
+    }
+
     setLoading(true);
 
     const formData = new FormData();
@@ -34,13 +41,18 @@ export default function RegisterPage() {
 
       if (data.success) {
         // Auto-login after registration
-        await signIn("credentials", {
+        const signInResult = await signIn("credentials", {
           email,
           password,
           redirect: false,
-          callbackUrl: "/dashboard",
         });
-        router.push("/dashboard");
+
+        if (signInResult?.ok) {
+          router.push("/dashboard");
+        } else {
+          // If signIn fails, redirect to login
+          router.push("/login?registered=true");
+        }
       } else {
         setError(data.error || "Erro ao cadastrar");
       }
@@ -117,6 +129,18 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Sua senha"
+                required
+                minLength={6}
+                className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl pl-10 pr-4 py-3 text-[#efeae0] focus:border-[#b08a3e] outline-none"
+              />
+            </div>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#86837d]" />
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirme sua senha"
                 required
                 minLength={6}
                 className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl pl-10 pr-4 py-3 text-[#efeae0] focus:border-[#b08a3e] outline-none"
