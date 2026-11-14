@@ -3,21 +3,58 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+async function resolveUserId(emailOrId: string): Promise<string | null> {
+  const user = await prisma.user.findFirst({
+    where: { OR: [{ id: emailOrId }, { email: emailOrId }] },
+    select: { id: true },
+  });
+  return user?.id ?? null;
+}
+
+async function resolveAccountId(idOrEmail: string): Promise<string | null> {
+  // Try direct ID lookup first
+  const acc = await prisma.account.findUnique({
+    where: { id: idOrEmail },
+    select: { id: true },
+  });
+  if (acc) return acc.id;
+
+  // Try email -> find user -> find account
+  const user = await prisma.user.findFirst({
+    where: { email: idOrEmail },
+    select: { id: true },
+  });
+  if (user) {
+    const found = await prisma.account.findFirst({
+      where: { userId: user.id },
+      select: { id: true },
+    });
+    return found?.id ?? null;
+  }
+  return null;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { userId, accountId, type, amount, description, date } = body;
+    const { email, userId, accountId, type, amount, description, date } = body;
+    const resolvedUserId = await resolveUserId(userId || email);
 
-    if (!userId || !accountId || !type || !amount || !description || !date) {
+    if (!resolvedUserId || !accountId || !type || !amount || !description || !date) {
       return NextResponse.json(
-        { error: 'Todos os campos são obrigatórios: userId, accountId, type, amount, description, date' },
+        { error: 'Todos os campos são obrigatórios: userId/email, accountId, type, amount, description, date' },
         { status: 400 }
       );
     }
 
+    const resolvedAccountId = await resolveAccountId(accountId);
+    if (!resolvedAccountId) {
+      return NextResponse.json({ error: 'Conta não encontrada' }, { status: 404 });
+    }
+
     const transaction = await prisma.transaction.create({
       data: {
-        accountId,
+        accountId: resolvedAccountId,
         type: type as 'INCOME' | 'EXPENSE',
         amount: new (require('@prisma/client').Decimal)(amount),
         description,
@@ -26,26 +63,25 @@ export async function POST(request: Request) {
       },
     });
 
-    // Atualizar saldo da conta
+    // Update account balance
     const account = await prisma.account.findUnique({
-      where: { id: accountId },
+      where: { id: resolvedAccountId },
+      select: { currentBalance: true },
     });
 
     if (account) {
+      const delta = new (require('@prisma/client').Decimal)(amount);
       const newBalance = type === 'INCOME'
-        ? account.currentBalance.plus(new (require('@prisma/client').Decimal)(amount))
-        : account.currentBalance.minus(new (require('@prisma/client').Decimal)(amount));
+        ? account.currentBalance.plus(delta)
+        : account.currentBalance.minus(delta);
 
       await prisma.account.update({
-        where: { id: accountId },
+        where: { id: resolvedAccountId },
         data: { currentBalance: newBalance },
       });
     }
 
-    return NextResponse.json({
-      message: 'Transação criada com sucesso!',
-      transaction,
-    });
+    return NextResponse.json({ message: 'Transação criada com sucesso!', transaction });
   } catch (error) {
     console.error('Erro ao criar transação:', error);
     return NextResponse.json(
@@ -58,29 +94,28 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
+    const userId = searchParams.get('userId') || searchParams.get('email');
     const accountId = searchParams.get('accountId');
 
     if (!userId) {
-      return NextResponse.json(
-        { error: 'userId é obrigatório' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'userId ou email é obrigatório' }, { status: 400 });
     }
 
-    const where: any = { account: { userId } };
+    const resolvedUserId = await resolveUserId(userId);
+    if (!resolvedUserId) {
+      return NextResponse.json({ transactions: [] });
+    }
+
+    const where: any = { account: { userId: resolvedUserId } };
     if (accountId) {
-      where.accountId = accountId;
+      const resolvedAccId = await resolveAccountId(accountId);
+      if (resolvedAccId) where.accountId = resolvedAccId;
     }
 
     const transactions = await prisma.transaction.findMany({
       where,
-      include: {
-        account: true,
-      },
-      orderBy: {
-        date: 'desc',
-      },
+      include: { account: true },
+      orderBy: { date: 'desc' },
     });
 
     return NextResponse.json({ transactions });

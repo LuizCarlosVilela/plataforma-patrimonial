@@ -3,21 +3,30 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+async function resolveUserId(emailOrId: string): Promise<string | null> {
+  const user = await prisma.user.findFirst({
+    where: { OR: [{ id: emailOrId }, { email: emailOrId }] },
+    select: { id: true },
+  });
+  return user?.id ?? null;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { userId, name, type, initialBalance = 0, currency = 'BRL' } = body;
+    const { email, userId, name, type, initialBalance = 0, currency = 'BRL' } = body;
+    const resolvedUserId = await resolveUserId(userId || email);
 
-    if (!userId || !name || !type) {
+    if (!resolvedUserId || !name || !type) {
       return NextResponse.json(
-        { error: 'Todos os campos são obrigatórios: userId, name, type' },
+        { error: 'Todos os campos são obrigatórios' },
         { status: 400 }
       );
     }
 
     const account = await prisma.account.create({
       data: {
-        userId,
+        userId: resolvedUserId,
         name,
         type: type as any,
         initialBalance: new (require('@prisma/client').Decimal)(initialBalance),
@@ -27,10 +36,7 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({
-      message: 'Conta criada com sucesso!',
-      account,
-    });
+    return NextResponse.json({ message: 'Conta criada com sucesso!', account });
   } catch (error) {
     console.error('Erro ao criar conta:', error);
     return NextResponse.json(
@@ -43,20 +49,20 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
+    const userId = searchParams.get('userId') || searchParams.get('email');
 
     if (!userId) {
-      return NextResponse.json(
-        { error: 'userId é obrigatório' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'userId ou email é obrigatório' }, { status: 400 });
+    }
+
+    const resolvedUserId = await resolveUserId(userId);
+    if (!resolvedUserId) {
+      return NextResponse.json({ accounts: [] });
     }
 
     const accounts = await prisma.account.findMany({
-      where: { userId },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      where: { userId: resolvedUserId },
+      orderBy: { createdAt: 'desc' },
     });
 
     return NextResponse.json({ accounts });

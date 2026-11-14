@@ -3,33 +3,39 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+async function resolveUserId(emailOrId: string): Promise<string | null> {
+  const user = await prisma.user.findFirst({
+    where: { OR: [{ id: emailOrId }, { email: emailOrId }] },
+    select: { id: true },
+  });
+  return user?.id ?? null;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { userId, title, targetAmount, targetDate, status = 'IN_PROGRESS' } = body;
+    const { email, userId, title, targetAmount, currentAmount = 0, targetDate, status = 'IN_PROGRESS' } = body;
+    const resolvedUserId = await resolveUserId(userId || email);
 
-    if (!userId || !title || !targetAmount || !targetDate) {
+    if (!resolvedUserId || !title || !targetAmount || !targetDate) {
       return NextResponse.json(
-        { error: 'Todos os campos são obrigatórios: userId, title, targetAmount, targetDate' },
+        { error: 'Todos os campos são obrigatórios: userId/email, title, targetAmount, targetDate' },
         { status: 400 }
       );
     }
 
     const goal = await prisma.goal.create({
       data: {
-        userId,
+        userId: resolvedUserId,
         title,
         targetAmount: new (require('@prisma/client').Decimal)(targetAmount),
-        currentAmount: new (require('@prisma/client').Decimal)(0),
+        currentAmount: new (require('@prisma/client').Decimal)(currentAmount),
         targetDate: new Date(targetDate),
         status,
       },
     });
 
-    return NextResponse.json({
-      message: 'Meta criada com sucesso!',
-      goal,
-    });
+    return NextResponse.json({ message: 'Meta criada com sucesso!', goal });
   } catch (error) {
     console.error('Erro ao criar meta:', error);
     return NextResponse.json(
@@ -42,20 +48,20 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
+    const userId = searchParams.get('userId') || searchParams.get('email');
 
     if (!userId) {
-      return NextResponse.json(
-        { error: 'userId é obrigatório' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'userId ou email é obrigatório' }, { status: 400 });
+    }
+
+    const resolvedUserId = await resolveUserId(userId);
+    if (!resolvedUserId) {
+      return NextResponse.json({ goals: [] });
     }
 
     const goals = await prisma.goal.findMany({
-      where: { userId },
-      orderBy: {
-        targetDate: 'asc',
-      },
+      where: { userId: resolvedUserId },
+      orderBy: { targetDate: 'asc' },
     });
 
     return NextResponse.json({ goals });
