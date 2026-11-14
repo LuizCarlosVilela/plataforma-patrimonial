@@ -27,6 +27,7 @@ export default function LoginPage() {
       setError(result.error === "CredentialsSignin" ? "E-mail ou senha incorretos" : result.error);
     } else if (result?.ok) {
       router.push("/dashboard");
+      router.refresh();
     }
 
     setLoading(false);

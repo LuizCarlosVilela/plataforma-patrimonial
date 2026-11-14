@@ -6,6 +6,11 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request });
   const { pathname } = request.nextUrl;
 
+  // Auth routes are public — skip them
+  if (pathname.startsWith('/api/auth') || pathname === '/login' || pathname === '/register') {
+    return NextResponse.next();
+  }
+
   // Lista de rotas protegidas
   const protectedRoutes = [
     '/dashboard',

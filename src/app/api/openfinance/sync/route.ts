@@ -3,18 +3,32 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+async function resolveUserId(emailOrId: string): Promise<string | null> {
+  const user = await prisma.user.findFirst({
+    where: { OR: [{ id: emailOrId }, { email: emailOrId }] },
+    select: { id: true },
+  });
+  return user?.id ?? null;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const userId = body.userId as string;
-    const token = body.token as string;
+    // Aceita userId, email ou token diretamente
+    const userIdRaw = body.userId || body.email || '';
+    const token = body.token;
 
-    if (!userId || !token) {
-      return NextResponse.json({ error: 'userId e token são obrigatórios' }, { status: 400 });
+    if (!userIdRaw) {
+      return NextResponse.json({ error: 'userId ou email é obrigatório' }, { status: 400 });
     }
 
-    // Simular chamada à API do Open Finance
-    // Em produção, substituir por chamada real à API
+    const userId = await resolveUserId(userIdRaw);
+    if (!userId) {
+      return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 });
+    }
+
+    // Simular chamada à API do Open Finance (mock)
+    // Em produção, fazer fetch real para https://api.bcb.gov.br/openfinance/...
     const mockAccounts = [
       { id: 'of_account_1', name: 'Conta Corrente Banco X', type: 'CHECKING', balance: 12500.50, currency: 'BRL' },
       { id: 'of_account_2', name: 'Poupança Banco Y', type: 'SAVINGS', balance: 45000.00, currency: 'BRL' },
