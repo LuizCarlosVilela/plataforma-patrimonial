@@ -1,0 +1,5 @@
+[    1182ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ https://plataforma-patrimonial-origin-sigma.vercel.app/register:1
+[    1182ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ https://plataforma-patrimonial-origin-sigma.vercel.app/register:1
+[    1425ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://plataforma-patrimonial-origin-sigma.vercel.app/privacy?_rsc=YHJgCYC7z7ItAmEk:1
+[    1426ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://plataforma-patrimonial-origin-sigma.vercel.app/terms?_rsc=YHJgCYC7z7ItAmEk:1
+[    1426ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://plataforma-patrimonial-origin-sigma.vercel.app/favicon.ico:1
