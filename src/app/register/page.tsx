@@ -23,18 +23,18 @@ export default function RegisterPage() {
       return;
     }
 
-    setLoading(true);
+    if (password.length < 6) {
+      setError("A senha deve ter pelo menos 6 caracteres");
+      return;
+    }
 
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("password", password);
+    setLoading(true);
 
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "register", formData }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       const data = await res.json();
@@ -50,7 +50,6 @@ export default function RegisterPage() {
         if (signInResult?.ok) {
           router.push("/dashboard");
         } else {
-          // If signIn fails, redirect to login
           router.push("/login?registered=true");
         }
       } else {
@@ -108,6 +107,7 @@ export default function RegisterPage() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Seu nome completo"
                 required
+                minLength={2}
                 className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl pl-10 pr-4 py-3 text-[#efeae0] focus:border-[#b08a3e] outline-none"
               />
             </div>
@@ -128,7 +128,7 @@ export default function RegisterPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Sua senha"
+                placeholder="Sua senha (mín. 6 caracteres)"
                 required
                 minLength={6}
                 className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-xl pl-10 pr-4 py-3 text-[#efeae0] focus:border-[#b08a3e] outline-none"
@@ -157,9 +157,21 @@ export default function RegisterPage() {
               className="w-full py-3 rounded-xl font-medium text-[#16171b] flex items-center justify-center gap-2 disabled:opacity-50"
               style={{ background: "#b08a3e" }}
             >
-              {loading ? "Criando conta..." : "Criar conta"}
+              {loading ? "Criando conta..." : "Criar conta grátis"}
               <ArrowRight className="w-4 h-4" />
             </button>
+
+            <p className="text-center text-xs text-[#86837d]">
+              Ao criar uma conta, você concorda com nossos{" "}
+              <Link href="/terms" className="text-[#b08a3e] hover:underline">
+                Termos de Uso
+              </Link>{" "}
+              e{" "}
+              <Link href="/privacy" className="text-[#b08a3e] hover:underline">
+                Política de Privacidade
+              </Link>
+              .
+            </p>
           </form>
         </div>
 

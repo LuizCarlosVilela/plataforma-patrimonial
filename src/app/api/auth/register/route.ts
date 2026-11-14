@@ -8,43 +8,33 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    let action: string | undefined;
+    // Detect action automatically based on fields present.
+    // This route is primarily for registration, but also handles login
+    // when the caller sends only email+password without a 'name' field.
+    const hasName = !!body.name;
+    const isLogin = !hasName && body.email && body.password;
+
     let name: string | undefined;
     let email: string | undefined;
     let password: string | undefined;
 
-    if (body.action === 'register') {
-      action = 'register';
-      if (body.formData && typeof body.formData.get === 'function') {
-        name = body.formData.get('name') as string;
-        email = body.formData.get('email') as string;
-        password = body.formData.get('password') as string;
-      } else {
-        name = body.name || body.formData?.name as string | undefined;
-        email = body.email || body.formData?.email as string | undefined;
-        password = body.password || body.formData?.password as string | undefined;
-      }
-    } else if (body.action === 'login') {
-      action = 'login';
-      if (body.formData && typeof body.formData.get === 'function') {
-        email = body.formData.get('email') as string;
-        password = body.formData.get('password') as string;
-      } else {
-        email = body.email || body.formData?.email as string | undefined;
-        password = body.password || body.formData?.password as string | undefined;
-      }
-    } else {
-      return NextResponse.json({ error: 'Ação inválida' }, { status: 400 });
-    }
+    // Helper: extract from plain object or legacy formData wrapper
+    const getVal = (key: string): string | undefined =>
+      body[key] ?? body.formData?.[key];
 
-    if (!action || !email || !password) {
+    email = getVal('email');
+    password = getVal('password');
+    name = hasName ? getVal('name') : undefined;
+
+    if (!email || !password) {
       return NextResponse.json(
-        { error: 'Preencha todos os campos: email e senha são obrigatórios.' },
+        { error: 'E-mail e senha são obrigatórios.' },
         { status: 400 }
       );
     }
 
-    if (action === 'register') {
+    // ── REGISTER ────────────────────────────────────────────────
+    if (hasName || (!isLogin)) {
       if (!name) {
         return NextResponse.json(
           { error: 'O nome é obrigatório.' },
@@ -74,21 +64,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, userId: user.id, role: 'CLIENT' });
     }
 
-    // action === 'login'
+    // ── LOGIN ──────────────────────────────────────────────────
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return NextResponse.json({ success: false, error: 'Usuário não encontrado' });
+      return NextResponse.json(
+        { success: false, error: 'Usuário não encontrado' },
+        { status: 404 }
+      );
     }
 
     const isValid = await bcrypt.compare(password, user.password!);
     if (!isValid) {
-      return NextResponse.json({ success: false, error: 'Senha incorreta' });
+      return NextResponse.json(
+        { success: false, error: 'Senha incorreta' },
+        { status: 401 }
+      );
     }
 
     return NextResponse.json({
       success: true,
       userId: user.id,
       role: user.role || 'CLIENT',
+      planTier: user.planTier,
     });
   } catch (error) {
     console.error('Erro na autenticação:', error);

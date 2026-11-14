@@ -1,5 +1,4 @@
-import NextAuth from "next-auth";
-import type { NextAuthOptions } from "next-auth";
+import NextAuth, { type NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
@@ -21,20 +20,15 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
         });
-
         if (!user || !user.password) return null;
-
         const isValid = await bcrypt.compare(
           credentials.password as string,
           user.password
         );
-
         if (!isValid) return null;
-
         return {
           id: user.id,
           name: user.name,
@@ -44,9 +38,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  session: {
-    strategy: "jwt",
-  },
+  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
@@ -63,11 +55,9 @@ export const authOptions: NextAuthOptions = {
     async signIn({ profile }: { profile?: any }) {
       try {
         if (!profile?.email) return true;
-
         let dbUser = await prisma.user.findUnique({
           where: { email: profile.email },
         });
-
         if (!dbUser) {
           dbUser = await prisma.user.create({
             data: {
@@ -93,5 +83,4 @@ export const authOptions: NextAuthOptions = {
 };
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };
