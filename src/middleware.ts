@@ -37,6 +37,7 @@ export const config = {
     '/goals',
     '/transactions',
     '/accounts',
+    '/reports',
     '/api/(.*)',
   ],
 };

@@ -1,25 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, ArrowUpRight, ArrowDownRight, Filter, Calendar, Trash2, Pencil } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { Plus, ArrowUpRight, ArrowDownRight, Filter, Calendar, Trash2 } from "lucide-react";
 import { formatBRL } from "@/lib/utils";
 
-interface Transaction {
-  id: string;
-  accountId: string;
-  amount: string;
-  description: string;
-  date: string;
-  type: "INCOME" | "EXPENSE";
-  account?: { name: string; color: string };
-  category?: { name: string; icon: string; color: string };
-}
-
 export default function TransactionsPage() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [filter, setFilter] = useState<"all" | "income" | "expense">("all");
   const [loading, setLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   // Form state
   const [type, setType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
@@ -29,16 +20,29 @@ export default function TransactionsPage() {
   const [accountId, setAccountId] = useState("");
   const [accounts, setAccounts] = useState<any[]>([]);
 
-  const DEMO_USER_ID = "clx8h6r7v0000w3xy9z2k4m5n"; // Client user from seed
-
   useEffect(() => {
-    loadTransactions();
-    loadAccounts();
+    async function getUser() {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.email) {
+            setUserEmail(data.email);
+            return;
+          }
+        }
+        signIn();
+      } catch (e) {
+        console.error("Error getting user:", e);
+      }
+    }
+    getUser();
   }, []);
 
   const loadTransactions = async () => {
+    if (!userEmail) return;
     try {
-      const res = await fetch(`/api/transactions?userId=${DEMO_USER_ID}`);
+      const res = await fetch(`/api/transactions?email=${userEmail}`);
       if (res.ok) {
         const data = await res.json();
         setTransactions(data.transactions || []);
@@ -51,8 +55,9 @@ export default function TransactionsPage() {
   };
 
   const loadAccounts = async () => {
+    if (!userEmail) return;
     try {
-      const res = await fetch(`/api/accounts?userId=${DEMO_USER_ID}`);
+      const res = await fetch(`/api/accounts?email=${userEmail}`);
       if (res.ok) {
         const data = await res.json();
         setAccounts(data.accounts || []);
@@ -65,6 +70,13 @@ export default function TransactionsPage() {
     }
   };
 
+  useEffect(() => {
+    if (userEmail) {
+      loadTransactions();
+      loadAccounts();
+    }
+  }, [userEmail]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!amount || !description || !date || !accountId) return;
@@ -74,7 +86,7 @@ export default function TransactionsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: DEMO_USER_ID,
+          email: userEmail,
           accountId,
           type,
           amount: parseFloat(amount),

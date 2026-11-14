@@ -1,10 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { ArrowLeft, TrendingUp, DollarSign, Target, Download, Loader2 } from "lucide-react";
-
-export const dynamic = "force-dynamic";
 
 interface Transaction {
   id: string;
@@ -26,13 +25,35 @@ export default function ReportsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
+    async function getUser() {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.email) {
+            setUserEmail(data.email);
+            return;
+          }
+        }
+        signIn();
+      } catch (e) {
+        console.error("Error getting user:", e);
+      }
+    }
+    getUser();
+  }, []);
+
+  useEffect(() => {
+    if (!userEmail) return;
+
     async function loadData() {
       try {
         const [transRes, goalsRes] = await Promise.all([
-          fetch("/api/transactions"),
-          fetch("/api/goals"),
+          fetch(`/api/transactions?email=${userEmail}`),
+          fetch(`/api/goals?email=${userEmail}`),
         ]);
 
         const transData = await transRes.json();
@@ -48,7 +69,7 @@ export default function ReportsPage() {
     }
 
     loadData();
-  }, []);
+  }, [userEmail]);
 
   const totalIncome = transactions
     .filter((t) => t.type === "INCOME")

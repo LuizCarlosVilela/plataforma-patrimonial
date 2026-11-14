@@ -127,3 +127,48 @@ export async function GET(request: Request) {
     );
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'ID da transação é obrigatório' }, { status: 400 });
+    }
+
+    // Get transaction before deleting to adjust balance
+    const transaction = await prisma.transaction.findUnique({
+      where: { id },
+      include: { account: true },
+    });
+
+    if (!transaction) {
+      return NextResponse.json({ error: 'Transação não encontrada' }, { status: 404 });
+    }
+
+    // Delete the transaction
+    await prisma.transaction.delete({ where: { id } });
+
+    // Update account balance
+    if (transaction.account) {
+      const delta = new (require('@prisma/client').Decimal)(transaction.amount);
+      const newBalance = transaction.type === 'INCOME'
+        ? transaction.account.currentBalance.minus(delta)
+        : transaction.account.currentBalance.plus(delta);
+
+      await prisma.account.update({
+        where: { id: transaction.accountId },
+        data: { currentBalance: newBalance },
+      });
+    }
+
+    return NextResponse.json({ message: 'Transação excluída com sucesso!' });
+  } catch (error) {
+    console.error('Erro ao excluir transação:', error);
+    return NextResponse.json(
+      { error: 'Erro ao excluir transação' },
+      { status: 500 }
+    );
+  }
+}

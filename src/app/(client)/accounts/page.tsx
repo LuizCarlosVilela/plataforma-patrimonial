@@ -1,42 +1,48 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { signIn } from "next-auth/react";
 import { Plus, CreditCard, Landmark, TrendingUp, Wallet, RefreshCw, AlertCircle } from "lucide-react";
 import { formatBRL } from "@/lib/utils";
 
-interface Account {
-  id: string;
-  name: string;
-  type: "CHECKING" | "SAVINGS" | "CREDIT_CARD" | "INVESTMENT" | "CASH" | "OTHER";
-  currentBalance: string;
-  currency: string;
-  isManual: boolean;
-  lastSyncedAt?: string;
-  icon?: string;
-  color?: string;
-}
-
 export default function AccountsPage() {
-  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [accounts, setAccounts] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   // Form state
   const [name, setName] = useState("");
   const [type, setType] = useState<"CHECKING" | "SAVINGS" | "CREDIT_CARD" | "INVESTMENT" | "CASH" | "OTHER">("CHECKING");
   const [initialBalance, setInitialBalance] = useState("");
 
-  const DEMO_USER_ID = "clx8h6r7v0000w3xy9z2k4m5n";
-
   useEffect(() => {
-    loadAccounts();
+    // Get user email from session cookie or redirect to login
+    async function getUser() {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.email) {
+            setUserEmail(data.email);
+            return;
+          }
+        }
+        // Not authenticated
+        signIn();
+      } catch (e) {
+        console.error("Error getting user:", e);
+      }
+    }
+    getUser();
   }, []);
 
   const loadAccounts = async () => {
+    if (!userEmail) return;
     try {
-      const res = await fetch(`/api/accounts?userId=${DEMO_USER_ID}`);
+      const res = await fetch(`/api/accounts?email=${userEmail}`);
       if (res.ok) {
         const data = await res.json();
         setAccounts(data.accounts || []);
@@ -48,16 +54,20 @@ export default function AccountsPage() {
     }
   };
 
+  useEffect(() => {
+    if (userEmail) loadAccounts();
+  }, [userEmail]);
+
   const handleCreateAccount = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !initialBalance) return;
+    if (!name || !initialBalance || !userEmail) return;
 
     try {
       const res = await fetch("/api/accounts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: DEMO_USER_ID,
+          email: userEmail,
           name,
           type,
           initialBalance: parseFloat(initialBalance),
@@ -76,6 +86,7 @@ export default function AccountsPage() {
   };
 
   const handleOpenFinanceSync = async () => {
+    if (!userEmail) return;
     setSyncing(true);
     setSyncError("");
 
@@ -84,7 +95,7 @@ export default function AccountsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: DEMO_USER_ID,
+          email: userEmail,
           token: "mock_token_for_demo",
         }),
       });
@@ -131,7 +142,7 @@ export default function AccountsPage() {
         <div className="flex gap-3">
           <button
             onClick={handleOpenFinanceSync}
-            disabled={syncing}
+            disabled={syncing || !userEmail}
             className="flex items-center gap-2 py-2 px-4 rounded-xl font-medium text-sm transition-all active:scale-[0.98] border border-[#cfc6b4] text-[#efeae0] hover:border-[#b08a3e] disabled:opacity-50"
           >
             <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} />
@@ -226,6 +237,8 @@ export default function AccountsPage() {
       {/* Loading State */}
       {loading ? (
         <div className="text-center py-12 text-[#86837d]">Carregando contas...</div>
+      ) : !userEmail ? (
+        <div className="text-center py-12 text-[#86837d]">Faça login para ver suas contas</div>
       ) : accounts.length === 0 ? (
         <div className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-8 text-center">
           <CreditCard className="w-16 h-16 mx-auto text-[#86837d] mb-4" />
