@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { NetWorthCard } from "@/components/shared/net-worth-card";
 import { GoalProgressCard } from "@/components/shared/goal-progress-card";
 import { Plus, ArrowUpRight, ShieldCheck, TrendingUp, Target, Loader2, RefreshCw } from "lucide-react";
@@ -89,12 +90,14 @@ export default function DashboardPage() {
   }
 
   async function handleOpenFinanceSync() {
+    if (!userEmail) return;
+
     setSyncing(true);
     try {
       const res = await fetch("/api/openfinance/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: DEMO_EMAIL }),
+        body: JSON.stringify({ email: userEmail }),
       });
       if (res.ok) {
         alert("Open Finance sincronizado com sucesso!");
@@ -132,19 +135,21 @@ export default function DashboardPage() {
 
       {/* Ações Rápidas */}
       <section className="grid grid-cols-2 gap-4">
-        <button
-          onClick={() => (window.location.href = "/transactions")}
-          className="flex items-center justify-center gap-2 bg-[#b08a3e] hover:bg-[#b08a3e]/90 active:scale-[0.98] transition-all text-[#16171b] py-3 px-4 rounded-xl font-medium text-sm shadow-gold"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Nova Despesa</span>
-        </button>
-        <button
-          onClick={() => (window.location.href = "/transactions")}
-          className="flex items-center justify-center gap-2 bg-[#191a1e] border border-[#cfc6b4] hover:border-[#b08a3e]/40 hover:bg-[#16171b] active:scale-[0.98] transition-all text-[#efeae0] py-3 px-4 rounded-xl font-medium text-sm"
-        >
-          <span className="text-[#b08a3e]">+</span> Nova Receita
-        </button>
+        <Link href="/transactions" legacyBehavior passHref>
+          <button
+            className="flex items-center justify-center gap-2 bg-[#b08a3e] hover:bg-[#b08a3e]/90 active:scale-[0.98] transition-all text-[#16171b] py-3 px-4 rounded-xl font-medium text-sm shadow-gold"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Nova Despesa</span>
+          </button>
+        </Link>
+        <Link href="/transactions" legacyBehavior passHref>
+          <button
+            className="flex items-center justify-center gap-2 bg-[#191a1e] border border-[#cfc6b4] hover:border-[#b08a3e]/40 hover:bg-[#16171b] active:scale-[0.98] transition-all text-[#efeae0] py-3 px-4 rounded-xl font-medium text-sm"
+          >
+            <span className="text-[#b08a3e]">+</span> Nova Receita
+          </button>
+        </Link>
       </section>
 
       {/* Metas Patrimoniais */}

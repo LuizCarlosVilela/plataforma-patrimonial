@@ -1,11 +1,11 @@
-import { getPrisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { Users, TrendingUp, Target, ShieldCheck, Search, Filter, MoreVertical, ArrowRight } from "lucide-react";
 
 const formatBRL = (val: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
 
 export default async function AdvisorClientsPage() {
-  const prisma = getPrisma();
+  // using shared prisma instance
   const advisor = await prisma.user.findUnique({
     where: { email: "consultor@w1.com.br" },
     include: {
@@ -13,7 +13,6 @@ export default async function AdvisorClientsPage() {
         include: {
           accounts: true,
           goals: true,
-          _count: { select: { transactions: true } },
         },
         orderBy: { createdAt: "desc" },
       },
@@ -81,16 +80,16 @@ export default async function AdvisorClientsPage() {
                   </td>
                 </tr>
               ) : (
-                clients.map((client: { id: string; name: string; email: string; planTier: string; accounts: Array<{ type: string; currentBalance: string }>; goals: Array<{ status: string }> }) => {
+                clients.map((client) => {
                   const assets = client.accounts
-                    .filter((a): a is { type: string; currentBalance: string } => a.type !== "CREDIT_CARD")
-                    .reduce((s, a): number => s + Number(a.currentBalance), 0 as number);
+                    .filter((a) => a.type !== "CREDIT_CARD")
+                    .reduce((s, a) => s + Number(a.currentBalance), 0);
                   const liabilities = client.accounts
-                    .filter((a): a is { type: string; currentBalance: string } => a.type === "CREDIT_CARD")
-                    .reduce((s, a): number => s + Number(a.currentBalance), 0 as number);
+                    .filter((a) => a.type === "CREDIT_CARD")
+                    .reduce((s, a) => s + Number(a.currentBalance), 0);
                   const netWorth = assets - liabilities;
-                  const activeGoals = client.goals.filter((g: { status: string }) => g.status === "IN_PROGRESS").length;
-                  const completedGoals = client.goals.filter((g: { status: string }) => g.status === "COMPLETED").length;
+                  const activeGoals = client.goals.filter((g) => g.status === "IN_PROGRESS").length;
+                  const completedGoals = client.goals.filter((g) => g.status === "COMPLETED").length;
 
                   return (
                     <tr key={client.id} className="hover:bg-[rgba(207,198,180,0.04)] transition-colors">

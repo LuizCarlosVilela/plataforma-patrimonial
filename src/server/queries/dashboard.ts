@@ -1,12 +1,12 @@
 "use server";
 
-import { getPrisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 // Account types defined locally (matching Prisma schema)
 type AccountType = 'CHECKING' | 'SAVINGS' | 'CREDIT_CARD' | 'INVESTMENT' | 'CASH' | 'OTHER';
 
 export async function getDashboardData(userId: string) {
-  const prisma = getPrisma();
+  // using shared prisma instance
   const accounts = await prisma.account.findMany({
     where: { userId },
   });

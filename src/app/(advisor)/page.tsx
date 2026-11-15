@@ -1,11 +1,11 @@
-import { getPrisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { Users, TrendingUp, ShieldCheck, ArrowUpRight, Target, Activity } from "lucide-react";
 
 const formatBRL = (val: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
 
 export default async function AdvisorDashboardPage() {
-  const prisma = getPrisma();
+  // using shared prisma instance
   const advisor = await prisma.user.findUnique({
     where: { email: "consultor@w1.com.br" },
     include: {
@@ -13,7 +13,7 @@ export default async function AdvisorDashboardPage() {
         include: {
           accounts: true,
           goals: true,
-          _count: { select: { transactions: true } },
+          _count: { select: { accounts: true } },
         },
       },
     },
@@ -31,24 +31,18 @@ export default async function AdvisorDashboardPage() {
   const clients = advisor.clients;
 
   const totalClients = clients.length;
-  const totalNetWorth = clients.reduce(
-    (sum: number, client: { accounts: Array<{ type: string; currentBalance: string }> }) => {
-      const assets = client.accounts
-        .filter((a): a is { type: string; currentBalance: string } => a.type !== "CREDIT_CARD")
-        .reduce((s: number, a: { type: string; currentBalance: string }): number => s + Number(a.currentBalance), 0 as number);
-      const liabilities = client.accounts
-        .filter((a): a is { type: string; currentBalance: string } => a.type === "CREDIT_CARD")
-        .reduce((s: number, a: { type: string; currentBalance: string }): number => s + Number(a.currentBalance), 0 as number);
-      return sum + (assets - liabilities);
-    },
-    0 as number
-  );
-  const totalGoals = clients.reduce(
-    (sum: number, client: { goals: Array<{ status: string }> }) => sum + client.goals.length,
-    0
-  );
+  const totalNetWorth = clients.reduce((sum, client) => {
+    const assets = client.accounts
+      .filter((a) => a.type !== "CREDIT_CARD")
+      .reduce((s, a) => s + Number(a.currentBalance), 0);
+    const liabilities = client.accounts
+      .filter((a) => a.type === "CREDIT_CARD")
+      .reduce((s, a) => s + Number(a.currentBalance), 0);
+    return sum + (assets - liabilities);
+  }, 0);
+  const totalGoals = clients.reduce((sum, client) => sum + client.goals.length, 0);
   const activeGoals = clients.reduce(
-    (sum: number, client: { goals: Array<{ status: string }> }) => sum + client.goals.filter((g: { status: string }) => g.status === "IN_PROGRESS").length,
+    (sum, client) => sum + client.goals.filter((g) => g.status === "IN_PROGRESS").length,
     0
   );
 
@@ -116,16 +110,16 @@ export default async function AdvisorDashboardPage() {
               <p className="text-[#86837d] text-sm">Convide seus clientes para começar a assessoria</p>
             </div>
           ) : (
-            clients.map((client: { id: string; name: string; email: string; planTier: string; accounts: Array<{ type: string; currentBalance: string }>; goals: Array<{ status: string }>; _count: { transactions: number } }) => {
+            clients.map((client) => {
               const assets = client.accounts
-                .filter((a): a is { type: string; currentBalance: string } => a.type !== "CREDIT_CARD")
-                .reduce((s: number, a: { type: string; currentBalance: string }): number => s + Number(a.currentBalance), 0 as number);
+                .filter((a) => a.type !== "CREDIT_CARD")
+                .reduce((s, a) => s + Number(a.currentBalance), 0);
               const liabilities = client.accounts
-                .filter((a): a is { type: string; currentBalance: string } => a.type === "CREDIT_CARD")
-                .reduce((s: number, a: { type: string; currentBalance: string }): number => s + Number(a.currentBalance), 0 as number);
+                .filter((a) => a.type === "CREDIT_CARD")
+                .reduce((s, a) => s + Number(a.currentBalance), 0);
               const netWorth = assets - liabilities;
-              const activeGoalsCount = client.goals.filter((g: { status: string }) => g.status === "IN_PROGRESS").length;
-              const transactionCount = client._count?.transactions || 0;
+              const activeGoalsCount = client.goals.filter((g) => g.status === "IN_PROGRESS").length;
+              const accountCount = client.accounts.length;
 
               return (
                 <div
@@ -151,7 +145,7 @@ export default async function AdvisorDashboardPage() {
                   <div className="mt-4 pt-4 border-t border-[#cfc6b4]/20 flex items-center justify-between text-sm text-[#86837d]">
                     <span className="flex items-center gap-1">
                       <Activity className="w-3.5 h-3.5" />
-                      {transactionCount} transações
+                      {accountCount} contas
                     </span>
                     <span className="flex items-center gap-1">
                       <Target className="w-3.5 h-3.5" />

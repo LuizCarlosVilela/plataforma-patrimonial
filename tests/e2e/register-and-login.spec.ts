@@ -1,22 +1,34 @@
 import { test, expect } from '@playwright/test';
 
-const random = Math.random().toString(36).substring(2, 10);
-const email = `test_${random}@example.com`;
-const password = 'TestPass123!';
-
 test('register then login', async ({ page }) => {
+  const random = Math.random().toString(36).substring(2, 10);
+  const email = `test_${random}@example.com`;
+  const password = 'TestPass123!';
+
   // Register
   await page.goto('/register');
   await page.fill('input[name="name"]', 'Test User');
-  await page.fill('input[name="email"]', email);
-  await page.fill('input[name="password"]', password);
-  await page.fill('input[name="confirmPassword"]', password);
-  await page.click('button[type="submit"]');
-  // Should redirect to login with registered flag
-  await expect(page).toHaveURL(/\/login/);
-  // Login
-  await page.fill('input[type="email"]', email);
-  await page.fill('input[type="password"]', password);
-  await page.click('button[type="submit"]');
+  await page.fill('input[placeholder="seu@email.com"]', email);
+  await page.fill('input[placeholder="Mínimo 8 caracteres"]', password);
+  await page.fill('input[placeholder="Repita a senha"]', password);
+  await page.getByRole('button', { name: /criar conta/i }).click();
+
+  // Should redirect to dashboard after auto-login
   await expect(page).toHaveURL(/\/dashboard/);
+});
+
+test('login with demo user', async ({ page }) => {
+  await page.goto('/login');
+  await page.fill('input[placeholder="seu@email.com"]', 'cliente@demo.com.br');
+  await page.fill('input[placeholder="••••••••"]', 'demo123');
+  await page.getByRole('button', { name: /acessar plataforma/i }).click();
+  await expect(page).toHaveURL(/\/dashboard/);
+});
+
+test('login with wrong password fails', async ({ page }) => {
+  await page.goto('/login');
+  await page.fill('input[placeholder="seu@email.com"]', 'cliente@demo.com.br');
+  await page.fill('input[placeholder="••••••••"]', 'wrongpassword');
+  await page.getByRole('button', { name: /acessar plataforma/i }).click();
+  await expect(page.getByText('E-mail ou senha incorretos')).toBeVisible();
 });

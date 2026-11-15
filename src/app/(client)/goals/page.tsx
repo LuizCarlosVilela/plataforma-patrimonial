@@ -17,6 +17,7 @@ export default function GoalsPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   // Form state
   const [title, setTitle] = useState("");
@@ -25,15 +26,29 @@ export default function GoalsPage() {
   const [targetDate, setTargetDate] = useState("");
   const [categoryTag, setCategoryTag] = useState("");
 
-  const DEMO_USER_ID = "clx8h6r7v0000w3xy9z2k4m5n";
-
   useEffect(() => {
-    loadGoals();
+    async function getUser() {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.email) setUserEmail(data.email);
+        }
+      } catch (e) {
+        console.error("Error getting user:", e);
+      }
+    }
+    getUser();
   }, []);
 
+  useEffect(() => {
+    if (userEmail) loadGoals();
+  }, [userEmail]);
+
   const loadGoals = async () => {
+    if (!userEmail) return;
     try {
-      const res = await fetch(`/api/goals?userId=${DEMO_USER_ID}`);
+      const res = await fetch(`/api/goals?email=${userEmail}`);
       if (res.ok) {
         const data = await res.json();
         setGoals(data.goals || []);
@@ -47,14 +62,14 @@ export default function GoalsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !targetAmount || !targetDate) return;
+    if (!title || !targetAmount || !targetDate || !userEmail) return;
 
     try {
       const res = await fetch("/api/goals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: DEMO_USER_ID,
+          email: userEmail,
           title,
           targetAmount: parseFloat(targetAmount),
           currentAmount: parseFloat(currentAmount) || 0,

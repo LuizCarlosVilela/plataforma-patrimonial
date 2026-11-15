@@ -1,10 +1,10 @@
 "use server";
 
-import { getPrisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function getAccounts(userId: string) {
-  const prisma = getPrisma();
+  // using shared prisma instance
   return prisma.account.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
@@ -18,6 +18,7 @@ export async function getAccounts(userId: string) {
 }
 
 export async function createAccount(data: {
+  userId: string;
   name: string;
   type: "CHECKING" | "SAVINGS" | "CREDIT_CARD" | "INVESTMENT" | "CASH" | "OTHER";
   initialBalance: number;
@@ -25,9 +26,10 @@ export async function createAccount(data: {
   icon?: string;
   color?: string;
 }) {
-  const prisma = getPrisma();
+  // using shared prisma instance
   const account = await prisma.account.create({
     data: {
+      userId: data.userId,
       name: data.name,
       type: data.type,
       currentBalance: data.initialBalance,
@@ -49,7 +51,7 @@ export async function syncOpenFinance(userId: string, accounts: Array<{
   balance: number;
   currency: string;
 }>) {
-  const prisma = getPrisma();
+  // using shared prisma instance
   const results = [];
 
   for (const acc of accounts) {
