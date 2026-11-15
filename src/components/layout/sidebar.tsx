@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Wallet, Target, ArrowRightLeft, Settings, LogOut, Palette, ShieldCheck } from "lucide-react";
+import { Home, Wallet, Target, ArrowRightLeft, Settings, LogOut, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { OriginLogo } from "@/components/shared/origin-logo";
@@ -47,19 +47,6 @@ export function Sidebar() {
           );
         })}
 
-        <div className="my-3 border-t border-[#cfc6b4]/20" />
-
-        <Link
-          href="/design-system"
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 ${
-            pathname === "/design-system"
-              ? "bg-white/10 text-[#efeae0] font-medium"
-              : "text-[#86837d] hover:bg-white/5 hover:text-[#cfc6b4]"
-          }`}
-        >
-          <Palette size={17} />
-          <span className="text-sm">Origin Design</span>
-        </Link>
       </nav>
 
       {/* Footer */}

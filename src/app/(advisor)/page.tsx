@@ -1,170 +1,243 @@
-import { prisma } from "@/lib/prisma";
-import { Users, TrendingUp, ShieldCheck, ArrowUpRight, Target, Activity } from "lucide-react";
+"use client";
 
-const formatBRL = (val: number) =>
-  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
+import { useState, useEffect, useRef } from "react";
+import { Send, Bot, User, Loader2, Sparkles, AlertCircle } from "lucide-react";
+import { formatBRL } from "@/lib/utils";
 
-export default async function AdvisorDashboardPage() {
-  // using shared prisma instance
-  const advisor = await prisma.user.findUnique({
-    where: { email: "consultor@w1.com.br" },
-    include: {
-      clients: {
-        include: {
-          accounts: true,
-          goals: true,
-          _count: { select: { accounts: true } },
-        },
-      },
-    },
-  });
+interface Message {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
+}
 
-  if (!advisor) {
-    return (
-      <div className="p-4 text-center text-[#86837d]">
-        <p>Assessor não encontrado.</p>
-        <p className="text-sm mt-2">Execute: <code className="bg-[#191a1e] px-2 py-1 rounded">npx prisma db seed</code></p>
-      </div>
-    );
-  }
+interface AdvisorPageProps {
+  userEmail?: string;
+  userName?: string;
+}
 
-  const clients = advisor.clients;
+// Quick suggestions
+const SUGGESTIONS = [
+  { icon: "chart", text: "Como melhorar meu patrimônio?" },
+  { icon: "goal", text: "Estou no caminho certo pro meu objetivo?" },
+  { icon: "risk", text: "Meus riscos financeiros estão controlados?" },
+];
 
-  const totalClients = clients.length;
-  const totalNetWorth = clients.reduce((sum, client) => {
-    const assets = client.accounts
-      .filter((a) => a.type !== "CREDIT_CARD")
-      .reduce((s, a) => s + Number(a.currentBalance), 0);
-    const liabilities = client.accounts
-      .filter((a) => a.type === "CREDIT_CARD")
-      .reduce((s, a) => s + Number(a.currentBalance), 0);
-    return sum + (assets - liabilities);
-  }, 0);
-  const totalGoals = clients.reduce((sum, client) => sum + client.goals.length, 0);
-  const activeGoals = clients.reduce(
-    (sum, client) => sum + client.goals.filter((g) => g.status === "IN_PROGRESS").length,
-    0
-  );
+export default function AdvisorPage({ userEmail, userName }: AdvisorPageProps) {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [connected, setConnected] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Welcome message
+    const welcome: Message = {
+      id: "welcome",
+      role: "assistant",
+      content: `Olá${userName ? `, ${userName.split(" ")[0]}` : ""}! 👋\n\nSou o **Advisor**, seu assistente financeiro da W1 Consultoria.\n\nPosso ajudar com:\n• Análise do seu patrimônio e evolução\n• Recomendações baseadas nas suas metas\n• Insights sobre suas movimentações financeiras\n\nSobre o que gostaria de conversar?`,
+      timestamp: new Date(),
+    };
+    setMessages([welcome]);
+    setConnected(true);
+  }, []);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const sendMessage = async (text?: string) => {
+    const messageText = (text || input).trim();
+    if (!messageText || isLoading) return;
+
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: messageText,
+      timestamp: new Date(),
+    };
+
+    setMessages(prev => [...prev, userMsg]);
+    setInput("");
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Erro ao comunicar com o Advisor");
+      }
+
+      const botMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: data.reply,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, botMsg]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
+      // Fallback: show local help message
+      const fallbackMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "Desculpe, não consegui conectar ao Advisor no momento. Seu assessor humano pode ajudar com essa dúvida — entre em contato pelo app.",
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, fallbackMsg]);
+    } finally {
+      setIsLoading(false);
+      inputRef.current?.focus();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  const sendSuggestion = (text: string) => {
+    sendMessage(text);
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col h-full min-h-[600px]">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3 mb-4 pb-4 border-b border-[#cfc6b4]/20">
+        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "linear-gradient(135deg, #b08a3e, #d4af65)" }}>
+          <Sparkles className="w-5 h-5 text-[#16171b]" />
+        </div>
         <div>
-          <h1 className="text-2xl font-bold text-[#efeae0]">Painel do Assessor</h1>
-          <p className="text-[#86837d] text-sm">Visão geral da carteira de clientes</p>
+          <h1 className="text-lg font-semibold text-[#efeae0]">Advisor IA</h1>
+          <div className="flex items-center gap-1.5">
+            <span className={`w-2 h-2 rounded-full ${connected ? "bg-green-500 animate-pulse" : "bg-red-500"}`} />
+            <p className="text-xs text-[#86837d]">{connected ? "Online" : "Offline"}</p>
+          </div>
         </div>
-        <div className="flex items-center gap-1.5 bg-[#4f6b52]/10 border border-[rgba(79,107,82,0.2)] text-[#4f6b52] px-3 py-1.5 rounded-full text-xs font-semibold">
-          <ShieldCheck className="w-4 h-4" />
-          <span>W1 Consultoria</span>
-        </div>
+        {!connected && (
+          <button
+            onClick={() => setConnected(true)}
+            className="ml-auto text-xs text-[#b08a3e] hover:underline"
+          >
+            Reconectar
+          </button>
+        )}
       </div>
 
-      {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-[#191a1e] border border-[#cfc6b4]/30 rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-2">
-            <Users className="w-5 h-5 text-[#b08a3e]" />
-            <span className="text-xs font-medium text-[#86837d]">Total de Clientes</span>
-          </div>
-          <p className="text-2xl font-bold text-[#efeae0]">{totalClients}</p>
-        </div>
-
-        <div className="bg-[#191a1e] border border-[#cfc6b4]/30 rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="w-5 h-5 text-[#4f6b52]" />
-            <span className="text-xs font-medium text-[#86837d]">Patrimônio Total</span>
-          </div>
-          <p className="text-2xl font-bold text-[#4f6b52]">{formatBRL(totalNetWorth)}</p>
-        </div>
-
-        <div className="bg-[#191a1e] border border-[#cfc6b4]/30 rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-2">
-            <Target className="w-5 h-5 text-[#b08a3e]" />
-            <span className="text-xs font-medium text-[#86837d]">Metas Ativas</span>
-          </div>
-          <p className="text-2xl font-bold text-[#b08a3e]">{activeGoals}/{totalGoals}</p>
-        </div>
-
-        <div className="bg-[#191a1e] border border-[#cfc6b4]/30 rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-2">
-            <Activity className="w-5 h-5 text-[#9e4a3e]" />
-            <span className="text-xs font-medium text-[#86837d]">Alertas</span>
-          </div>
-          <p className="text-2xl font-bold text-[#9e4a3e]">3</p>
-        </div>
-      </div>
-
-      {/* Lista de Clientes */}
-      <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-[#efeae0]">Clientes</h2>
-          <button className="text-sm text-[#b08a3e] hover:underline">Ver todos</button>
-        </div>
-
-        <div className="space-y-3">
-          {clients.length === 0 ? (
-            <div className="bg-[#191a1e] border border-[#cfc6b4]/30 rounded-xl p-8 text-center">
-              <Users className="w-16 h-16 mx-auto text-[#86837d] mb-4" />
-              <h3 className="text-lg font-medium text-[#efeae0] mb-1">Nenhum cliente vinculado</h3>
-              <p className="text-[#86837d] text-sm">Convide seus clientes para começar a assessoria</p>
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto space-y-4 pr-1 mb-4">
+        {messages.map((msg) => (
+          <div
+            key={msg.id}
+            className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
+          >
+            {/* Avatar */}
+            <div
+              className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mt-1 ${
+                msg.role === "user"
+                  ? "bg-[#b08a3e]/20"
+                  : "bg-[#4f6b52]/20"
+              }`}
+            >
+              {msg.role === "user" ? (
+                <User className="w-4 h-4 text-[#b08a3e]" />
+              ) : (
+                <Bot className="w-4 h-4 text-[#4f6b52]" />
+              )}
             </div>
-          ) : (
-            clients.map((client) => {
-              const assets = client.accounts
-                .filter((a) => a.type !== "CREDIT_CARD")
-                .reduce((s, a) => s + Number(a.currentBalance), 0);
-              const liabilities = client.accounts
-                .filter((a) => a.type === "CREDIT_CARD")
-                .reduce((s, a) => s + Number(a.currentBalance), 0);
-              const netWorth = assets - liabilities;
-              const activeGoalsCount = client.goals.filter((g) => g.status === "IN_PROGRESS").length;
-              const accountCount = client.accounts.length;
 
-              return (
-                <div
-                  key={client.id}
-                  className="bg-[#191a1e] border border-[#cfc6b4]/30 rounded-xl p-4 hover:border-[#cfc6b4]/60 transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full flex items-center justify-center text-[#16171b] font-bold" style={{ background: "#b08a3e" }}>
-                        {client.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="font-medium text-[#efeae0]">{client.name}</p>
-                        <p className="text-xs text-[#86837d]">{client.email}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-lg text-[#efeae0]">{formatBRL(netWorth)}</p>
-                      <p className="text-xs text-[#86837d]">Patrimônio Líquido</p>
-                    </div>
-                  </div>
+            {/* Bubble */}
+            <div
+              className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
+                msg.role === "user"
+                  ? "bg-[#b08a3e] text-[#16171b] rounded-tr-sm"
+                  : "bg-[#191a1e] border border-[#cfc6b4]/30 text-[#efeae0] rounded-tl-sm"
+              }`}
+            >
+              {msg.content}
+            </div>
+          </div>
+        ))}
 
-                  <div className="mt-4 pt-4 border-t border-[#cfc6b4]/20 flex items-center justify-between text-sm text-[#86837d]">
-                    <span className="flex items-center gap-1">
-                      <Activity className="w-3.5 h-3.5" />
-                      {accountCount} contas
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Target className="w-3.5 h-3.5" />
-                      {activeGoalsCount} metas ativas
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      {client.planTier === "PREMIUM" ? "Premium" : "Gratuito"}
-                    </span>
-                    <button className="text-[#b08a3e] hover:underline text-sm font-medium">
-                      Ver detalhes →
-                    </button>
-                  </div>
-                </div>
-              );
-            })
-          )}
+        {/* Loading indicator */}
+        {isLoading && (
+          <div className="flex gap-3">
+            <div className="w-8 h-8 rounded-full bg-[#4f6b52]/20 flex-shrink-0 flex items-center justify-center">
+              <Bot className="w-4 h-4 text-[#4f6b52]" />
+            </div>
+            <div className="bg-[#191a1e] border border-[#cfc6b4]/30 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-2">
+              <Loader2 className="w-4 h-4 text-[#b08a3e] animate-spin" />
+              <span className="text-sm text-[#86837d]">Advisor pensando...</span>
+            </div>
+          </div>
+        )}
+
+        {/* Error state */}
+        {error && (
+          <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Suggestions */}
+      {messages.length <= 2 && !isLoading && (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {SUGGESTIONS.map((s) => (
+            <button
+              key={s.text}
+              onClick={() => sendSuggestion(s.text)}
+              className="text-xs px-3 py-1.5 rounded-full border border-[#cfc6b4]/30 text-[#86837d] hover:text-[#efeae0] hover:border-[#b08a3e]/40 transition-all"
+            >
+              {s.text}
+            </button>
+          ))}
         </div>
-      </section>
+      )}
+
+      {/* Input */}
+      <div className="flex gap-2 items-end">
+        <div className="flex-1 relative">
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Pergunte sobre seu patrimônio, metas, investimentos..."
+            disabled={isLoading}
+            className="w-full bg-[#191a1e] border border-[#cfc6b4] rounded-xl pl-4 pr-4 py-3 text-sm text-[#efeae0] placeholder-[#86837d] focus:border-[#b08a3e] focus:outline-none disabled:opacity-50 transition-colors"
+          />
+        </div>
+        <button
+          onClick={() => sendMessage()}
+          disabled={isLoading || !input.trim()}
+          className="w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-50"
+          style={{ background: "#b08a3e" }}
+        >
+          {isLoading ? (
+            <Loader2 className="w-5 h-5 text-[#16171b] animate-spin" />
+          ) : (
+            <Send className="w-5 h-5 text-[#16171b]" />
+          )}
+        </button>
+      </div>
     </div>
   );
 }

@@ -2,23 +2,42 @@
 
 import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { Plus, ArrowUpRight, ArrowDownRight, Filter, Calendar, Trash2 } from "lucide-react";
+import { Plus, ArrowUpRight, ArrowDownRight, Filter, Calendar, Trash2, Sparkles, X } from "lucide-react";
 import { formatBRL } from "@/lib/utils";
+import { TransactionModal } from "@/components/shared/transaction-modal";
+
+interface Category {
+  id: string;
+  name: string;
+  icon?: string | null;
+  color?: string | null;
+}
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [filter, setFilter] = useState<"all" | "income" | "expense">("all");
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
-  // Form state
+  // Form state (for inline form fallback)
   const [type, setType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [accountId, setAccountId] = useState("");
   const [accounts, setAccounts] = useState<any[]>([]);
+
+  // Create category state
+  const [showCreateCat, setShowCreateCat] = useState(false);
+  const [newCatName, setNewCatName] = useState("");
+  const [newCatColor, setNewCatColor] = useState("#8b5cf6");
+  const [newCatIcon, setNewCatIcon] = useState("MoreHorizontal");
+
+  const ICON_OPTIONS = ["Utensils", "Home", "Car", "HeartPulse", "Gamepad2", "Wallet", "TrendingUp", "Briefcase", "ShoppingBag", "GraduationCap", "Coins", "MoreHorizontal"];
+  const COLOR_OPTIONS = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#8b5cf6", "#ec4899", "#06b6d4", "#10b981", "#f59e0b", "#6366f1", "#6b7280"];
 
   useEffect(() => {
     async function getUser() {
@@ -70,13 +89,28 @@ export default function TransactionsPage() {
     }
   };
 
+  const loadCategories = async () => {
+    if (!userEmail) return;
+    try {
+      const res = await fetch(`/api/categories?email=${userEmail}`);
+      if (res.ok) {
+        const data = await res.json();
+        setCategories(data.categories || []);
+      }
+    } catch (e) {
+      console.error("Error loading categories:", e);
+    }
+  };
+
   useEffect(() => {
     if (userEmail) {
       loadTransactions();
       loadAccounts();
+      loadCategories();
     }
   }, [userEmail]);
 
+  // Inline form submit (legacy fallback)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!amount || !description || !date || !accountId) return;
@@ -125,132 +159,132 @@ export default function TransactionsPage() {
     return true;
   });
 
+  const getCategoryById = (id: string | null | undefined) => {
+    if (!id) return null;
+    return categories.find(c => c.id === id) || null;
+  };
+
+  const handleCreateCategory = async () => {
+    if (!newCatName.trim() || !userEmail) return;
+    try {
+      const res = await fetch("/api/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: userEmail,
+          name: newCatName.trim(),
+          icon: newCatIcon,
+          color: newCatColor,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCategories(prev => [...prev, data.category]);
+        setNewCatName("");
+        setShowCreateCat(false);
+      }
+    } catch (e) {
+      console.error("Error creating category:", e);
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-[#efeae0]">Transações</h1>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 py-2 px-4 rounded-xl font-medium text-sm transition-all active:scale-[0.98] text-[#16171b]"
-          style={{ background: "#b08a3e" }}
-        >
-          <Plus className="w-4 h-4" />
-          Nova Transação
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 py-2 px-4 rounded-xl font-medium text-sm transition-all active:scale-[0.98] text-[#16171b]"
+            style={{ background: "#b08a3e" }}
+          >
+            <Plus className="w-4 h-4" />
+            Nova Transação
+          </button>
+        </div>
       </div>
 
-      {/* Form */}
-      {showForm && (
-        <form onSubmit={handleSubmit} className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-6 space-y-4">
-          <h2 className="font-semibold text-[#efeae0]">Nova Transação</h2>
+      {/* Categories quick panel */}
+      <div className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#b08a3e]" />
+            <span className="text-xs font-medium text-[#86837d] uppercase tracking-wider">Categorias</span>
+          </div>
+          <button
+            onClick={() => setShowCreateCat(!showCreateCat)}
+            className="text-xs text-[#b08a3e] hover:underline flex items-center gap-1"
+          >
+            <Plus className="w-3 h-3" />
+            Criar Categoria
+          </button>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Type */}
-            <div>
-              <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Tipo</label>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setType("EXPENSE")}
-                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
-                    type === "EXPENSE"
-                      ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                      : "bg-[#16171b] text-[#86837d] border border-[#cfc6b4]"
-                  }`}
-                >
-                  Despesa
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setType("INCOME")}
-                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
-                    type === "INCOME"
-                      ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                      : "bg-[#16171b] text-[#86837d] border border-[#cfc6b4]"
-                  }`}
-                >
-                  Receita
-                </button>
-              </div>
-            </div>
-
-            {/* Amount */}
-            <div>
-              <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Valor (R$)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0,00"
-                className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-lg px-4 py-2 text-[#efeae0] focus:border-[#b08a3e] outline-none"
-                required
-              />
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Descrição</label>
+        {/* Create category form */}
+        {showCreateCat && (
+          <div className="mb-3 p-3 bg-[#16171b] rounded-lg border border-[#cfc6b4]/30 space-y-3">
+            <div className="flex gap-2">
               <input
                 type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Ex: Supermercado"
-                className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-lg px-4 py-2 text-[#efeae0] focus:border-[#b08a3e] outline-none"
-                required
+                value={newCatName}
+                onChange={(e) => setNewCatName(e.target.value)}
+                placeholder="Nome da categoria"
+                className="flex-1 bg-[#191a1e] border border-[#cfc6b4] rounded-lg px-3 py-1.5 text-sm text-[#efeae0] placeholder-[#86837d] focus:border-[#b08a3e] outline-none"
+                onKeyDown={(e) => e.key === "Enter" && handleCreateCategory()}
               />
-            </div>
-
-            {/* Account */}
-            <div>
-              <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Conta</label>
               <select
-                value={accountId}
-                onChange={(e) => setAccountId(e.target.value)}
-                className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-lg px-4 py-2 text-[#efeae0] focus:border-[#b08a3e] outline-none"
-                required
+                value={newCatIcon}
+                onChange={(e) => setNewCatIcon(e.target.value)}
+                className="bg-[#191a1e] border border-[#cfc6b4] rounded-lg px-2 py-1.5 text-sm text-[#efeae0] focus:border-[#b08a3e] outline-none"
               >
-                <option value="">Selecione uma conta</option>
-                {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id}>
-                    {acc.name} ({acc.type})
-                  </option>
+                {ICON_OPTIONS.map(icon => (
+                  <option key={icon} value={icon}>{icon}</option>
                 ))}
               </select>
+              <button
+                onClick={handleCreateCategory}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#16171b]"
+                style={{ background: "#b08a3e" }}
+              >
+                Criar
+              </button>
             </div>
-
-            {/* Date */}
-            <div>
-              <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Data</label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-lg px-4 py-2 text-[#efeae0] focus:border-[#b08a3e] outline-none"
-                required
-              />
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-[#86837d]">Cor:</span>
+              {COLOR_OPTIONS.map(color => (
+                <button
+                  key={color}
+                  onClick={() => setNewCatColor(color)}
+                  className={`w-6 h-6 rounded-full border-2 transition-all ${newCatColor === color ? "border-white scale-110" : "border-transparent"}`}
+                  style={{ background: color }}
+                />
+              ))}
             </div>
           </div>
+        )}
 
-          <div className="flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={() => setShowForm(false)}
-              className="py-2 px-4 rounded-lg text-sm text-[#86837d] hover:text-[#efeae0] transition-colors"
+        {/* Category chips */}
+        <div className="flex flex-wrap gap-2">
+          {categories.map((cat) => (
+            <div
+              key={cat.id}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium cursor-default transition-all hover:scale-105"
+              style={{
+                background: `${cat.color}20`,
+                border: `1px solid ${cat.color}40`,
+                color: cat.color,
+              }}
             >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="py-2 px-6 rounded-lg font-medium text-sm text-[#16171b]"
-              style={{ background: "#b08a3e" }}
-            >
-              Salvar Transação
-            </button>
-          </div>
-        </form>
-      )}
+              <span className="w-2 h-2 rounded-full" style={{ background: cat.color }} />
+              {cat.name}
+            </div>
+          ))}
+          {categories.length === 0 && (
+            <span className="text-xs text-[#86837d]">Nenhuma categoria criada ainda</span>
+          )}
+        </div>
+      </div>
 
       {/* Filters */}
       <div className="flex items-center gap-3">
@@ -287,48 +321,81 @@ export default function TransactionsPage() {
         </div>
       ) : (
         <div className="space-y-2">
-          {filteredTransactions.map((tx) => (
-            <div
-              key={tx.id}
-              className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-4 flex items-center justify-between hover:border-[#b08a3e]/40 transition-all"
-            >
-              <div className="flex items-center gap-4">
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
-                  style={{ background: tx.type === "INCOME" ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)" }}
-                >
-                  {tx.type === "INCOME" ? (
-                    <ArrowUpRight className="w-5 h-5 text-green-500" />
-                  ) : (
-                    <ArrowDownRight className="w-5 h-5 text-red-500" />
+          {filteredTransactions.map((tx) => {
+            const cat = getCategoryById(tx.categoryId);
+            return (
+              <div
+                key={tx.id}
+                className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-4 flex items-center justify-between hover:border-[#b08a3e]/40 transition-all"
+              >
+                <div className="flex items-center gap-4">
+                  {/* Icon circle */}
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{
+                      background: tx.type === "INCOME"
+                        ? "rgba(34,197,94,0.1)"
+                        : "rgba(239,68,68,0.1)",
+                    }}
+                  >
+                    {tx.type === "INCOME" ? (
+                      <ArrowUpRight className="w-5 h-5 text-green-500" />
+                    ) : (
+                      <ArrowDownRight className="w-5 h-5 text-red-500" />
+                    )}
+                  </div>
+
+                  <div>
+                    <p className="font-medium text-[#efeae0]">{tx.description}</p>
+                    <p className="text-xs text-[#86837d]">
+                      {tx.account?.name || "Sem conta"} · {new Date(tx.date).toLocaleDateString("pt-BR")}
+                    </p>
+                  </div>
+
+                  {/* Category chip */}
+                  {cat && (
+                    <div
+                      className="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0"
+                      style={{
+                        background: `${cat.color}20`,
+                        border: `1px solid ${cat.color}40`,
+                        color: cat.color,
+                      }}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: cat.color }} />
+                      {cat.name}
+                    </div>
                   )}
                 </div>
-                <div>
-                  <p className="font-medium text-[#efeae0]">{tx.description}</p>
-                  <p className="text-xs text-[#86837d]">
-                    {tx.account?.name || "Sem conta"} · {new Date(tx.date).toLocaleDateString("pt-BR")}
-                  </p>
+
+                <div className="flex items-center gap-4">
+                  <span
+                    className={`font-semibold ${
+                      tx.type === "INCOME" ? "text-green-500" : "text-red-500"
+                    }`}
+                  >
+                    {tx.type === "INCOME" ? "+" : "-"} {formatBRL(parseFloat(tx.amount))}
+                  </span>
+                  <button
+                    onClick={() => handleDelete(tx.id)}
+                    className="p-2 rounded-lg hover:bg-red-500/10 text-[#86837d] hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
-                <span
-                  className={`font-semibold ${
-                    tx.type === "INCOME" ? "text-green-500" : "text-red-500"
-                  }`}
-                >
-                  {tx.type === "INCOME" ? "+" : "-"} {formatBRL(parseFloat(tx.amount))}
-                </span>
-                <button
-                  onClick={() => handleDelete(tx.id)}
-                  className="p-2 rounded-lg hover:bg-red-500/10 text-[#86837d] hover:text-red-500 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
+
+      {/* Transaction Modal with Category Support */}
+      <TransactionModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        accounts={accounts}
+        categories={categories}
+      />
     </div>
   );
 }
