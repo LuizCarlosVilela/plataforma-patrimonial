@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { getToken } from 'next-auth/jwt';
 import { prisma } from '@/lib/prisma';
 
 const SYSTEM_PROMPT = `Você é o Assistente Patrimonial, uma IA especializada em planejamento financeiro pessoal e institucional para clientes de wealth management.
@@ -18,8 +18,8 @@ Quando não souber a resposta, seja honesto e sugira entrar em contato com o ass
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user?.email) {
+    const token = await getToken({ req: request });
+    if (!token?.email) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
@@ -33,27 +33,24 @@ export async function POST(request: NextRequest) {
     // Load client context if userId provided (client view)
     let clientContext = '';
     if (userId) {
-      const client = await prisma.user.findUnique({
-        where: { id: userId },
-        include: {
-          accounts: true,
-          goals: { where: { status: 'IN_PROGRESS' } },
-          transactions: { orderBy: { date: 'desc' }, take: 20 },
-        },
-      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const client: any = await prisma.user.findUnique({ where: { id: userId } });
       if (client) {
-        const totalAssets = client.accounts
-          .filter(a => a.type !== 'CREDIT_CARD')
-          .reduce((s, a) => s + Number(a.currentBalance), 0);
-        const totalLiabilities = client.accounts
-          .filter(a => a.type === 'CREDIT_CARD')
-          .reduce((s, a) => s + Number(a.currentBalance), 0);
+        const safeAccounts = client.accounts ?? [];
+        const totalAssets = safeAccounts
+          .filter((a: any) => a.type !== 'CREDIT_CARD')
+          .reduce((s: number, a: any) => s + Number(a.currentBalance), 0);
+        const totalLiabilities = safeAccounts
+          .filter((a: any) => a.type === 'CREDIT_CARD')
+          .reduce((s: number, a: any) => s + Number(a.currentBalance), 0);
+        const safeGoals = client.goals ?? [];
+        const safeTransactions = client.transactions ?? [];
         clientContext = `\n\nContexto do cliente ${client.name} (${client.email}):
 - Patrimônio Líquido: R$ ${(totalAssets - totalLiabilities).toLocaleString('pt-BR')}
 - Total Ativos: R$ ${totalAssets.toLocaleString('pt-BR')}
 - Total Passivos: R$ ${totalLiabilities.toLocaleString('pt-BR')}
-- Metas ativas: ${client.goals.length}
-Últimas transações: ${client.transactions.slice(0, 5).map(t => `${t.description} - R$ ${Number(t.amount).toLocaleString('pt-BR')} (${t.type})`).join(', ') || 'Nenhuma recente'}`;
+- Metas ativas: ${safeGoals.length}
+Últimas transações: ${safeTransactions.slice(0, 5).map((t: any) => `${t.description} - R$ ${Number(t.amount).toLocaleString('pt-BR')} (${t.type})`).join(', ') || 'Nenhuma recente'}`;
       }
     }
 

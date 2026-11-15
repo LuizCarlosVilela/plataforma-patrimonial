@@ -271,12 +271,12 @@ export default function TransactionsPage() {
               key={cat.id}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium cursor-default transition-all hover:scale-105"
               style={{
-                background: `${cat.color}20`,
-                border: `1px solid ${cat.color}40`,
-                color: cat.color,
+                background: `${cat.color || '#8b5cf6'}20`,
+                border: `1px solid ${cat.color || '#8b5cf6'}40`,
+                color: cat.color || '#8b5cf6',
               }}
             >
-              <span className="w-2 h-2 rounded-full" style={{ background: cat.color }} />
+              <span className="w-2 h-2 rounded-full" style={{ background: cat.color || '#8b5cf6' }} />
               {cat.name}
             </div>
           ))}
@@ -357,12 +357,12 @@ export default function TransactionsPage() {
                     <div
                       className="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0"
                       style={{
-                        background: `${cat.color}20`,
-                        border: `1px solid ${cat.color}40`,
-                        color: cat.color,
+                        background: `${cat.color || '#8b5cf6'}20`,
+                        border: `1px solid ${cat.color || '#8b5cf6'}40`,
+                        color: cat.color || '#8b5cf6',
                       }}
                     >
-                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: cat.color }} />
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: cat.color || '#8b5cf6' }} />
                       {cat.name}
                     </div>
                   )}
