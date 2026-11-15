@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { Plus, ArrowUpRight, ArrowDownRight, Filter, Calendar, Trash2, Sparkles, X } from "lucide-react";
+import { Plus, ArrowUpRight, ArrowDownRight, Filter, Calendar, Trash2, Sparkles, X, Utensils, Home, Car, HeartPulse, Gamepad2, Wallet, TrendingUp, Briefcase, ShoppingBag, GraduationCap, Coins, MoreHorizontal } from "lucide-react";
 import { formatBRL } from "@/lib/utils";
 import { TransactionModal } from "@/components/shared/transaction-modal";
 
@@ -12,6 +12,30 @@ interface Category {
   icon?: string | null;
   color?: string | null;
 }
+
+const ICON_OPTIONS = ["Utensils", "Home", "Car", "HeartPulse", "Gamepad2", "Wallet", "TrendingUp", "Briefcase", "ShoppingBag", "GraduationCap", "Coins", "MoreHorizontal"];
+const COLOR_OPTIONS = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#8b5cf6", "#ec4899", "#06b6d4", "#10b981", "#f59e0b", "#6366f1", "#6b7280"];
+
+const ALL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  Utensils,
+  Home,
+  Car,
+  HeartPulse,
+  Gamepad2,
+  Wallet,
+  TrendingUp,
+  Briefcase,
+  ShoppingBag,
+  GraduationCap,
+  Coins,
+  MoreHorizontal,
+};
+
+const renderCategoryIcon = (iconName: string | null | undefined) => {
+  if (!iconName || !ALL_ICONS[iconName]) return null;
+  const IconComp = ALL_ICONS[iconName];
+  return <IconComp className="w-3.5 h-3.5" />;
+};
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -35,9 +59,6 @@ export default function TransactionsPage() {
   const [newCatName, setNewCatName] = useState("");
   const [newCatColor, setNewCatColor] = useState("#8b5cf6");
   const [newCatIcon, setNewCatIcon] = useState("MoreHorizontal");
-
-  const ICON_OPTIONS = ["Utensils", "Home", "Car", "HeartPulse", "Gamepad2", "Wallet", "TrendingUp", "Briefcase", "ShoppingBag", "GraduationCap", "Coins", "MoreHorizontal"];
-  const COLOR_OPTIONS = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#8b5cf6", "#ec4899", "#06b6d4", "#10b981", "#f59e0b", "#6366f1", "#6b7280"];
 
   useEffect(() => {
     async function getUser() {
@@ -276,8 +297,8 @@ export default function TransactionsPage() {
                 color: cat.color || '#8b5cf6',
               }}
             >
-              <span className="w-2 h-2 rounded-full" style={{ background: cat.color || '#8b5cf6' }} />
-              {cat.name}
+              {renderCategoryIcon(cat.icon)}
+              <span>{cat.name}</span>
             </div>
           ))}
           {categories.length === 0 && (
@@ -362,7 +383,7 @@ export default function TransactionsPage() {
                         color: cat.color || '#8b5cf6',
                       }}
                     >
-                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: cat.color || '#8b5cf6' }} />
+                      {renderCategoryIcon(cat.icon)}
                       {cat.name}
                     </div>
                   )}

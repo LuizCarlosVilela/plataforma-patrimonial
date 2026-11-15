@@ -82,6 +82,7 @@ model Account {
   lastSyncedAt      DateTime?    @map("last_synced_at")
 
   transactions      Transaction[]
+  goalAccounts      GoalAccount[]
 
   createdAt         DateTime     @default(now()) @map("created_at")
   updatedAt         DateTime     @updatedAt @map("updated_at")
@@ -149,11 +150,28 @@ model Goal {
   status        GoalStatus  @default(IN_PROGRESS)
   categoryTag   String?     @map("category_tag")
 
+  goalAccounts  GoalAccount[]
+
   createdAt     DateTime    @default(now()) @map("created_at")
   updatedAt     DateTime    @updatedAt @map("updated_at")
 
   @@index([userId])
   @@map("goals")
+}
+
+model GoalAccount {
+  id        String   @id @default(cuid())
+  goalId    String   @map("goal_id")
+  goal      Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  accountId String   @map("account_id")
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([goalId, accountId])
+  @@index([goalId])
+  @@index([accountId])
+  @@map("goal_accounts")
 }
 
 model AdvisorAuditLog {

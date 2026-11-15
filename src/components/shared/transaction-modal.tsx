@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Plus, Minus, CreditCard, Landmark, TrendingUp, Wallet, Car, Home, Utensils, HeartPulse, Gamepad2 } from "lucide-react";
+import { X, Plus, Minus, CreditCard, Landmark, TrendingUp, Wallet, Car, Home, Utensils, HeartPulse, Gamepad2, GraduationCap, ShoppingBag, Briefcase, Coins, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createTransaction } from "@/server/actions/transactions";
 
@@ -13,6 +13,11 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
   Gamepad2,
   Wallet,
   TrendingUp,
+  GraduationCap,
+  ShoppingBag,
+  Briefcase,
+  Coins,
+  MoreHorizontal,
 };
 
 const accountIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -24,7 +29,8 @@ const accountIcons: Record<string, React.ComponentType<{ className?: string }>> 
 
 const renderIcon = (iconName: string | null | undefined, icons: Record<string, React.ComponentType<{ className?: string }>>) => {
   if (!iconName || !icons[iconName]) return null;
-  return null;
+  const IconComp = icons[iconName];
+  return <IconComp className="w-4 h-4" />;
 };
 
 interface TransactionModalProps {

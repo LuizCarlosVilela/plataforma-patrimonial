@@ -5,6 +5,28 @@ import { signIn } from "next-auth/react";
 import { Plus, CreditCard, Landmark, TrendingUp, Wallet, RefreshCw, AlertCircle } from "lucide-react";
 import { formatBRL } from "@/lib/utils";
 
+interface BankOption {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  color: string;
+}
+
+const BANKS: BankOption[] = [
+  { id: "bb", name: "Banco do Brasil", icon: <span className="text-xs font-bold text-white">BB</span>, color: "#e52d2d" },
+  { id: "santander", name: "Santander", icon: <span className="text-xs font-bold text-white">Sa</span>, color: "#ec0000" },
+  { id: "itau", name: "Itaú", icon: <span className="text-xs font-bold text-white">Ita</span>, color: "#ff7a00" },
+  { id: "bradesco", name: "Bradesco", icon: <span className="text-xs font-bold text-white">B</span>, color: "#e32632" },
+  { id: "nubank", name: "Nubank", icon: <span className="text-xs font-bold text-white">Nu</span>, color: "#8a09d2" },
+  { id: "inter", name: "Banco Inter", icon: <span className="text-xs font-bold text-white">Int</span>, color: "#ff7a00" },
+  { id: "c6", name: "C6 Bank", icon: <span className="text-xs font-bold text-white">C6</span>, color: "#000000" },
+  { id: "caixa", name: "Caixa", icon: <span className="text-xs font-bold text-white">CX</span>, color: "#005ca9" },
+  { id: "picpay", name: "PicPay", icon: <span className="text-xs font-bold text-white">Pp</span>, color: "#21c25e" },
+  { id: "cora", name: "Cora", icon: <span className="text-xs font-bold text-white">Co</span>, color: "#0066cc" },
+  { id: "btg", name: "BTG Pactual", icon: <span className="text-xs font-bold text-white">BTG</span>, color: "#003399" },
+  { id: "original", name: "Original", icon: <span className="text-xs font-bold text-white">Or</span>, color: "#00a651" },
+];
+
 export default function AccountsPage() {
   const [accounts, setAccounts] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -17,9 +39,9 @@ export default function AccountsPage() {
   const [name, setName] = useState("");
   const [type, setType] = useState<"CHECKING" | "SAVINGS" | "CREDIT_CARD" | "INVESTMENT" | "CASH" | "OTHER">("CHECKING");
   const [initialBalance, setInitialBalance] = useState("");
+  const [selectedBank, setSelectedBank] = useState<string>("");
 
   useEffect(() => {
-    // Get user email from session cookie or redirect to login
     async function getUser() {
       try {
         const res = await fetch("/api/auth/me");
@@ -30,7 +52,6 @@ export default function AccountsPage() {
             return;
           }
         }
-        // Not authenticated
         signIn();
       } catch (e) {
         console.error("Error getting user:", e);
@@ -71,6 +92,7 @@ export default function AccountsPage() {
           name,
           type,
           initialBalance: parseFloat(initialBalance),
+          ...(selectedBank ? { color: BANKS.find(b => b.id === selectedBank)?.color } : {}),
         }),
       });
 
@@ -78,6 +100,7 @@ export default function AccountsPage() {
         setShowForm(false);
         setName("");
         setInitialBalance("");
+        setSelectedBank("");
         loadAccounts();
       }
     } catch (e) {
@@ -171,6 +194,38 @@ export default function AccountsPage() {
       {showForm && (
         <form onSubmit={handleCreateAccount} className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-6 space-y-4">
           <h2 className="font-semibold text-[#efeae0]">Nova Conta</h2>
+
+          {/* Bank selector */}
+          <div>
+            <label className="block text-xs text-[#86837d] mb-2 uppercase tracking-wider">Selecione o Banco</label>
+            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-2">
+              {BANKS.map((bank) => {
+                const isSelected = selectedBank === bank.id;
+                return (
+                  <button
+                    key={bank.id}
+                    type="button"
+                    onClick={() => setSelectedBank(bank.id)}
+                    className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-all ${
+                      isSelected
+                        ? "border-[#b08a3e] bg-[rgba(176,138,62,0.15)] scale-105"
+                        : "border-[#cfc6b4] bg-[#16171b] hover:border-[#b08a3e]/50"
+                    }`}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
+                      style={{ background: bank.color }}
+                    >
+                      {bank.icon}
+                    </div>
+                    <span className={`text-[10px] truncate w-full text-center ${isSelected ? "text-[#efeae0]" : "text-[#86837d]"}`}>
+                      {bank.name.split(" ")[0]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>

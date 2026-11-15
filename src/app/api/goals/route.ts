@@ -14,7 +14,7 @@ async function resolveUserId(emailOrId: string): Promise<string | null> {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, userId, title, targetAmount, currentAmount = 0, targetDate, status = 'IN_PROGRESS' } = body;
+    const { email, userId, title, targetAmount, currentAmount = 0, targetDate, status = 'IN_PROGRESS', accountIds, categoryTag } = body;
     const resolvedUserId = await resolveUserId(userId || email);
 
     if (!resolvedUserId || !title || !targetAmount || !targetDate) {
@@ -32,6 +32,17 @@ export async function POST(request: Request) {
         currentAmount: new (require('@prisma/client').Decimal)(currentAmount),
         targetDate: new Date(targetDate),
         status,
+        ...(categoryTag ? { categoryTag } : {}),
+        goalAccounts: accountIds && accountIds.length > 0
+          ? {
+              create: accountIds.map((accountId: string) => ({ accountId })),
+            }
+          : undefined,
+      },
+      include: {
+        goalAccounts: {
+          include: { account: true },
+        },
       },
     });
 
@@ -62,6 +73,11 @@ export async function GET(request: Request) {
     const goals = await prisma.goal.findMany({
       where: { userId: resolvedUserId },
       orderBy: { targetDate: 'asc' },
+      include: {
+        goalAccounts: {
+          include: { account: true },
+        },
+      },
     });
 
     return NextResponse.json({ goals });
