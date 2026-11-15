@@ -139,7 +139,7 @@ test.describe('Simulação Financeira - Compra Imóvel 1M', () => {
       await page.waitForTimeout(400);
 
       await expect(page.locator('text=Salário Mensal')).toBeVisible();
-      await expect(page.locator('button:has-text("Receita")').filter({ exact: true }).or(page.locator('text=Receitas'))).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Receita', exact: true }).or(page.locator('text=Receitas'))).toBeVisible();
     });
   });
 
