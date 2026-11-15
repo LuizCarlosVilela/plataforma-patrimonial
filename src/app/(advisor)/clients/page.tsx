@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { Users, TrendingUp, Target, ShieldCheck, Search, Filter, MoreVertical, ArrowRight } from "lucide-react";
 
+export const dynamic = 'force-dynamic'; // Don't prerender - fetch at request time
+
 const formatBRL = (val: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
 
