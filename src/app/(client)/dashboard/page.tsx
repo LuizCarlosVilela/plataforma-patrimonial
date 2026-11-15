@@ -33,7 +33,6 @@ interface Goal {
   categoryTag?: string | null;
 }
 
-const DEMO_EMAIL = "joao@exemplo.com";
 const formatBRL = (val: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
 
@@ -43,18 +42,38 @@ export default function DashboardPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    loadData();
+    async function fetchUserEmail() {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (response.ok) {
+          const data = await response.json();
+          setUserEmail(data.email);
+        }
+      } catch (err) {
+        console.error('Erro ao buscar e-mail do usuário:', err);
+      }
+    }
+    fetchUserEmail();
   }, []);
 
+  useEffect(() => {
+    if (userEmail) {
+      loadData();
+    }
+  }, [userEmail]);
+
   async function loadData() {
+    if (!userEmail) return;
+
     setLoading(true);
     try {
       const [accRes, txRes, goalRes] = await Promise.all([
-        fetch(`/api/accounts?email=${DEMO_EMAIL}`),
-        fetch(`/api/transactions?email=${DEMO_EMAIL}`),
-        fetch(`/api/goals?email=${DEMO_EMAIL}`),
+        fetch(`/api/accounts?email=${encodeURIComponent(userEmail)}`),
+        fetch(`/api/transactions?email=${encodeURIComponent(userEmail)}`),
+        fetch(`/api/goals?email=${encodeURIComponent(userEmail)}`),
       ]);
       const accData = await accRes.json();
       const txData = await txRes.json();
