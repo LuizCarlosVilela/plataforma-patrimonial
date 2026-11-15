@@ -174,13 +174,14 @@ export default function RegisterPage() {
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#555]" />
                 <input
                   type="text"
+                  name="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="João da Silva"
                   required
                   minLength={2}
                   autoComplete="name"
-                  className="w-full bg-[#191a1e] border border-[#2a2b30] rounded-xl pl-10 pr-4 py-3 text-white text-sm placeholder-[#555] focus:border-[#b08a3e] outline-none transition-colors"
+                  className="w-full bg-[#191a1e] border border-[#2a2b30] rounded-xl pl- tarball pr-4 py-3 text-white text-sm placeholder-[#555] focus:border-[#b08a3e] outline-none transition-colors"
                 />
               </div>
             </div>

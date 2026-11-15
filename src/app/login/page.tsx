@@ -134,6 +134,7 @@ function LoginForm() {
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#555]" />
                 <input
                   type="email"
+                  name="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="seu@email.com"
@@ -150,6 +151,7 @@ function LoginForm() {
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#555]" />
                 <input
                   type={showPassword ? "text" : "password"}
+                  name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"

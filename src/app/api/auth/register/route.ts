@@ -33,60 +33,60 @@ export async function POST(request: Request) {
       );
     }
 
-    // ── REGISTER ────────────────────────────────────────────────
-    if (hasName || (!isLogin)) {
-      if (!name) {
-        return NextResponse.json(
-          { error: 'O nome é obrigatório.' },
-          { status: 400 }
-        );
-      }
-
-      const existingUser = await prisma.user.findUnique({ where: { email } });
-      if (existingUser) {
-        return NextResponse.json(
-          { error: 'Este e-mail já está cadastrado.' },
-          { status: 400 }
-        );
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const user = await prisma.user.create({
-        data: {
-          name,
-          email,
-          password: hashedPassword,
-          role: 'CLIENT',
-          planTier: 'FREE',
-        },
-      });
-
-      return NextResponse.json({ success: true, userId: user.id, role: 'CLIENT' });
-    }
-
     // ── LOGIN ──────────────────────────────────────────────────
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
+    if (isLogin) {
+      const user = await prisma.user.findUnique({ where: { email } });
+      if (!user) {
+        return NextResponse.json(
+          { success: false, error: 'Usuário não encontrado' },
+          { status: 404 }
+        );
+      }
+
+      const isValid = await bcrypt.compare(password, user.password!);
+      if (!isValid) {
+        return NextResponse.json(
+          { success: false, error: 'Senha incorreta' },
+          { status: 401 }
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        userId: user.id,
+        role: user.role || 'CLIENT',
+        planTier: user.planTier,
+      });
+    }
+
+    // ── REGISTER ────────────────────────────────────────────────
+    if (!name) {
       return NextResponse.json(
-        { success: false, error: 'Usuário não encontrado' },
-        { status: 404 }
+        { error: 'O nome é obrigatório.' },
+        { status: 400 }
       );
     }
 
-    const isValid = await bcrypt.compare(password, user.password!);
-    if (!isValid) {
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
       return NextResponse.json(
-        { success: false, error: 'Senha incorreta' },
-        { status: 401 }
+        { error: 'Este e-mail já está cadastrado.' },
+        { status: 400 }
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      userId: user.id,
-      role: user.role || 'CLIENT',
-      planTier: user.planTier,
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: 'CLIENT',
+        planTier: 'FREE',
+      },
     });
+
+    return NextResponse.json({ success: true, userId: user.id, role: 'CLIENT' });
   } catch (error) {
     console.error('Erro na autenticação:', error);
     return NextResponse.json(
