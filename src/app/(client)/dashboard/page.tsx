@@ -131,6 +131,7 @@ export default function DashboardPage() {
         netWorth={netWorth}
         totalAssets={totalAssets}
         totalLiabilities={totalLiabilities}
+        className="panel"
       />
 
       {/* Ações Rápidas */}
@@ -166,14 +167,14 @@ export default function DashboardPage() {
             Carregando metas…
           </div>
         ) : goals.length === 0 ? (
-          <div className="card-body p-8 text-center text-[#86837d] text-sm">
+          <div className="panel p-8 text-center text-[#86837d] text-sm">
             Nenhuma meta cadastrada.{" "}
             <a href="/goals" className="text-[#b08a3e] hover:underline">Criar uma meta →</a>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {goals.map((goal) => (
-              <GoalProgressCard key={goal.id} {...goal} />
+              <GoalProgressCard key={goal.id} {...goal} className="panel" />
             ))}
           </div>
         )}
@@ -188,7 +189,7 @@ export default function DashboardPage() {
             { num: "02", title: "Órbita Patrimonial", desc: "Blindagem jurídica e alocação inteligente dos ativos", icon: TrendingUp },
             { num: "03", title: "Órbita Sucessória", desc: "Governança familiar e planejamento sucessório", icon: Target },
           ].map((orbit) => (
-            <div key={orbit.num} className="card-premium p-5 relative overflow-hidden group cursor-pointer">
+            <div key={orbit.num} className="panel p-5 relative overflow-hidden group cursor-pointer transition-all hover:border-[#b08a3e]/50">
               <div className="absolute top-3 right-3 text-3xl font-bold font-mono text-[#b08a3e]/20 group-hover:text-[#b08a3e]/40 transition-colors">
                 {orbit.num}
               </div>
@@ -214,14 +215,14 @@ export default function DashboardPage() {
             Carregando transações…
           </div>
         ) : recentTx.length === 0 ? (
-          <div className="card-body p-8 text-center text-[#86837d] text-sm">
+          <div className="panel p-8 text-center text-[#86837d] text-sm">
             Nenhuma transação registrada ainda.{" "}
             <a href="/transactions" className="text-[#b08a3e] hover:underline">Registrar uma →</a>
           </div>
         ) : (
           <div className="space-y-2">
             {recentTx.map((tx) => (
-              <div key={tx.id} className="flex items-center justify-between card-body p-4">
+              <div key={tx.id} className="panel p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm ${tx.type === "INCOME" ? "bg-[rgba(79,107,82,0.1)] text-[#4f6b52]" : "bg-[rgba(158,74,62,0.1)] text-[#9e4a3e]"}`}>
                     {tx.type === "INCOME" ? <TrendingUp className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
@@ -231,7 +232,7 @@ export default function DashboardPage() {
                     <p className="text-xs text-[#86837d]">{tx.account?.name ?? "—"} • {new Date(tx.date).toLocaleDateString("pt-BR")}</p>
                   </div>
                 </div>
-                <span className={`text-sm font-semibold ${tx.type === "INCOME" ? "text-[#4f6b52]" : "text-[#9e4a3e]"}`}>
+                <span className={`text-sm font-semibold num ${tx.type === "INCOME" ? "text-[#4f6b52]" : "text-[#9e4a3e]"}`}>
                   {tx.type === "INCOME" ? "+" : "-"}{formatBRL(parseFloat(tx.amount))}
                 </span>
               </div>

@@ -14,7 +14,11 @@ async function resolveUserId(emailOrId: string): Promise<string | null> {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, userId, name, type, initialBalance = 0, currency = 'BRL', bankId, color } = body;
+    const {
+      email, userId, name, type, initialBalance = 0,
+      currency = 'BRL', bankId, color,
+      creditLimit, dueDay,
+    } = body;
     const resolvedUserId = await resolveUserId(userId || email);
 
     if (!resolvedUserId || !name || !type) {
@@ -35,6 +39,14 @@ export async function POST(request: Request) {
         isManual: true,
         ...(bankId ? { bankId } : {}),
         ...(color ? { color } : {}),
+        ...(type === 'CREDIT_CARD'
+          ? {
+              creditLimit: creditLimit
+                ? new (require('@prisma/client').Decimal)(creditLimit)
+                : undefined,
+              dueDay: dueDay ? parseInt(dueDay, 10) : undefined,
+            }
+          : {}),
       },
     });
 

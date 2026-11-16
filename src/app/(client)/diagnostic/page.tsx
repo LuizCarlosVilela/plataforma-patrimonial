@@ -28,7 +28,7 @@ export default function DiagnosticPage() {
 
   return (
     <div className="max-w-3xl mx-auto py-12 px-6">
-      <div className="card-premium p-8 lg:p-12">
+      <div className="panel p-8 lg:p-12">
         {step <= questions.length ? (
           <>
             <div className="mb-8">
@@ -57,7 +57,7 @@ export default function DiagnosticPage() {
                 <button
                   key={option}
                   onClick={() => handleAnswer(questions[step - 1].id, option)}
-                  className="p-4 rounded-xl bg-[#191a1e] border border-[#cfc6b4] hover:border-[#b08a3e] hover:bg-[rgba(176,138,62,0.1)] active:scale-[0.98] transition-all text-left flex items-center justify-between group"
+                  className="p-4 rounded-xl bg-[#16171b] border border-[#cfc6b4] hover:border-[#b08a3e] hover:bg-[rgba(176,138,62,0.1)] active:scale-[0.98] transition-all text-left flex items-center justify-between group"
                 >
                   <span className="font-medium text-[#efeae0] group-hover:text-[#b08a3e]">{option}</span>
                   <ChevronRight size={18} className="text-[#86837d] group-hover:text-[#b08a3e] transition-colors" />

@@ -252,96 +252,96 @@ export default function GoalsPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {goals.map((goal) => {
-            const progress = getProgress(goal);
-            const statusInfo = getStatusInfo(goal.status);
-            const StatusIcon = statusInfo.icon;
-            const monthlyNeeded = getMonthlyNeeded(goal);
-            const chartData = buildChartData(goal);
+            {goals.map((goal) => {
+              const progress = getProgress(goal);
+              const statusInfo = getStatusInfo(goal.status);
+              const StatusIcon = statusInfo.icon;
+              const monthlyNeeded = getMonthlyNeeded(goal);
+              const chartData = buildChartData(goal);
 
-            return (
-              <div key={goal.id}
-                className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-6 hover:border-[#b08a3e]/40 transition-all">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="font-semibold text-[#efeae0]">{goal.title}</h3>
-                    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border mt-2 ${statusInfo.color}`}>
-                      <StatusIcon className="w-3 h-3" />
-                      {statusInfo.label}
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-[#efeae0]">{formatBRL(parseFloat(goal.currentAmount))}</p>
-                    <p className="text-xs text-[#86837d]">de {formatBRL(parseFloat(goal.targetAmount))}</p>
-                  </div>
-                </div>
-
-                {/* Chart */}
-                {chartData.length > 0 && (
-                  <div className="mb-4 h-40">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#cfc6b420" />
-                        <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#86837d" }} />
-                        <YAxis tick={{ fontSize: 11, fill: "#86837d" }} tickFormatter={(v) => `R$${v.toFixed(0)}`} />
-                        <Tooltip
-                          contentStyle={{ background: "#191a1e", border: "1px solid #cfc6b4", borderRadius: "8px" }}
-                          labelStyle={{ color: "#efeae0" }}
-                          formatter={(value, _name) => [formatBRL(value as number), _name === "atual" ? "Saldo acumulado" : "Trajetória"]}
-                        />
-                        <Bar dataKey="alvo" name="Trajetória" fill="#b08a3e" radius={[4, 4, 0, 0]} opacity={0.6} />
-                        <Bar dataKey="atual" name="Saldo acumulado" fill="#b08a3e" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
-
-                {/* Progress bar */}
-                <div className="mb-3">
-                  <div className="flex justify-between text-xs text-[#86837d] mb-1">
-                    <span>Progresso</span>
-                    <span>{progress.toFixed(0)}%</span>
-                  </div>
-                  <div className="w-full h-2 rounded-full bg-[#16171b] overflow-hidden">
-                    <div className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${progress}%`, background: progress >= 100 ? "#4f6b52" : "#b08a3e" }} />
-                  </div>
-                </div>
-
-                {/* Stats row */}
-                <div className="flex flex-wrap items-center gap-4 text-xs text-[#86837d]">
-                  {goal.targetDate && (
-                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> Prazo: {new Date(goal.targetDate).toLocaleDateString("pt-BR")}</span>
-                  )}
-                  {monthlyNeeded > 0 && (
-                    <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3 text-[#b08a3e]" /> Aporte mensal necessário: <strong className="text-[#efeae0]">{formatBRL(monthlyNeeded)}</strong></span>
-                  )}
-                  <span className="ml-auto flex items-center gap-1">
-                    <Wallet className="w-3 h-3" />
-                    {goal.goalAccounts?.length || 0} conta{(goal.goalAccounts?.length || 0) !== 1 ? "s" : ""}
-                  </span>
-                  {progress >= 100 && (
-                    <span className="ml-auto text-green-500 flex items-center gap-1">
-                      <CheckCircle className="w-3 h-3" /> Concluída!
-                    </span>
-                  )}
-                </div>
-
-                {/* Selected accounts */}
-                {goal.goalAccounts && goal.goalAccounts.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-[#cfc6b4]/20">
-                    {goal.goalAccounts.map((ga) => (
-                      <span key={ga.accountId} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs bg-[#16171b] text-[#efeae0] border border-[#cfc6b4]/30">
-                        <Wallet className="w-3 h-3 text-[#b08a3e]" />
-                        {ga.account.name}
+              return (
+                <div key={goal.id}
+                  className="panel p-6 hover:border-[#b08a3e]/40 transition-all">
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="font-semibold text-[#efeae0]">{goal.title}</h3>
+                      <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border mt-2 ${statusInfo.color}`}>
+                        <StatusIcon className="w-3 h-3" />
+                        {statusInfo.label}
                       </span>
-                    ))}
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-[#efeae0] num">{formatBRL(parseFloat(goal.currentAmount))}</p>
+                      <p className="text-xs text-[#86837d]">de {formatBRL(parseFloat(goal.targetAmount))}</p>
+                    </div>
                   </div>
-                )}
-              </div>
-            );
-          })}
+
+                  {/* Chart */}
+                  {chartData.length > 0 && (
+                    <div className="mb-4 h-40">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#cfc6b420" />
+                          <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#86837d" }} />
+                          <YAxis tick={{ fontSize: 11, fill: "#86837d" }} tickFormatter={(v) => `R$${v.toFixed(0)}`} />
+                          <Tooltip
+                            contentStyle={{ background: "#191a1e", border: "1px solid #cfc6b4", borderRadius: "8px" }}
+                            labelStyle={{ color: "#efeae0" }}
+                            formatter={(value, _name) => [formatBRL(value as number), _name === "atual" ? "Saldo acumulado" : "Trajetória"]}
+                          />
+                          <Bar dataKey="alvo" name="Trajetória" fill="#b08a3e" radius={[4, 4, 0, 0]} opacity={0.6} />
+                          <Bar dataKey="atual" name="Saldo acumulado" fill="#b08a3e" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
+
+                  {/* Progress bar */}
+                  <div className="mb-3">
+                    <div className="flex justify-between text-xs text-[#86837d] mb-1">
+                      <span>Progresso</span>
+                      <span className="num">{progress.toFixed(0)}%</span>
+                    </div>
+                    <div className="w-full h-2 rounded-full bg-[#16171b] overflow-hidden">
+                      <div className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${progress}%`, background: progress >= 100 ? "#4f6b52" : "#b08a3e" }} />
+                    </div>
+                  </div>
+
+                  {/* Stats row */}
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-[#86837d]">
+                    {goal.targetDate && (
+                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> Prazo: {new Date(goal.targetDate).toLocaleDateString("pt-BR")}</span>
+                    )}
+                    {monthlyNeeded > 0 && (
+                      <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3 text-[#b08a3e]" /> Aporte mensal necessário: <strong className="text-[#efeae0] num">{formatBRL(monthlyNeeded)}</strong></span>
+                    )}
+                    <span className="ml-auto flex items-center gap-1">
+                      <Wallet className="w-3 h-3" />
+                      {goal.goalAccounts?.length || 0} conta{(goal.goalAccounts?.length || 0) !== 1 ? "s" : ""}
+                    </span>
+                    {progress >= 100 && (
+                      <span className="ml-auto text-green-500 flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3" /> Concluída!
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Selected accounts */}
+                  {goal.goalAccounts && goal.goalAccounts.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-[#cfc6b4]/20">
+                      {goal.goalAccounts.map((ga) => (
+                        <span key={ga.accountId} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs bg-[#16171b] text-[#efeae0] border border-[#cfc6b4]/30">
+                          <Wallet className="w-3 h-3 text-[#b08a3e]" />
+                          {ga.account.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
         </div>
       )}
     </div>

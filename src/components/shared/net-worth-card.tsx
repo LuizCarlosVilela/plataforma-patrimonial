@@ -17,13 +17,13 @@ export function NetWorthCard({ netWorth, totalAssets, totalLiabilities, classNam
   const isPositive = netWorth >= 0;
 
   return (
-    <section className={cn("card-body p-6", className)}>
+    <section className={cn("panel p-6", className)}>
       <div className="flex items-start justify-between">
         <div>
           <span className="text-xs font-semibold text-[#86837d] uppercase tracking-[0.15em]">
             Patrimônio Líquido
           </span>
-          <h2 className={cn("text-3xl font-bold mt-2", isPositive ? "text-[#efeae0]" : "text-[#9e4a3e]")}>
+          <h2 className={cn("text-3xl font-bold mt-2 num", isPositive ? "text-[#efeae0]" : "text-[#9e4a3e]")}>
             {formatBRL(netWorth)}
           </h2>
           <p className="text-xs text-[#4f6b52] font-medium mt-1 flex items-center gap-1">
@@ -42,14 +42,14 @@ export function NetWorthCard({ netWorth, totalAssets, totalLiabilities, classNam
             <ArrowUpRight className="w-3.5 h-3.5 text-[#4f6b52]" />
             <span>Ativos</span>
           </div>
-          <p className="text-base font-semibold text-[#efeae0]">{formatBRL(totalAssets)}</p>
+          <p className="text-base font-semibold text-[#efeae0] num">{formatBRL(totalAssets)}</p>
         </div>
         <div>
           <div className="flex items-center gap-1.5 text-[#86837d] text-xs mb-1 uppercase tracking-wider">
             <ArrowDownRight className="w-3.5 h-3.5 text-[#9e4a3e]" />
             <span>Passivos</span>
           </div>
-          <p className="text-base font-semibold text-[#efeae0]">{formatBRL(totalLiabilities)}</p>
+          <p className="text-base font-semibold text-[#efeae0] num">{formatBRL(totalLiabilities)}</p>
         </div>
       </div>
     </section>

@@ -62,12 +62,18 @@ async function main() {
     },
   });
 
+  const bcrypt = require("bcryptjs");
+  const demoPasswordHash = await bcrypt.hash("demo123", 10);
+
   const client = await prisma.user.upsert({
     where: { email: "cliente@demo.com.br" },
-    update: {},
+    update: {
+      password: demoPasswordHash,
+    },
     create: {
       email: "cliente@demo.com.br",
       name: "João Silva",
+      password: demoPasswordHash,
       role: "CLIENT",
       planTier: "FREE",
       advisorId: advisor.id,

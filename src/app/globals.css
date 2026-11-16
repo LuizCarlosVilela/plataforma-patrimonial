@@ -12,6 +12,7 @@
   --obsidiana: #16171b;
   --osso:      #efeae0;
   --areia:     #e6dfd2;
+  --sand:      #e6dfd2; /* Nova variável de alinhamento */
   --linha:     #cfc6b4;
   --mineral:   #c2b293;
   --bronze:    #7e6e52;
@@ -123,6 +124,21 @@
 }
 .shadow-gold-lg {
   box-shadow: 0 0 50px rgba(176,138,62,0.25), 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* Tabular / numeric typography — aligns monetary values by digit */
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  font-family: "Poppins", system-ui, sans-serif;
+}
+
+/* Origin/Lovable panel surface — tinted card with hairline border */
+.panel {
+  @apply bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl;
+}
+.panel-soft {
+  @apply bg-[#16171b]/60 border border-[#cfc6b4]/40 rounded-xl;
 }
 
 *:focus-visible {

@@ -53,7 +53,7 @@ export function GoalProgressCard({
   const style = statusStyles[status];
 
   return (
-    <div className={cn("card-body p-5", className)}>
+    <div className={cn("panel p-5", className)}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2 min-w-0">
           <span className="text-sm font-medium text-[#efeae0] truncate">{title}</span>
@@ -61,7 +61,7 @@ export function GoalProgressCard({
             {style.label}
           </span>
         </div>
-        <span className="text-lg font-bold text-[#efeae0] flex-shrink-0 ml-2">{progress}%</span>
+        <span className="text-lg font-bold text-[#efeae0] flex-shrink-0 ml-2 num">{progress}%</span>
       </div>
 
       <div className={cn("w-full h-2 rounded-full overflow-hidden", style.barBg)}>
@@ -72,8 +72,8 @@ export function GoalProgressCard({
       </div>
 
       <div className="flex justify-between items-center mt-3 text-xs text-[#86837d]">
-        <span className="font-medium text-[#efeae0]">{formatBRL(currentAmount)}</span>
-        <span>de {formatBRL(targetAmount)}</span>
+        <span className="font-medium text-[#efeae0] num">{formatBRL(currentAmount)}</span>
+        <span className="num">de {formatBRL(targetAmount)}</span>
       </div>
 
       {categoryTag && (

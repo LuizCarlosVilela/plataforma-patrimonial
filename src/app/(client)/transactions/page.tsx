@@ -229,7 +229,7 @@ export default function TransactionsPage() {
       </div>
 
       {/* Categories quick panel */}
-      <div className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-4">
+      <div className="panel p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#b08a3e]" />
@@ -325,7 +325,7 @@ export default function TransactionsPage() {
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 filter === f.key
                   ? "bg-[#b08a3e]/20 text-[#b08a3e] border border-[#b08a3e]/30"
-                  : "text-[#86837d] hover:text-[#efeae0]"
+                  : "text-[#86837d] hover:text-[#efeae0] border border-transparent"
               }`}
             >
               {f.label}
@@ -338,7 +338,7 @@ export default function TransactionsPage() {
       {loading ? (
         <div className="text-center py-12 text-[#86837d]">Carregando...</div>
       ) : filteredTransactions.length === 0 ? (
-        <div className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-8 text-center">
+        <div className="panel p-8 text-center">
           <Calendar className="w-16 h-16 mx-auto text-[#86837d] mb-4" />
           <h3 className="text-lg font-medium text-[#efeae0] mb-1">Nenhuma transação encontrada</h3>
           <p className="text-[#86837d] text-sm">Adicione sua primeira transação para começar a controlar suas finanças</p>
@@ -350,7 +350,7 @@ export default function TransactionsPage() {
             return (
               <div
                 key={tx.id}
-                className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-4 flex items-center justify-between hover:border-[#b08a3e]/40 transition-all"
+                className="panel p-4 flex items-center justify-between hover:border-[#b08a3e]/40 transition-all"
               >
                 <div className="flex items-center gap-4">
                   {/* Icon circle */}
@@ -394,7 +394,7 @@ export default function TransactionsPage() {
 
                 <div className="flex items-center gap-4">
                   <span
-                    className={`font-semibold ${
+                    className={`font-semibold num ${
                       tx.type === "INCOME" ? "text-green-500" : "text-red-500"
                     }`}
                   >

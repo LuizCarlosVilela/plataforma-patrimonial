@@ -26,11 +26,32 @@ const BANKS: BankOption[] = [
   { id: "cora", name: "Cora", icon: <span className="text-xs font-bold text-white">Co</span>, color: "#0066cc" },
   { id: "btg", name: "BTG Pactual", icon: <span className="text-xs font-bold text-white">BTG</span>, color: "#003399" },
   { id: "original", name: "Original", icon: <span className="text-xs font-bold text-white">Or</span>, color: "#00a651" },
+  { id: "xp", name: "XP Investimentos", icon: <span className="text-xs font-bold text-white">XP</span>, color: "#303030" },
+  { id: "rico", name: "Rico", icon: <span className="text-xs font-bold text-white">Ri</span>, color: "#f2711c" },
+  { id: "nuinvest", name: "NuInvest", icon: <span className="text-xs font-bold text-white">NuI</span>, color: "#8a09d2" },
+  { id: "clear", name: "Clear", icon: <span className="text-xs font-bold text-white">Cl</span>, color: "#00a89d" },
+  { id: "easynvest", name: "Easynvest", icon: <span className="text-xs font-bold text-white">Ea</span>, color: "#2672ba" },
+  { id: "safra", name: "Safra", icon: <span className="text-xs font-bold text-white">Sa</span>, color: "#2a2a2a" },
+  { id: "banco-pan", name: "Banco Pan", icon: <span className="text-xs font-bold text-white">Pa</span>, color: "#f58220" },
+  { id: "next", name: "Next", icon: <span className="text-xs font-bold text-white">Ne</span>, color: "#212121" },
+  { id: "pagbank", name: "PagBank", icon: <span className="text-xs font-bold text-white">Pg</span>, color: "#00c300" },
+  { id: "mercadopago", name: "Mercado Pago", icon: <span className="text-xs font-bold text-white">Mp</span>, color: "#00a8e8" },
+  { id: "nomad", name: "Nomad", icon: <span className="text-xs font-bold text-white">No</span>, color: "#000000" },
+  { id: "avenue", name: "Avenue", icon: <span className="text-xs font-bold text-white">Av</span>, color: "#1e3a8a" },
+  { id: "wise", name: "Wise", icon: <span className="text-xs font-bold text-white">Wi</span>, color: "#90e8e0" },
+  { id: "neon", name: "Neon", icon: <span className="text-xs font-bold text-white">Ne</span>, color: "#00ffcc" },
+  { id: "sofisa", name: "Sofisa Direto", icon: <span className="text-xs font-bold text-white">So</span>, color: "#f7941e" },
+  { id: "bmg", name: "Banco BMG", icon: <span className="text-xs font-bold text-white">Bm</span>, color: "#ff8200" },
+  { id: "daycoval", name: "Daycoval", icon: <span className="text-xs font-bold text-white">Da</span>, color: "#005696" },
+  { id: "meupag", name: "Meu Pag!", icon: <span className="text-xs font-bold text-white">Pg</span>, color: "#ff8200" },
+  { id: "will", name: "Will Bank", icon: <span className="text-xs font-bold text-white">Wi</span>, color: "#ffeb00" },
+  { id: "iti", name: "iti", icon: <span className="text-xs font-bold text-white">it</span>, color: "#ec008c" },
 ];
 
 export default function AccountsPage() {
   const [accounts, setAccounts] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [formType, setFormType] = useState<"ACCOUNT" | "CARD" | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -87,16 +108,17 @@ export default function AccountsPage() {
     if (!name || !initialBalance || !userEmail) return;
 
     try {
+      const accountType = formType === "CARD" ? "CREDIT_CARD" : type;
       const res = await fetch("/api/accounts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: userEmail,
           name,
-          type,
+          type: accountType,
           initialBalance: parseFloat(initialBalance),
           ...(selectedBank ? { bankId: selectedBank, color: BANKS.find(b => b.id === selectedBank)?.color } : {}),
-          ...(type === "CREDIT_CARD" ? {
+          ...(accountType === "CREDIT_CARD" ? {
             creditLimit: creditLimit ? parseFloat(creditLimit) : undefined,
             dueDay: dueDay ? parseInt(dueDay) : undefined,
           } : {}),
@@ -105,9 +127,11 @@ export default function AccountsPage() {
 
       if (res.ok) {
         setShowForm(false);
+        setFormType(null);
         setName("");
         setInitialBalance("");
         setSelectedBank("");
+        setCreditLimit("");
         loadAccounts();
       }
     } catch (e) {
@@ -179,12 +203,19 @@ export default function AccountsPage() {
             Sync Open Finance
           </button>
           <button
-            onClick={() => setShowForm(!showForm)}
+            onClick={() => { setFormType("ACCOUNT"); setShowForm(true); }}
+            className="flex items-center gap-2 py-2 px-4 rounded-xl font-medium text-sm transition-all active:scale-[0.98] border border-[#cfc6b4] text-[#efeae0] hover:border-[#b08a3e]"
+          >
+            <Landmark className="w-4 h-4" />
+            Nova Conta
+          </button>
+          <button
+            onClick={() => { setFormType("CARD"); setShowForm(true); }}
             className="flex items-center gap-2 py-2 px-4 rounded-xl font-medium text-sm transition-all active:scale-[0.98] text-[#16171b]"
             style={{ background: "#b08a3e" }}
           >
-            <Plus className="w-4 h-4" />
-            Nova Conta
+            <CreditCard className="w-4 h-4" />
+            Novo Cartão
           </button>
         </div>
       </div>
@@ -200,7 +231,7 @@ export default function AccountsPage() {
       {/* Form */}
       {showForm && (
         <form onSubmit={handleCreateAccount} className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-6 space-y-4">
-          <h2 className="font-semibold text-[#efeae0]">Nova Conta</h2>
+          <h2 className="font-semibold text-[#efeae0]">{formType === "CARD" ? "Novo Cartão de Crédito" : "Nova Conta"}</h2>
 
           {/* Bank selector */}
           <div>
@@ -216,36 +247,37 @@ export default function AccountsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Nome da Conta</label>
+              <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Nome da {formType === "CARD" ? "Cartão" : "Conta"}</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Ex: Nubank Conta Corrente"
+                placeholder={formType === "CARD" ? "Ex: Nubank Platinum" : "Ex: Conta Corrente"}
                 className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-lg px-4 py-2 text-[#efeae0] focus:border-[#b08a3e] outline-none"
                 required
               />
             </div>
 
-            <div>
-              <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Tipo</label>
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value as any)}
-                className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-lg px-4 py-2 text-[#efeae0] focus:border-[#b08a3e] outline-none"
-              >
-                <option value="CHECKING">Conta Corrente</option>
-                <option value="SAVINGS">Poupança</option>
-                <option value="CREDIT_CARD">Cartão de Crédito</option>
-                <option value="INVESTMENT">Investimento</option>
-                <option value="CASH">Dinheiro</option>
-                <option value="OTHER">Outro</option>
-              </select>
-            </div>
+            {formType !== "CARD" && (
+              <div>
+                <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Tipo</label>
+                <select
+                  value={type}
+                  onChange={(e) => setType(e.target.value as any)}
+                  className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-lg px-4 py-2 text-[#efeae0] focus:border-[#b08a3e] outline-none"
+                >
+                  <option value="CHECKING">Conta Corrente</option>
+                  <option value="SAVINGS">Poupança</option>
+                  <option value="INVESTMENT">Investimento</option>
+                  <option value="CASH">Dinheiro</option>
+                  <option value="OTHER">Outro</option>
+                </select>
+              </div>
+            )}
 
             <div>
               <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">
-                {type === "CREDIT_CARD" ? "Fatura Atual (R$)" : "Saldo Inicial (R$)"}
+                {formType === "CARD" ? "Fatura Atual (R$)" : "Saldo Inicial (R$)"}
               </label>
               <input
                 type="number"
@@ -258,7 +290,7 @@ export default function AccountsPage() {
               />
             </div>
 
-            {type === "CREDIT_CARD" && (
+            {formType === "CARD" && (
               <>
                 <div>
                   <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Limite Total (R$)</label>
@@ -291,7 +323,7 @@ export default function AccountsPage() {
           <div className="flex justify-end gap-3">
             <button
               type="button"
-              onClick={() => setShowForm(false)}
+              onClick={() => { setShowForm(false); setFormType(null); }}
               className="py-2 px-4 rounded-lg text-sm text-[#86837d] hover:text-[#efeae0] transition-colors"
             >
               Cancelar
@@ -301,7 +333,7 @@ export default function AccountsPage() {
               className="py-2 px-6 rounded-lg font-medium text-sm text-[#16171b]"
               style={{ background: "#b08a3e" }}
             >
-              Criar Conta
+              Criar {formType === "CARD" ? "Cartão" : "Conta"}
             </button>
           </div>
         </form>
@@ -359,19 +391,19 @@ export default function AccountsPage() {
                   <div className="space-y-2">
                     <div>
                       <span className="text-[10px] text-[#86837d] uppercase tracking-wider block">Fatura Atual</span>
-                      <p className="text-2xl font-bold text-[#9e4a3e]">
+                      <p className="text-2xl font-bold text-[#9e4a3e] num">
                         {formatBRL(Math.abs(parseFloat(account.currentBalance || "0")))}
                       </p>
                     </div>
                     {account.creditLimit && parseFloat(account.creditLimit) > 0 && (
                       <div className="pt-2 border-t border-[#cfc6b4]/20 flex justify-between text-xs text-[#86837d]">
-                        <span>Limite: <strong className="text-[#efeae0]">{formatBRL(parseFloat(account.creditLimit))}</strong></span>
+                        <span>Limite: <strong className="text-[#efeae0] num">{formatBRL(parseFloat(account.creditLimit))}</strong></span>
                         {account.dueDay && <span>Venc: dia <strong className="text-[#efeae0]">{account.dueDay}</strong></span>}
                       </div>
                     )}
                   </div>
                 ) : (
-                  <p className="text-2xl font-bold text-[#efeae0]">
+                  <p className="text-2xl font-bold text-[#efeae0] num">
                     {formatBRL(parseFloat(account.currentBalance))}
                   </p>
                 )}
