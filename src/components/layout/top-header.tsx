@@ -2,6 +2,7 @@
 
 import { Menu, Bell, User, LogOut, ChevronDown, Settings } from "lucide-react";
 import { useState } from "react";
+import { signIn, signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 
 interface TopHeaderProps {
@@ -70,7 +71,10 @@ export function TopHeader({ userName, userRole, showMobileMenu = true, onMenuCli
                   <span>Configurações</span>
                 </button>
                 <hr className="border-[#cfc6b4] mx-2" />
-                <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#9e4a3e] hover:bg-[#9e4a3e]/10 transition-colors">
+                <button
+                  onClick={() => signOut({ callbackUrl: "/login" })}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#9e4a3e] hover:bg-[#9e4a3e]/10 transition-colors"
+                >
                   <LogOut className="w-4 h-4" />
                   <span>Sair</span>
                 </button>

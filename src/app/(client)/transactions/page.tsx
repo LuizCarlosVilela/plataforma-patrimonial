@@ -42,6 +42,8 @@ export default function TransactionsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [filter, setFilter] = useState<"all" | "income" | "expense">("all");
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -288,9 +290,10 @@ export default function TransactionsPage() {
         {/* Category chips */}
         <div className="flex flex-wrap gap-2">
           {categories.map((cat) => (
-            <div
+            <button
               key={cat.id}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium cursor-default transition-all hover:scale-105"
+              onClick={() => { setModalType(cat.icon === "Wallet" || cat.icon === "TrendingUp" || cat.icon === "Briefcase" || cat.icon === "Coins" ? "INCOME" : "EXPENSE"); setSelectedCategoryId(cat.id); setShowModal(true); }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-all hover:scale-105"
               style={{
                 background: `${cat.color || '#8b5cf6'}20`,
                 border: `1px solid ${cat.color || '#8b5cf6'}40`,
@@ -299,7 +302,7 @@ export default function TransactionsPage() {
             >
               {renderCategoryIcon(cat.icon)}
               <span>{cat.name}</span>
-            </div>
+            </button>
           ))}
           {categories.length === 0 && (
             <span className="text-xs text-[#86837d]">Nenhuma categoria criada ainda</span>
@@ -414,6 +417,8 @@ export default function TransactionsPage() {
       <TransactionModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
+        defaultType={modalType}
+        defaultCategoryId={selectedCategoryId}
         accounts={accounts}
         categories={categories}
       />
