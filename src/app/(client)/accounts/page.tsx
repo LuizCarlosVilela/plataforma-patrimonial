@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { Plus, CreditCard, Landmark, TrendingUp, Wallet, RefreshCw, AlertCircle } from "lucide-react";
 import { formatBRL } from "@/lib/utils";
+import { SearchableSelect } from "@/components/shared/searchable-select";
 
 interface BankOption {
   id: string;
@@ -92,7 +93,7 @@ export default function AccountsPage() {
           name,
           type,
           initialBalance: parseFloat(initialBalance),
-          ...(selectedBank ? { color: BANKS.find(b => b.id === selectedBank)?.color } : {}),
+          ...(selectedBank ? { bankId: selectedBank, color: BANKS.find(b => b.id === selectedBank)?.color } : {}),
         }),
       });
 
@@ -197,34 +198,14 @@ export default function AccountsPage() {
 
           {/* Bank selector */}
           <div>
-            <label className="block text-xs text-[#86837d] mb-2 uppercase tracking-wider">Selecione o Banco</label>
-            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-2">
-              {BANKS.map((bank) => {
-                const isSelected = selectedBank === bank.id;
-                return (
-                  <button
-                    key={bank.id}
-                    type="button"
-                    onClick={() => setSelectedBank(bank.id)}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-all ${
-                      isSelected
-                        ? "border-[#b08a3e] bg-[rgba(176,138,62,0.15)] scale-105"
-                        : "border-[#cfc6b4] bg-[#16171b] hover:border-[#b08a3e]/50"
-                    }`}
-                  >
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-                      style={{ background: bank.color }}
-                    >
-                      {bank.icon}
-                    </div>
-                    <span className={`text-[10px] truncate w-full text-center ${isSelected ? "text-[#efeae0]" : "text-[#86837d]"}`}>
-                      {bank.name.split(" ")[0]}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            <label className="block text-xs text-[#86837d] mb-2 uppercase tracking-wider">Banco</label>
+            <SearchableSelect
+              options={BANKS.map((b) => ({ id: b.id, label: b.name, icon: null, color: b.color }))}
+              value={selectedBank}
+              onChange={(id) => setSelectedBank(id)}
+              placeholder="Pesquisar banco..."
+              className="w-full"
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

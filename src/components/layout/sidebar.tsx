@@ -3,6 +3,7 @@
 import { Home, Wallet, Target, ArrowRightLeft, Settings, LogOut, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { OriginLogo } from "@/components/shared/origin-logo";
 
 export function Sidebar() {
@@ -51,7 +52,10 @@ export function Sidebar() {
 
       {/* Footer */}
       <div className="p-3 border-t border-[#cfc6b4]/20">
-        <button className="flex items-center gap-3 px-3 py-2.5 w-full text-[#86837d] hover:text-[#9e4a3e] transition-colors rounded-lg hover:bg-white/5">
+        <button
+          onClick={() => signOut({ callbackUrl: "/login" })}
+          className="flex items-center gap-3 px-3 py-2.5 w-full text-[#86837d] hover:text-[#9e4a3e] transition-colors rounded-lg hover:bg-white/5"
+        >
           <LogOut size={17} />
           <span className="text-sm">Sair</span>
         </button>

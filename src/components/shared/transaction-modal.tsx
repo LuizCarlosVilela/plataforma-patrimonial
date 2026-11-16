@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { X, Plus, Minus, CreditCard, Landmark, TrendingUp, Wallet, Car, Home, Utensils, HeartPulse, Gamepad2, GraduationCap, ShoppingBag, Briefcase, Coins, MoreHorizontal, Repeat, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createTransaction } from "@/server/actions/transactions";
+import { SearchableSelect } from "@/components/shared/searchable-select";
 
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   Utensils,
@@ -140,6 +141,20 @@ export function TransactionModal({ isOpen, onClose, defaultType = "EXPENSE", def
   const incomeCategories = categories.filter(c => c.icon === "Wallet" || c.icon === "TrendingUp" || c.icon === "Briefcase" || c.icon === "Coins");
   const displayCategories = type === "INCOME" ? incomeCategories : expenseCategories;
 
+  const accountOptions = accounts.map(acc => ({
+    id: acc.id,
+    label: acc.name,
+    icon: renderIcon(acc.icon ?? "", accountIcons),
+    color: acc.color ?? undefined,
+  }));
+
+  const categoryOptions = displayCategories.map(cat => ({
+    id: cat.id,
+    label: cat.name,
+    icon: renderIcon(cat.icon ?? "", categoryIcons),
+    color: cat.color ?? undefined,
+  }));
+
   if (!isOpen) return null;
 
   return (
@@ -221,69 +236,32 @@ export function TransactionModal({ isOpen, onClose, defaultType = "EXPENSE", def
             />
           </div>
 
-          {/* Conta */}
+          {/* Conta — searchable select */}
           <div>
             <label className="block text-xs font-medium text-[#86837d] mb-2">Conta</label>
-            <div className="grid grid-cols-2 gap-2">
-              {accounts.map((acc) => {
-                const AccIcon = accountIcons[acc.icon ?? ""] || Landmark;
-                const isSelected = accountId === acc.id;
-                return (
-                  <button
-                    key={acc.id}
-                    type="button"
-                    onClick={() => setAccountId(acc.id)}
-                    className={cn(
-                      "flex items-center gap-2 px-3 py-2.5 rounded-xl border text-left transition-all",
-                      isSelected
-                        ? "border-[#b08a3e] bg-[rgba(176,138,62,0.15)]"
-                        : "border-[#cfc6b4] bg-[#16171b] hover:border-[#b08a3e]/50"
-                    )}
-                  >
-                    <AccIcon className={`w-4 h-4 flex-shrink-0 ${isSelected ? "text-[#b08a3e]" : "text-[#86837d]"}`} />
-                    <span className={cn("text-xs truncate", isSelected ? "text-[#efeae0]" : "text-[#86837d]")}>
-                      {acc.name}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            <SearchableSelect
+              options={accountOptions}
+              value={accountId}
+              onChange={(id) => setAccountId(id)}
+              placeholder="Selecionar conta..."
+              className="w-full"
+            />
           </div>
 
           {/* Categoria com ícones visuais */}
           <div>
             <label className="block text-xs font-medium text-[#86837d] mb-2">Categoria</label>
-            <div className="grid grid-cols-4 gap-2">
-              {displayCategories.map((cat) => {
-                const CatIcon = categoryIcons[cat.icon ?? ""] || MoreHorizontal;
-                const isSelected = categoryId === cat.id;
-                return (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setCategoryId(cat.id)}
-                    className={cn(
-                      "flex flex-col items-center gap-1.5 p-2.5 rounded-xl border transition-all",
-                      isSelected
-                        ? "border-[#b08a3e] bg-[rgba(176,138,62,0.15)] scale-105"
-                        : "border-[#cfc6b4] bg-[#16171b] hover:border-[#b08a3e]/50"
-                    )}
-                  >
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center"
-                      style={{ background: `${cat.color || '#8b5cf6'}20` }}
-                    >
-                      <span style={{ color: cat.color || '#8b5cf6' }}>
-                        <CatIcon className="w-4 h-4" />
-                      </span>
-                    </div>
-                    <span className={cn("text-[10px] text-center leading-tight", isSelected ? "text-[#efeae0]" : "text-[#86837d]")}>
-                      {cat.name.split(" ")[0]}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            {displayCategories.length > 0 ? (
+              <SearchableSelect
+                options={categoryOptions}
+                value={categoryId}
+                onChange={(id) => setCategoryId(id)}
+                placeholder={`Categoria de ${type === "EXPENSE" ? "despesa" : "receita"}...`}
+                className="w-full"
+              />
+            ) : (
+              <p className="text-sm text-[#86837d]">Nenhuma categoria disponível. Crie uma primeiro.</p>
+            )}
           </div>
 
           {/* Data */}

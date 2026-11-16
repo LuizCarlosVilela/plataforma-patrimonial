@@ -76,6 +76,7 @@ model Account {
   currency          String       @default("BRL")
   color             String?
   icon              String?
+  bankId            String?  @map("bank_id")
 
   isManual          Boolean      @default(true) @map("is_manual")
   openFinanceItemId String?      @map("open_finance_item_id")
