@@ -226,7 +226,7 @@ export function TransactionModal({ isOpen, onClose, defaultType = "EXPENSE", def
             <label className="block text-xs font-medium text-[#86837d] mb-2">Conta</label>
             <div className="grid grid-cols-2 gap-2">
               {accounts.map((acc) => {
-                const AccIcon = accountIcons[acc.icon] || Landmark;
+                const AccIcon = accountIcons[acc.icon ?? ""] || Landmark;
                 const isSelected = accountId === acc.id;
                 return (
                   <button
@@ -255,7 +255,7 @@ export function TransactionModal({ isOpen, onClose, defaultType = "EXPENSE", def
             <label className="block text-xs font-medium text-[#86837d] mb-2">Categoria</label>
             <div className="grid grid-cols-4 gap-2">
               {displayCategories.map((cat) => {
-                const CatIcon = categoryIcons[cat.icon] || MoreHorizontal;
+                const CatIcon = categoryIcons[cat.icon ?? ""] || MoreHorizontal;
                 const isSelected = categoryId === cat.id;
                 return (
                   <button
@@ -273,7 +273,9 @@ export function TransactionModal({ isOpen, onClose, defaultType = "EXPENSE", def
                       className="w-8 h-8 rounded-full flex items-center justify-center"
                       style={{ background: `${cat.color || '#8b5cf6'}20` }}
                     >
-                      <CatIcon className="w-4 h-4" style={{ color: cat.color || '#8b5cf6' }} />
+                      <span style={{ color: cat.color || '#8b5cf6' }}>
+                        <CatIcon className="w-4 h-4" />
+                      </span>
                     </div>
                     <span className={cn("text-[10px] text-center leading-tight", isSelected ? "text-[#efeae0]" : "text-[#86837d]")}>
                       {cat.name.split(" ")[0]}
