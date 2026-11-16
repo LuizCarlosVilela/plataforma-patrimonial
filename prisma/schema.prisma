@@ -77,7 +77,8 @@ model Account {
   color             String?
   icon              String?
   bankId            String?  @map("bank_id")
-
+  creditLimit       Decimal? @default(0.00) @db.Decimal(15, 2) @map("credit_limit")
+  dueDay            Int?     @default(15) @map("due_day")
   isManual          Boolean      @default(true) @map("is_manual")
   openFinanceItemId String?      @map("open_finance_item_id")
   lastSyncedAt      DateTime?    @map("last_synced_at")

@@ -41,6 +41,8 @@ export default function AccountsPage() {
   const [type, setType] = useState<"CHECKING" | "SAVINGS" | "CREDIT_CARD" | "INVESTMENT" | "CASH" | "OTHER">("CHECKING");
   const [initialBalance, setInitialBalance] = useState("");
   const [selectedBank, setSelectedBank] = useState<string>("");
+  const [creditLimit, setCreditLimit] = useState("");
+  const [dueDay, setDueDay] = useState("15");
 
   useEffect(() => {
     async function getUser() {
@@ -94,6 +96,10 @@ export default function AccountsPage() {
           type,
           initialBalance: parseFloat(initialBalance),
           ...(selectedBank ? { bankId: selectedBank, color: BANKS.find(b => b.id === selectedBank)?.color } : {}),
+          ...(type === "CREDIT_CARD" ? {
+            creditLimit: creditLimit ? parseFloat(creditLimit) : undefined,
+            dueDay: dueDay ? parseInt(dueDay) : undefined,
+          } : {}),
         }),
       });
 
@@ -238,7 +244,9 @@ export default function AccountsPage() {
             </div>
 
             <div>
-              <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Saldo Inicial (R$)</label>
+              <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">
+                {type === "CREDIT_CARD" ? "Fatura Atual (R$)" : "Saldo Inicial (R$)"}
+              </label>
               <input
                 type="number"
                 step="0.01"
@@ -249,6 +257,35 @@ export default function AccountsPage() {
                 required
               />
             </div>
+
+            {type === "CREDIT_CARD" && (
+              <>
+                <div>
+                  <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Limite Total (R$)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={creditLimit}
+                    onChange={(e) => setCreditLimit(e.target.value)}
+                    placeholder="Ex: 5000,00"
+                    className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-lg px-4 py-2 text-[#efeae0] focus:border-[#b08a3e] outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs text-[#86837d] mb-1 uppercase tracking-wider">Dia do Vencimento</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="31"
+                    value={dueDay}
+                    onChange={(e) => setDueDay(e.target.value)}
+                    placeholder="Ex: 10"
+                    className="w-full bg-[#16171b] border border-[#cfc6b4] rounded-lg px-4 py-2 text-[#efeae0] focus:border-[#b08a3e] outline-none"
+                  />
+                </div>
+              </>
+            )}
           </div>
 
           <div className="flex justify-end gap-3">
@@ -318,9 +355,26 @@ export default function AccountsPage() {
                 <h3 className="font-semibold text-[#efeae0] mb-1">{account.name}</h3>
                 <p className="text-xs text-[#86837d] mb-3">{getTypeLabel(account.type)}</p>
 
-                <p className="text-2xl font-bold text-[#efeae0]">
-                  {formatBRL(parseFloat(account.currentBalance))}
-                </p>
+                {account.type === "CREDIT_CARD" ? (
+                  <div className="space-y-2">
+                    <div>
+                      <span className="text-[10px] text-[#86837d] uppercase tracking-wider block">Fatura Atual</span>
+                      <p className="text-2xl font-bold text-[#9e4a3e]">
+                        {formatBRL(Math.abs(parseFloat(account.currentBalance || "0")))}
+                      </p>
+                    </div>
+                    {account.creditLimit && parseFloat(account.creditLimit) > 0 && (
+                      <div className="pt-2 border-t border-[#cfc6b4]/20 flex justify-between text-xs text-[#86837d]">
+                        <span>Limite: <strong className="text-[#efeae0]">{formatBRL(parseFloat(account.creditLimit))}</strong></span>
+                        {account.dueDay && <span>Venc: dia <strong className="text-[#efeae0]">{account.dueDay}</strong></span>}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-2xl font-bold text-[#efeae0]">
+                    {formatBRL(parseFloat(account.currentBalance))}
+                  </p>
+                )}
               </div>
             );
           })}
