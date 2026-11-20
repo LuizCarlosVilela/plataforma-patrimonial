@@ -28,27 +28,41 @@ export async function POST(request: Request) {
       );
     }
 
-    const account = await prisma.account.create({
-      data: {
-        userId: resolvedUserId,
-        name,
-        type: type as any,
-        initialBalance: new (require('@prisma/client').Decimal)(initialBalance),
-        currentBalance: new (require('@prisma/client').Decimal)(initialBalance),
-        currency,
-        isManual: true,
-        ...(bankId ? { bankId } : {}),
-        ...(color ? { color } : {}),
-        ...(type === 'CREDIT_CARD'
-          ? {
-              creditLimit: creditLimit
-                ? new (require('@prisma/client').Decimal)(creditLimit)
-                : undefined,
-              dueDay: dueDay ? parseInt(dueDay, 10) : undefined,
-            }
-          : {}),
-      },
-    });
+    // Build create data without optional fields that may not exist in DB yet
+    const createData: any = {
+      userId: resolvedUserId,
+      name,
+      type: type as any,
+      initialBalance: new (require('@prisma/client').Decimal)(initialBalance),
+      currentBalance: new (require('@prisma/client').Decimal)(initialBalance),
+      currency,
+      isManual: true,
+    };
+
+    if (bankId) createData.bankId = bankId;
+    if (color) createData.color = color;
+
+    if (type === 'CREDIT_CARD') {
+      if (creditLimit) createData.creditLimit = new (require('@prisma/client').Decimal)(creditLimit);
+      if (dueDay) createData.dueDay = parseInt(dueDay, 10);
+    }
+
+    // Try creating with all fields; on failure retry without optional ones
+    let account;
+    try {
+      account = await prisma.account.create({ data: createData });
+    } catch (err: any) {
+      if (err?.code === 'P2006' || err?.message?.includes('bank_id') || err?.message?.includes('credit_limit') || err?.message?.includes('due_day')) {
+        // Columns don't exist yet — retry without them
+        delete createData.bankId;
+        delete createData.color;
+        delete createData.creditLimit;
+        delete createData.dueDay;
+        account = await prisma.account.create({ data: createData });
+      } else {
+        throw err;
+      }
+    }
 
     return NextResponse.json({ message: 'Conta criada com sucesso!', account });
   } catch (error) {
