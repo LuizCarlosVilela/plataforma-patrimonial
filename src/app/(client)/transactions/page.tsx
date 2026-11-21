@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { Plus, ArrowUpRight, ArrowDownRight, Filter, Calendar, Trash2, Sparkles, X, Utensils, Home, Car, HeartPulse, Gamepad2, Wallet, TrendingUp, Briefcase, ShoppingBag, GraduationCap, Coins, MoreHorizontal } from "lucide-react";
+import { Plus, ArrowUpRight, ArrowDownRight, Filter, Calendar, Trash2, Sparkles, X, Utensils, Home, Car, HeartPulse, Gamepad2, Wallet, TrendingUp, Briefcase, ShoppingBag, GraduationCap, Coins, MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatBRL } from "@/lib/utils";
 import { TransactionModal } from "@/components/shared/transaction-modal";
 
@@ -45,6 +45,8 @@ export default function TransactionsPage() {
   const [modalType, setModalType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [filter, setFilter] = useState<"all" | "income" | "expense">("all");
+  const [dateFilter, setDateFilter] = useState<{ month: number; year: number } | null>(null);
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
@@ -180,7 +182,35 @@ export default function TransactionsPage() {
     if (filter === "income") return t.type === "INCOME";
     if (filter === "expense") return t.type === "EXPENSE";
     return true;
+  }).filter((t) => {
+    if (!dateFilter) return true;
+    const txDate = new Date(t.date);
+    return txDate.getMonth() === dateFilter.month && txDate.getFullYear() === dateFilter.year;
   });
+
+  const getMonthName = (month: number) => {
+    const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    return months[month];
+  };
+
+  const changeMonth = (direction: 'prev' | 'next') => {
+    setCurrentDate(prev => {
+      const newDate = new prev;
+      if (direction === 'prev') {
+        newDate.setMonth(prev.getMonth() - 1);
+      } else {
+        newDate.setMonth(prev.getMonth() + 1);
+      }
+      setDateFilter({ month: newDate.getMonth(), year: newDate.getFullYear() });
+      return newDate;
+    });
+  };
+
+  const resetDateFilter = () => {
+    setDateFilter(null);
+    setCurrentDate(new Date());
+  };
 
   const getCategoryById = (id: string | null | undefined) => {
     if (!id) return null;
@@ -331,6 +361,42 @@ export default function TransactionsPage() {
               {f.label}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Date Filter */}
+      <div className="panel p-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Calendar className="w-4 h-4 text-[#b08a3e]" />
+          {dateFilter ? (
+            <span className="text-sm font-medium text-[#efeae0]">
+              {getMonthName(dateFilter.month)} {dateFilter.year}
+            </span>
+          ) : (
+            <span className="text-sm text-[#86837d]">Todos os períodos</span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => changeMonth('prev')}
+            className="p-1.5 rounded-lg hover:bg-[#16171b] text-[#86837d] hover:text-[#efeae0] transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => changeMonth('next')}
+            className="p-1.5 rounded-lg hover:bg-[#16171b] text-[#86837d] hover:text-[#efeae0] transition-colors"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+          {dateFilter && (
+            <button
+              onClick={resetDateFilter}
+              className="ml-2 px-3 py-1.5 rounded-lg text-xs font-medium text-red-400 hover:bg-red-500/10 transition-colors"
+            >
+              Limpar
+            </button>
+          )}
         </div>
       </div>
 
