@@ -196,7 +196,7 @@ export default function TransactionsPage() {
 
   const changeMonth = (direction: 'prev' | 'next') => {
     setCurrentDate(prev => {
-      const newDate = new prev;
+      const newDate = new Date(prev);
       if (direction === 'prev') {
         newDate.setMonth(prev.getMonth() - 1);
       } else {

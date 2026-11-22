@@ -14,38 +14,56 @@ interface BankOption {
 }
 
 const BANKS: BankOption[] = [
+  // Principais bancos brasileiros
   { id: "bb", name: "Banco do Brasil", icon: <span className="text-xs font-bold text-white">BB</span>, color: "#e52d2d" },
   { id: "santander", name: "Santander", icon: <span className="text-xs font-bold text-white">Sa</span>, color: "#ec0000" },
   { id: "itau", name: "Itaú", icon: <span className="text-xs font-bold text-white">Ita</span>, color: "#ff7a00" },
   { id: "bradesco", name: "Bradesco", icon: <span className="text-xs font-bold text-white">B</span>, color: "#e32632" },
+  { id: "caixa", name: "Caixa Econômica Federal", icon: <span className="text-xs font-bold text-white">CX</span>, color: "#005ca9" },
   { id: "nubank", name: "Nubank", icon: <span className="text-xs font-bold text-white">Nu</span>, color: "#8a09d2" },
   { id: "inter", name: "Banco Inter", icon: <span className="text-xs font-bold text-white">Int</span>, color: "#ff7a00" },
   { id: "c6", name: "C6 Bank", icon: <span className="text-xs font-bold text-white">C6</span>, color: "#000000" },
-  { id: "caixa", name: "Caixa", icon: <span className="text-xs font-bold text-white">CX</span>, color: "#005ca9" },
+  { id: "bmg", name: "Banco BMG", icon: <span className="text-xs font-bold text-white">Bm</span>, color: "#ff8200" },
+  { id: "daycoval", name: "Daycoval", icon: <span className="text-xs font-bold text-white">Da</span>, color: "#005696" },
+  { id: "sofisa", name: "Sofisa Direto", icon: <span className="text-xs font-bold text-white">So</span>, color: "#f7941e" },
+  { id: "original", name: "Original", icon: <span className="text-xs font-bold text-white">Or</span>, color: "#00a651" },
+
+  // Fintechs populares
   { id: "picpay", name: "PicPay", icon: <span className="text-xs font-bold text-white">Pp</span>, color: "#21c25e" },
   { id: "cora", name: "Cora", icon: <span className="text-xs font-bold text-white">Co</span>, color: "#0066cc" },
+  { id: "recargapay", name: "RecargaPay", icon: <span className="text-xs font-bold text-white">Rp</span>, color: "#009688" },
+  { id: "mercado-pago", name: "Mercado Pago", icon: <span className="text-xs font-bold text-white">Mp</span>, color: "#00a8e8" },
+  { id: "will", name: "Will Bank", icon: <span className="text-xs font-bold text-white">Wi</span>, color: "#ffeb00" },
+  { id: "neon", name: "Neon", icon: <span className="text-xs font-bold text-white">Ne</span>, color: "#00ffcc" },
+  { id: "next", name: "Next", icon: <span className="text-xs font-bold text-white">Ne</span>, color: "#212121" },
+  { id: "pagbank", name: "PagBank", icon: <span className="text-xs font-bold text-white">Pg</span>, color: "#00c300" },
+  { id: "meupag", name: "Meu Pag!", icon: <span className="text-xs font-bold text-white">Pg</span>, color: "#ff8200" },
+  { id: "banco-pan", name: "Banco Pan", icon: <span className="text-xs font-bold text-white">Pa</span>, color: "#f58220" },
+  { id: "iti", name: "iti", icon: <span className="text-xs font-bold text-white">it</span>, color: "#ec008c" },
+  { id: "solo", name: "Solo", icon: <span className="text-xs font-bold text-white">So</span>, color: "#6c5ce7" },
+  { id: "kriya", name: "Kry", icon: <span className="text-xs font-bold text-white">Kr</span>, color: "#00c853" },
+
+  // Investimentos
   { id: "btg", name: "BTG Pactual", icon: <span className="text-xs font-bold text-white">BTG</span>, color: "#003399" },
-  { id: "original", name: "Original", icon: <span className="text-xs font-bold text-white">Or</span>, color: "#00a651" },
   { id: "xp", name: "XP Investimentos", icon: <span className="text-xs font-bold text-white">XP</span>, color: "#303030" },
   { id: "rico", name: "Rico", icon: <span className="text-xs font-bold text-white">Ri</span>, color: "#f2711c" },
   { id: "nuinvest", name: "NuInvest", icon: <span className="text-xs font-bold text-white">NuI</span>, color: "#8a09d2" },
   { id: "clear", name: "Clear", icon: <span className="text-xs font-bold text-white">Cl</span>, color: "#00a89d" },
   { id: "easynvest", name: "Easynvest", icon: <span className="text-xs font-bold text-white">Ea</span>, color: "#2672ba" },
   { id: "safra", name: "Safra", icon: <span className="text-xs font-bold text-white">Sa</span>, color: "#2a2a2a" },
-  { id: "banco-pan", name: "Banco Pan", icon: <span className="text-xs font-bold text-white">Pa</span>, color: "#f58220" },
-  { id: "next", name: "Next", icon: <span className="text-xs font-bold text-white">Ne</span>, color: "#212121" },
-  { id: "pagbank", name: "PagBank", icon: <span className="text-xs font-bold text-white">Pg</span>, color: "#00c300" },
-  { id: "mercadopago", name: "Mercado Pago", icon: <span className="text-xs font-bold text-white">Mp</span>, color: "#00a8e8" },
+  { id: "voro", name: "Voro", icon: <span className="text-xs font-bold text-white">Vo</span>, color: "#1a237e" },
+
+  // Internacionais e pagamentos
   { id: "nomad", name: "Nomad", icon: <span className="text-xs font-bold text-white">No</span>, color: "#000000" },
-  { id: "avenue", name: "Avenue", icon: <span className="text-xs font-bold text-white">Av</span>, color: "#1e3a8a" },
   { id: "wise", name: "Wise", icon: <span className="text-xs font-bold text-white">Wi</span>, color: "#90e8e0" },
-  { id: "neon", name: "Neon", icon: <span className="text-xs font-bold text-white">Ne</span>, color: "#00ffcc" },
-  { id: "sofisa", name: "Sofisa Direto", icon: <span className="text-xs font-bold text-white">So</span>, color: "#f7941e" },
-  { id: "bmg", name: "Banco BMG", icon: <span className="text-xs font-bold text-white">Bm</span>, color: "#ff8200" },
-  { id: "daycoval", name: "Daycoval", icon: <span className="text-xs font-bold text-white">Da</span>, color: "#005696" },
-  { id: "meupag", name: "Meu Pag!", icon: <span className="text-xs font-bold text-white">Pg</span>, color: "#ff8200" },
-  { id: "will", name: "Will Bank", icon: <span className="text-xs font-bold text-white">Wi</span>, color: "#ffeb00" },
-  { id: "iti", name: "iti", icon: <span className="text-xs font-bold text-white">it</span>, color: "#ec008c" },
+  { id: "avenue", name: "Avenue", icon: <span className="text-xs font-bold text-white">Av</span>, color: "#1e3a8a" },
+  { id: "payoneer", name: "Payoneer", icon: <span className="text-xs font-bold text-white">Py</span>, color: "#ff4000" },
+  { id: "paypal", name: "PayPal", icon: <span className="text-xs font-bold text-white">PP</span>, color: "#003087" },
+
+  // Outros
+  { id: "mobway", name: "Mobway", icon: <span className="text-xs font-bold text-white">Mw</span>, color: "#e91e63" },
+  { id: "bmobil", name: "BMobil", icon: <span className="text-xs font-bold text-white">Bm</span>, color: "#607d8b" },
+  { id: "santander-cash", name: "Santander Cash", icon: <span className="text-xs font-bold text-white">Sc</span>, color: "#ec0000" },
 ];
 
 export default function AccountsPage() {
@@ -191,31 +209,31 @@ export default function AccountsPage() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-[#efeae0]">Minhas Contas</h1>
-        <div className="flex gap-3">
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-xl font-bold text-[#efeae0] whitespace-nowrap">Minhas Contas</h1>
+        <div className="flex gap-2 flex-wrap justify-end">
           <button
             onClick={handleOpenFinanceSync}
             disabled={syncing || !userEmail}
-            className="flex items-center gap-2 py-2 px-4 rounded-xl font-medium text-sm transition-all active:scale-[0.98] border border-[#cfc6b4] text-[#efeae0] hover:border-[#b08a3e] disabled:opacity-50"
+            className="flex items-center gap-1 sm:gap-2 py-2 px-3 sm:px-4 rounded-xl font-medium text-xs sm:text-sm transition-all active:scale-[0.98] border border-[#cfc6b4] text-[#efeae0] hover:border-[#b08a3e] disabled:opacity-50"
           >
-            <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} />
-            Sync Open Finance
+            <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${syncing ? "animate-spin" : ""}`} />
+            <span className="hidden xs:inline">Sync Open Finance</span>
           </button>
           <button
             onClick={() => { setFormType("ACCOUNT"); setShowForm(true); }}
-            className="flex items-center gap-2 py-2 px-4 rounded-xl font-medium text-sm transition-all active:scale-[0.98] border border-[#cfc6b4] text-[#efeae0] hover:border-[#b08a3e]"
+            className="flex items-center gap-1 sm:gap-2 py-2 px-3 sm:px-4 rounded-xl font-medium text-xs sm:text-sm transition-all active:scale-[0.98] border border-[#cfc6b4] text-[#efeae0] hover:border-[#b08a3e]"
           >
-            <Landmark className="w-4 h-4" />
-            Nova Conta
+            <Landmark className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="hidden xs:inline">Nova Conta</span>
           </button>
           <button
             onClick={() => { setFormType("CARD"); setShowForm(true); }}
-            className="flex items-center gap-2 py-2 px-4 rounded-xl font-medium text-sm transition-all active:scale-[0.98] text-[#16171b]"
+            className="flex items-center gap-1 sm:gap-2 py-2 px-3 sm:px-4 rounded-xl font-medium text-xs sm:text-sm transition-all active:scale-[0.98] text-[#16171b]"
             style={{ background: "#b08a3e" }}
           >
-            <CreditCard className="w-4 h-4" />
-            Novo Cartão
+            <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="hidden xs:inline">Novo Cartão</span>
           </button>
         </div>
       </div>
