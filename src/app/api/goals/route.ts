@@ -33,16 +33,6 @@ export async function POST(request: Request) {
         targetDate: new Date(targetDate),
         status,
         ...(categoryTag ? { categoryTag } : {}),
-        goalAccounts: accountIds && accountIds.length > 0
-          ? {
-              create: accountIds.map((accountId: string) => ({ accountId })),
-            }
-          : undefined,
-      },
-      include: {
-        goalAccounts: {
-          include: { account: true },
-        },
       },
     });
 
@@ -70,15 +60,30 @@ export async function GET(request: Request) {
       return NextResponse.json({ goals: [] });
     }
 
-    const goals = await prisma.goal.findMany({
-      where: { userId: resolvedUserId },
-      orderBy: { targetDate: 'asc' },
-      include: {
-        goalAccounts: {
-          include: { account: true },
+    let goals;
+    try {
+      goals = await prisma.goal.findMany({
+        where: { userId: resolvedUserId },
+        orderBy: { targetDate: 'asc' },
+        include: {
+          goalAccounts: {
+            include: { account: true },
+          },
         },
-      },
-    });
+      });
+    } catch (err: any) {
+      const msg = err?.message || '';
+      if (err?.code === 'P2006' ||
+          msg.includes('goal_accounts') || msg.includes('goal_account')) {
+        // goal_accounts table doesn't exist yet — return simple goals
+        goals = await prisma.goal.findMany({
+          where: { userId: resolvedUserId },
+          orderBy: { targetDate: 'asc' },
+        });
+      } else {
+        throw err;
+      }
+    }
 
     return NextResponse.json({ goals });
   } catch (error) {
