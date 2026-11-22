@@ -11,6 +11,32 @@ async function resolveUserId(emailOrId: string): Promise<string | null> {
   return user?.id ?? null;
 }
 
+// Helper: upsert account without failing on missing columns
+async function safeUpsertAccount(updates: Record<string, any>, accountId: string) {
+  try {
+    return await prisma.account.update({
+      where: { id: accountId },
+      data: updates,
+    });
+  } catch (err: any) {
+    const msg = err?.message || '';
+    if (err?.code === 'P2006' ||
+        msg.includes('bankId') || msg.includes('bank_id') ||
+        msg.includes('creditLimit') || msg.includes('credit_limit') ||
+        msg.includes('dueDay') || msg.includes('due_day')) {
+      delete updates.bankId;
+      delete updates.color;
+      delete updates.creditLimit;
+      delete updates.dueDay;
+      return await prisma.account.update({
+        where: { id: accountId },
+        data: updates,
+      });
+    }
+    throw err;
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -28,7 +54,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Build create data without optional fields that may not exist in DB yet
     const createData: any = {
       userId: resolvedUserId,
       name,
@@ -47,13 +72,15 @@ export async function POST(request: Request) {
       if (dueDay) createData.dueDay = parseInt(dueDay, 10);
     }
 
-    // Try creating with all fields; on failure retry without optional ones
     let account;
     try {
       account = await prisma.account.create({ data: createData });
     } catch (err: any) {
-      if (err?.code === 'P2006' || err?.message?.includes('bank_id') || err?.message?.includes('credit_limit') || err?.message?.includes('due_day')) {
-        // Columns don't exist yet — retry without them
+      const msg = err?.message || '';
+      if (err?.code === 'P2006' ||
+          msg.includes('bankId') || msg.includes('bank_id') ||
+          msg.includes('creditLimit') || msg.includes('credit_limit') ||
+          msg.includes('dueDay') || msg.includes('due_day')) {
         delete createData.bankId;
         delete createData.color;
         delete createData.creditLimit;
@@ -98,6 +125,79 @@ export async function GET(request: Request) {
     console.error('Erro ao buscar contas:', error);
     return NextResponse.json(
       { error: 'Erro ao buscar contas' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json();
+    const { id, email, userId, name, type, initialBalance, currency, bankId, color, creditLimit, dueDay } = body;
+
+    if (!id) {
+      return NextResponse.json({ error: 'ID da conta é obrigatório' }, { status: 400 });
+    }
+
+    const resolvedUserId = await resolveUserId(userId || email);
+    if (!resolvedUserId) {
+      return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 });
+    }
+
+    // Verify ownership
+    const existing = await prisma.account.findFirst({ where: { id, userId: resolvedUserId } });
+    if (!existing) {
+      return NextResponse.json({ error: 'Conta não encontrada' }, { status: 404 });
+    }
+
+    const updates: any = {};
+    if (name !== undefined) updates.name = name;
+    if (type !== undefined) updates.type = type as any;
+    if (currency !== undefined) updates.currency = currency;
+    if (initialBalance !== undefined) updates.initialBalance = new (require('@prisma/client').Decimal)(initialBalance);
+    if (bankId !== undefined) updates.bankId = bankId;
+    if (color !== undefined) updates.color = color;
+
+    if (type === 'CREDIT_CARD') {
+      if (creditLimit !== undefined && creditLimit !== '') updates.creditLimit = new (require('@prisma/client').Decimal)(creditLimit);
+      if (dueDay !== undefined) updates.dueDay = parseInt(dueDay, 10);
+    }
+
+    const account = await safeUpsertAccount(updates, id);
+    return NextResponse.json({ message: 'Conta atualizada!', account });
+  } catch (error) {
+    console.error('Erro ao atualizar conta:', error);
+    return NextResponse.json(
+      { error: 'Erro ao atualizar conta', details: error instanceof Error ? error.message : String(error) },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    const userIdParam = searchParams.get('userId') || searchParams.get('email');
+
+    if (!id) {
+      return NextResponse.json({ error: 'ID da conta é obrigatório' }, { status: 400 });
+    }
+
+    const resolvedUserId = await resolveUserId(userIdParam || '');
+    if (resolvedUserId) {
+      const existing = await prisma.account.findFirst({ where: { id, userId: resolvedUserId } });
+      if (!existing) {
+        return NextResponse.json({ error: 'Conta não encontrada' }, { status: 404 });
+      }
+    }
+
+    await prisma.account.delete({ where: { id } });
+    return NextResponse.json({ message: 'Conta excluída com sucesso!' });
+  } catch (error) {
+    console.error('Erro ao excluir conta:', error);
+    return NextResponse.json(
+      { error: 'Erro ao excluir conta', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
