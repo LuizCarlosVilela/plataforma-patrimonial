@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { Plus, CreditCard, Landmark, TrendingUp, Wallet, RefreshCw, AlertCircle } from "lucide-react";
+import { Plus, CreditCard, Landmark, TrendingUp, Wallet, RefreshCw, AlertCircle, Pencil, Trash2, X } from "lucide-react";
 import { formatBRL } from "@/lib/utils";
 import { SearchableSelect } from "@/components/shared/searchable-select";
 
@@ -75,6 +75,10 @@ export default function AccountsPage() {
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
+  // Edit mode
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<any>({});
+
   // Form state
   const [name, setName] = useState("");
   const [type, setType] = useState<"CHECKING" | "SAVINGS" | "CREDIT_CARD" | "INVESTMENT" | "CASH" | "OTHER">("CHECKING");
@@ -121,30 +125,43 @@ export default function AccountsPage() {
     if (userEmail) loadAccounts();
   }, [userEmail]);
 
-  const handleCreateAccount = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !initialBalance || !userEmail) return;
 
+    const accountType = formType === "CARD" ? "CREDIT_CARD" : type;
+    const payload: any = {
+      email: userEmail,
+      name,
+      type: accountType,
+      initialBalance: parseFloat(initialBalance),
+      ...(selectedBank ? { bankId: selectedBank, color: BANKS.find(b => b.id === selectedBank)?.color } : {}),
+      ...(accountType === "CREDIT_CARD" ? {
+        creditLimit: creditLimit ? parseFloat(creditLimit) : undefined,
+        dueDay: dueDay ? parseInt(dueDay) : undefined,
+      } : {}),
+    };
+
     try {
-      const accountType = formType === "CARD" ? "CREDIT_CARD" : type;
-      const res = await fetch("/api/accounts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: userEmail,
-          name,
-          type: accountType,
-          initialBalance: parseFloat(initialBalance),
-          ...(selectedBank ? { bankId: selectedBank, color: BANKS.find(b => b.id === selectedBank)?.color } : {}),
-          ...(accountType === "CREDIT_CARD" ? {
-            creditLimit: creditLimit ? parseFloat(creditLimit) : undefined,
-            dueDay: dueDay ? parseInt(dueDay) : undefined,
-          } : {}),
-        }),
-      });
+      let res;
+      if (editingId) {
+        payload.id = editingId;
+        res = await fetch("/api/accounts", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        res = await fetch("/api/accounts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
 
       if (res.ok) {
         setShowForm(false);
+        setEditingId(null);
         setFormType(null);
         setName("");
         setInitialBalance("");
@@ -153,7 +170,7 @@ export default function AccountsPage() {
         loadAccounts();
       }
     } catch (e) {
-      console.error("Error creating account:", e);
+      console.error("Error saving account:", e);
     }
   };
 
@@ -248,8 +265,8 @@ export default function AccountsPage() {
 
       {/* Form */}
       {showForm && (
-        <form onSubmit={handleCreateAccount} className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-6 space-y-4">
-          <h2 className="font-semibold text-[#efeae0]">{formType === "CARD" ? "Novo Cartão de Crédito" : "Nova Conta"}</h2>
+        <form onSubmit={handleSubmit} className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-6 space-y-4">
+          <h2 className="font-semibold text-[#efeae0]">{editingId ? "Editar Conta" : formType === "CARD" ? "Novo Cartão de Crédito" : "Nova Conta"}</h2>
 
           {/* Bank selector */}
           <div>
@@ -382,8 +399,46 @@ export default function AccountsPage() {
             return (
               <div
                 key={account.id}
-                className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-5 hover:border-[#b08a3e]/40 transition-all"
+                className="bg-[#191a1e]/70 border border-[#cfc6b4] rounded-xl p-5 hover:border-[#b08a3e]/40 transition-all relative group"
               >
+                {/* Edit/Delete actions */}
+                <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => {
+                      setEditingId(account.id);
+                      setFormType(account.type === "CREDIT_CARD" ? "CARD" : "ACCOUNT");
+                      setEditForm({
+                        name: account.name,
+                        type: account.type,
+                        initialBalance: parseFloat(account.currentBalance || account.initialBalance || "0"),
+                        selectedBank: account.bankId || "",
+                        creditLimit: account.creditLimit ? parseFloat(account.creditLimit).toString() : "",
+                        dueDay: account.dueDay?.toString() || "15",
+                      });
+                      setShowForm(true);
+                    }}
+                    className="p-1.5 rounded-lg bg-[#16171b] border border-[#cfc6b4] text-[#86837d] hover:text-[#b08a3e] hover:border-[#b08a3e] transition-colors"
+                    title="Editar"
+                  >
+                    <Pencil className="w-3 h-3" />
+                  </button>
+                  <button
+                    onClick={async () => {
+                      if (!confirm("Deseja realmente excluir esta conta?")) return;
+                      try {
+                        const res = await fetch(`/api/accounts?id=${account.id}&email=${userEmail}`, { method: "DELETE" });
+                        if (res.ok) loadAccounts();
+                      } catch (e) {
+                        console.error("Error deleting account:", e);
+                      }
+                    }}
+                    className="p-1.5 rounded-lg bg-[#16171b] border border-[#cfc6b4] text-[#86837d] hover:text-red-500 hover:border-red-500 transition-colors"
+                    title="Excluir"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
+
                 <div className="flex items-start justify-between mb-4">
                   <div
                     className="w-12 h-12 rounded-full flex items-center justify-center"
