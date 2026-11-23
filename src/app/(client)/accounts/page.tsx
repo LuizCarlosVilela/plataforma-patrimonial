@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { Plus, CreditCard, Landmark, TrendingUp, Wallet, RefreshCw, AlertCircle, Pencil, Trash2, X } from "lucide-react";
 import { formatBRL } from "@/lib/utils";
 import { SearchableSelect } from "@/components/shared/searchable-select";
+import { ActionSpinner } from "@/components/shared/action-spinner";
 
 interface BankOption {
   id: string;
@@ -78,6 +79,7 @@ export default function AccountsPage() {
   // Edit mode
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<any>({});
+  const [saving, setSaving] = useState(false);
 
   // Form state
   const [name, setName] = useState("");
@@ -128,21 +130,21 @@ export default function AccountsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !initialBalance || !userEmail) return;
-
-    const accountType = formType === "CARD" ? "CREDIT_CARD" : type;
-    const payload: any = {
-      email: userEmail,
-      name,
-      type: accountType,
-      initialBalance: parseFloat(initialBalance),
-      ...(selectedBank ? { bankId: selectedBank, color: BANKS.find(b => b.id === selectedBank)?.color } : {}),
-      ...(accountType === "CREDIT_CARD" ? {
-        creditLimit: creditLimit ? parseFloat(creditLimit) : undefined,
-        dueDay: dueDay ? parseInt(dueDay) : undefined,
-      } : {}),
-    };
-
+    setSaving(true);
     try {
+      const accountType = formType === "CARD" ? "CREDIT_CARD" : type;
+      const payload: any = {
+        email: userEmail,
+        name,
+        type: accountType,
+        initialBalance: parseFloat(initialBalance),
+        ...(selectedBank ? { bankId: selectedBank, color: BANKS.find(b => b.id === selectedBank)?.color } : {}),
+        ...(accountType === "CREDIT_CARD" ? {
+          creditLimit: creditLimit ? parseFloat(creditLimit) : undefined,
+          dueDay: dueDay ? parseInt(dueDay) : undefined,
+        } : {}),
+      };
+
       let res;
       if (editingId) {
         payload.id = editingId;
@@ -172,6 +174,8 @@ export default function AccountsPage() {
       }
     } catch (e) {
       console.error("Error saving account:", e);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -366,10 +370,11 @@ export default function AccountsPage() {
             </button>
             <button
               type="submit"
+              disabled={saving}
               className="py-2 px-6 rounded-lg font-medium text-sm text-[#16171b]"
               style={{ background: "#b08a3e" }}
             >
-              Criar {formType === "CARD" ? "Cartão" : "Conta"}
+              {saving ? <ActionSpinner label="Salvando..." /> : `Criar ${formType === "CARD" ? "Cartão" : "Conta"}`}
             </button>
           </div>
         </form>

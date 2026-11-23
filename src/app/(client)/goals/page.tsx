@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Target, CheckCircle, Clock, PauseCircle, TrendingUp, Wallet } from "lucide-react";
 import { formatBRL } from "@/lib/utils";
+import { ActionSpinner } from "@/components/shared/action-spinner";
 import {
   BarChart,
   Bar,
@@ -56,6 +57,7 @@ export default function GoalsPage() {
   const [targetDate, setTargetDate] = useState("");
   const [selectedAccountIds, setSelectedAccountIds] = useState<string[]>([]);
   const [categoryTag, setCategoryTag] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     async function getUser() {
@@ -93,6 +95,7 @@ export default function GoalsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !targetAmount || !targetDate || !userEmail) return;
+    setSaving(true);
     try {
       const res = await fetch("/api/goals", {
         method: "POST",
@@ -115,6 +118,7 @@ export default function GoalsPage() {
         loadGoals();
       }
     } catch (e) { console.error(e); }
+    finally { setSaving(false); }
   };
 
   const toggleAccount = (id: string) => {
@@ -231,8 +235,8 @@ export default function GoalsPage() {
           <div className="flex justify-end gap-3">
             <button type="button" onClick={() => setShowForm(false)}
               className="py-2 px-4 rounded-lg text-sm text-[#86837d] hover:text-[#efeae0] transition-colors">Cancelar</button>
-            <button type="submit" className="py-2 px-6 rounded-lg font-medium text-sm text-[#16171b]" style={{ background: "#b08a3e" }}>
-              Criar Meta
+            <button type="submit" disabled={saving} className="py-2 px-6 rounded-lg font-medium text-sm text-[#16171b]" style={{ background: "#b08a3e" }}>
+              {saving ? <ActionSpinner label="Salvando..." /> : "Criar Meta"}
             </button>
           </div>
         </form>

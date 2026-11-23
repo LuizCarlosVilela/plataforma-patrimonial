@@ -217,6 +217,54 @@ export default function DesignSystemPage() {
             </div>
           </div>
 
+          {/* Loading States */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-[#86837d] uppercase tracking-wider">Estados de Loading (ActionSpinner)</h3>
+            <div className="card-premium p-6 rounded-xl space-y-4">
+              <p className="text-sm text-[#efeae0]">
+                Usar o componente <code className="font-mono text-xs px-1 py-0.5 rounded" style={{ background: "rgba(176,138,62,0.15)", color: "#b08a3e" }}>ActionSpinner</code> em botões de ação para feedback visual durante requisições.
+              </p>
+              <div className="flex flex-wrap gap-4 items-center">
+                <button disabled className="py-2 px-6 rounded-lg font-medium text-sm text-[#16171b] opacity-70 cursor-not-allowed flex items-center gap-2" style={{ background: "#b08a3e" }}>
+                  <span className="inline-block w-3 h-3 border-2 border-[#16171b] border-t-transparent rounded-full animate-spin" />
+                  Salvando...
+                </button>
+                <button disabled className="py-2 px-6 rounded-lg font-medium text-sm text-[#16171b] opacity-70 cursor-not-allowed flex items-center gap-2" style={{ background: "#b08a3e" }}>
+                  <span className="inline-block w-3 h-3 border-2 border-[#16171b] border-t-transparent rounded-full animate-spin" />
+                  Criando Meta...
+                </button>
+              </div>
+              <div className="border-t border-[#cfc6b4]/20 pt-4 space-y-2">
+                <p className="text-xs text-[#86837d] font-medium uppercase tracking-wider">Uso no código</p>
+                <pre className="font-mono text-xs text-[#cfc6b4] bg-[#16171b] p-3 rounded-lg overflow-x-auto">{`// 1. Adicione o estado
+const [saving, setSaving] = useState(false);
+
+// 2. Wrap handleSubmit com try/catch/finally
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setSaving(true);
+  try { /* sua lógica */ }
+  catch (err) { console.error(err); }
+  finally { setSaving(false); }
+};
+
+// 3. No botão submit:
+<button type="submit" disabled={saving}>
+  {saving
+    ? <ActionSpinner label="Salvando..." />
+    : "Criar Conta"}
+</button>`}</pre>
+              </div>
+              <div className="border-t border-[#cfc6b4]/20 pt-4">
+                <p className="text-xs text-[#86837d] font-medium uppercase tracking-wider mb-2">Propriedades do ActionSpinner</p>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="bg-[#16171b] rounded-lg px-3 py-2"><span className="text-[#b08a3e] font-mono">label</span> — texto ao lado do spinner (default: "Carregando")</div>
+                  <div className="bg-[#16171b] rounded-lg px-3 py-2"><span className="text-[#b08a3e] font-mono">size</span> — tamanho em px (default: 14)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Badges */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium text-[#86837d] uppercase tracking-wider">Badges & Tags de Status</h3>
