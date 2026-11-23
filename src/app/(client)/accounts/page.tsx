@@ -164,6 +164,7 @@ export default function AccountsPage() {
         setEditingId(null);
         setFormType(null);
         setName("");
+        setType("CHECKING");
         setInitialBalance("");
         setSelectedBank("");
         setCreditLimit("");
@@ -358,7 +359,7 @@ export default function AccountsPage() {
           <div className="flex justify-end gap-3">
             <button
               type="button"
-              onClick={() => { setShowForm(false); setFormType(null); }}
+              onClick={() => { setShowForm(false); setEditingId(null); setFormType(null); setName(""); setType("CHECKING"); setInitialBalance(""); setSelectedBank(""); setCreditLimit(""); setDueDay("15"); }}
               className="py-2 px-4 rounded-lg text-sm text-[#86837d] hover:text-[#efeae0] transition-colors"
             >
               Cancelar
@@ -407,14 +408,12 @@ export default function AccountsPage() {
                     onClick={() => {
                       setEditingId(account.id);
                       setFormType(account.type === "CREDIT_CARD" ? "CARD" : "ACCOUNT");
-                      setEditForm({
-                        name: account.name,
-                        type: account.type,
-                        initialBalance: parseFloat(account.currentBalance || account.initialBalance || "0"),
-                        selectedBank: account.bankId || "",
-                        creditLimit: account.creditLimit ? parseFloat(account.creditLimit).toString() : "",
-                        dueDay: account.dueDay?.toString() || "15",
-                      });
+                      setName(account.name);
+                      setType(account.type as any);
+                      setInitialBalance((parseFloat(account.currentBalance) || parseFloat(account.initialBalance) || 0).toString());
+                      setSelectedBank(account.bankId || "");
+                      setCreditLimit(account.creditLimit ? (parseFloat(account.creditLimit) || 0).toFixed(2) : "");
+                      setDueDay(account.dueDay?.toString() || "15");
                       setShowForm(true);
                     }}
                     className="p-1.5 rounded-lg bg-[#16171b] border border-[#cfc6b4] text-[#86837d] hover:text-[#b08a3e] hover:border-[#b08a3e] transition-colors"
